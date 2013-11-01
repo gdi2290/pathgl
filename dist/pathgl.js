@@ -218,11 +218,9 @@ svgDomProxy.prototype =
         var parse = d3.transform(d)
           , radians = parse.rotate * Math.PI / 180
 
-        this.attr.translate = parse.translate
+        extend(this.attr, parse)
 
         this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
-
-        this.attr.scale = parse.scale
 
         render()
       }
@@ -330,14 +328,17 @@ function addLine(x1, y1, x2, y2) {
   this[index].numItems = vertices.length / 3
 }
 
+function applyTransforms(node) {
+  ctx.uniform2fv(program.xy, node.attr.translate)
+  ctx.uniform2fv(program.scale, node.attr.scale)
+  ctx.uniform2fv(program.rotation, node.attr.rotation)
+}
+
 function drawPath(node) {
   if (node.buffer) drawPolygon.call(node, node.buffer)
 
-
   setStroke(d3.rgb(node.attr.stroke))
-  ctx.uniform2fv(program.xy, node.attr.translate)
-  node.attr.scale && ctx.uniform2fv(program.scale, node.attr.scale)
-  node.attr.rotation && ctx.uniform2fv(program.rotation, node.attr.rotation)
+  applyTransforms(node)
 
   var path = node.path
 

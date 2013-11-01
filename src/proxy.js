@@ -46,11 +46,9 @@ svgDomProxy.prototype =
         var parse = d3.transform(d)
           , radians = parse.rotate * Math.PI / 180
 
-        this.attr.translate = parse.translate
+        extend(this.attr, parse)
 
         this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
-
-        this.attr.scale = parse.scale
 
         render()
       }
