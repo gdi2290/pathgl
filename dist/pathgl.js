@@ -216,13 +216,11 @@ svgDomProxy.prototype =
 
     , transform: function (d) {
         var parse = d3.transform(d)
-        this.attr.translateX = parse.translate[0]
-        this.attr.translateY = parse.translate[1]
+          , radians = parse.rotate * Math.PI / 180
 
-        var radians = parse.rotate * Math.PI / 180
+        this.attr.translate = parse.translate
 
         this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
-
 
         this.attr.scale = parse.scale
 
@@ -337,7 +335,7 @@ function drawPath(node) {
 
 
   setStroke(d3.rgb(node.attr.stroke))
-  ctx.uniform2f(program.xy, node.attr.translateX || 0, node.attr.translateY || 0)
+  ctx.uniform2fv(program.xy, node.attr.translate)
   node.attr.scale && ctx.uniform2fv(program.scale, node.attr.scale)
   node.attr.rotation && ctx.uniform2fv(program.rotation, node.attr.rotation)
 

@@ -18,7 +18,7 @@ function drawPath(node) {
 
 
   setStroke(d3.rgb(node.attr.stroke))
-  ctx.uniform2f(program.xy, node.attr.translateX || 0, node.attr.translateY || 0)
+  ctx.uniform2fv(program.xy, node.attr.translate)
   node.attr.scale && ctx.uniform2fv(program.scale, node.attr.scale)
   node.attr.rotation && ctx.uniform2fv(program.rotation, node.attr.rotation)
 
