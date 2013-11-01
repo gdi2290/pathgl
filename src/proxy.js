@@ -47,7 +47,7 @@ svgDomProxy.prototype =
         this.attr.translateX = parse.translate[0]
         this.attr.translateY = parse.translate[1]
 
-        var radians = (360 - parse.rotate) * Math.PI / 180
+        var radians = parse.rotate * Math.PI / 180
 
         this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
         render()
