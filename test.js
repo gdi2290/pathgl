@@ -1,4 +1,9 @@
+
 d3.select(window).on('load', function () {
+
+  pathgl.fragment = d3.select('[id]').text()
+  pathgl.forceRerender = true
+
   var canvas = d3.select('canvas')
     , svg = d3.select('svg')
     , dim = { height: 500, width: innerWidth * .499}
