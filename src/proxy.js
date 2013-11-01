@@ -1,3 +1,11 @@
+var attrDefaults = {
+  rotation: [0, 1]
+, translate: [0, 0]
+, scale: [1, 1]
+, cx: 0
+, cy: 0
+}
+
 function svgDomProxy(el, canvas) {
   if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);
 
@@ -5,7 +13,7 @@ function svgDomProxy(el, canvas) {
 
   this.tagName = el.tagName
   this.id = canvas.__id__++
-  this.attr = {}
+  this.attr = Object.create(attrDefaults)
   this.parentElement = canvas
 }
 

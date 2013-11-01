@@ -14,7 +14,7 @@ function addLine(x1, y1, x2, y2) {
 }
 
 function applyTransforms(node) {
-  ctx.uniform2fv(program.xy, node.attr.translate)
+  ctx.uniform2f(program.xy, node.attr.translate[0] + node.attr.cx, node.attr.translate[0] + node.attr.cy)
   ctx.uniform2fv(program.scale, node.attr.scale)
   ctx.uniform2fv(program.rotation, node.attr.rotation)
 }

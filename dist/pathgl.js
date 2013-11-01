@@ -170,6 +170,14 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, canvas.height - y]))
 }
+var attrDefaults = {
+  rotation: [0, 1]
+, translate: [0, 0]
+, scale: [1, 1]
+, cx: 0
+, cy: 0
+}
+
 function svgDomProxy(el, canvas) {
   if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);
 
@@ -177,7 +185,7 @@ function svgDomProxy(el, canvas) {
 
   this.tagName = el.tagName
   this.id = canvas.__id__++
-  this.attr = {}
+  this.attr = Object.create(attrDefaults)
   this.parentElement = canvas
 }
 
@@ -329,7 +337,7 @@ function addLine(x1, y1, x2, y2) {
 }
 
 function applyTransforms(node) {
-  ctx.uniform2fv(program.xy, node.attr.translate)
+  ctx.uniform2f(program.xy, node.attr.translate[0] + node.attr.cx, node.attr.translate[0] + node.attr.cy)
   ctx.uniform2fv(program.scale, node.attr.scale)
   ctx.uniform2fv(program.rotation, node.attr.rotation)
 }
