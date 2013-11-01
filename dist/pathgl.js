@@ -93,6 +93,7 @@ pathgl.shaderParameters = {
 , time: [0]
 , rotation: [0, 1]
 , resolution: [innerWidth, innerHeight]
+, scale: [1, 1]
 , mouse: pathgl.mouse = [0, 0]
 }
 
@@ -221,6 +222,10 @@ svgDomProxy.prototype =
         var radians = parse.rotate * Math.PI / 180
 
         this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
+
+
+        this.attr.scale = parse.scale
+
         render()
       }
 
@@ -330,12 +335,14 @@ function addLine(x1, y1, x2, y2) {
 function drawPath(node) {
   if (node.buffer) drawPolygon.call(node, node.buffer)
 
+
   setStroke(d3.rgb(node.attr.stroke))
   ctx.uniform2f(program.xy, node.attr.translateX || 0, node.attr.translateY || 0)
+  node.attr.scale && ctx.uniform2fv(program.scale, node.attr.scale)
   node.attr.rotation && ctx.uniform2fv(program.rotation, node.attr.rotation)
 
   var path = node.path
-  
+
   for (var i = 0; i < path.length; i++) {
     ctx.bindBuffer(ctx.ARRAY_BUFFER, path[i])
     ctx.vertexAttribPointer(program.vertexPositionLoc, path[i].itemSize, ctx.FLOAT, false, 0, 0)
@@ -368,10 +375,14 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 , "uniform vec2 xy;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
+                , "uniform vec2 scale;"
+
                 , "void main(void) {"
 
-                , "vec2 rotated_position = vec2(aVertexPosition.x * rotation.y + aVertexPosition.y * rotation.x, "
-                                              + "aVertexPosition.y * rotation.y - aVertexPosition.x * rotation.x);"
+                , "vec3 scaled_position = aVertexPosition * vec3(scale, 1.0);"
+
+                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
+                                              + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
 
                 , "vec2 position = vec2(rotated_position.x +xy.x, rotated_position.y + xy.y );"
 

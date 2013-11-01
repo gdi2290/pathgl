@@ -11,6 +11,7 @@ pathgl.shaderParameters = {
 , time: [0]
 , rotation: [0, 1]
 , resolution: [innerWidth, innerHeight]
+, scale: [1, 1]
 , mouse: pathgl.mouse = [0, 0]
 }
 

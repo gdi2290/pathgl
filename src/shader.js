@@ -12,10 +12,14 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 , "uniform vec2 xy;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
+                , "uniform vec2 scale;"
+
                 , "void main(void) {"
 
-                , "vec2 rotated_position = vec2(aVertexPosition.x * rotation.y + aVertexPosition.y * rotation.x, "
-                                              + "aVertexPosition.y * rotation.y - aVertexPosition.x * rotation.x);"
+                , "vec3 scaled_position = aVertexPosition * vec3(scale, 1.0);"
+
+                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
+                                              + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
 
                 , "vec2 position = vec2(rotated_position.x +xy.x, rotated_position.y + xy.y );"
 

@@ -23,7 +23,7 @@ function woah () {
     .attr('stroke', stroke)
     .attr('stroke-width', 2.5)
     .attr('fill', 'pink')
-    .attr('transform', 'rotate(10, 350, 300)')
+    .attr('transform', 'rotate (15)')
 
 
     enter.transition().duration(1000)

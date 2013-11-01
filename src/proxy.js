@@ -50,6 +50,10 @@ svgDomProxy.prototype =
         var radians = parse.rotate * Math.PI / 180
 
         this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
+
+
+        this.attr.scale = parse.scale
+
         render()
       }
 
