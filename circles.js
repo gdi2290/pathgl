@@ -14,7 +14,7 @@ d3.selectAll('[id]').each(function () {
   })
 })
 
-d3.select('canvas').attr('height', innerHeight).attr('width', innerWidth)
+  d3.select('canvas').attr('height', innerHeight).attr('width', innerWidth)
 
 var data = d3.range(1e3)
            .map(function (d) { return [ Math.random() * w / 2

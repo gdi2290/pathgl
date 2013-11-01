@@ -20,6 +20,7 @@ function svgDomProxy(el, canvas) {
 function querySelector(query) {
   return this.querySelectorAll(query)[0]
 }
+
 function querySelectorAll(query) {
   return this.__scene__
 }
@@ -34,9 +35,11 @@ svgDomProxy.prototype =
         this.buffer = buildBuffer(this.path.coords)
         drawPolygon.call(this, this.buffer)
       }
+
     , cx: function (cx) {
         this.buffer && drawPolygon.call(this, this.buffer)
       }
+
     , cy: function (cy) {
         this.buffer && drawPolygon.call(this, this.buffer)
       }
@@ -45,15 +48,15 @@ svgDomProxy.prototype =
         function integer(i) { return + i }
         function identity(i) { return i }
 
-        if (this.tagName != 'PATH') drawPolygon.call(this, this.buffer)
-        else {
-          if (! this.buffer) this.buffer = toBuffer(this.path.coords
-                                                    .map(function (d) { return d.map(integer).filter(identity) })
-                                                    .map(function (d) { d.push(0); return d })
-                                                    .filter(function (d) { return d.length == 3 }))
-          drawPolygon.call(this, this.buffer)
-        }
+        if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
+        if (! this.buffer)
+          this.buffer = toBuffer(this.path.coords
+                                 .map(function (d) { return d.map(integer).filter(identity) })
+                                 .map(function (d) { d.push(0); return d })
+                                 .filter(function (d) { return d.length == 3 }))
+
+        drawPolygon.call(this, this.buffer)
       }
 
     , transform: function (d) {
@@ -94,7 +97,7 @@ svgDomProxy.prototype =
       }
 
     , removeAttribute: function (name) {
-        this.attr[name] = null
+        delete this.attr[name]
       }
 
     , textContent: noop
@@ -103,14 +106,25 @@ svgDomProxy.prototype =
     }
 
 var circleProto = extend(Object.create(svgDomProxy), {
-  r: ''
-, cx: ''
-, cy: ''
+  r: noop
+, cx: noop
+, cy: noop
 })
 
 var pathProto = extend(Object.create(svgDomProxy), {
-  d: ''
+  d: noop
 })
+
+var rect = extend(Object.create(svgDomProxy), {
+  height: noop
+, width: noop
+, rx: noop
+, ry: noop
+, x: noop
+, y: noop
+})
+
+//rect, line, group, text, image
 
 function buildBuffer(points){
   var buffer = ctx.createBuffer()
@@ -120,26 +134,12 @@ function buildBuffer(points){
   return buffer
 }
 
-function drawPolygon(buffer) {
-  if (! this.attr) return console.log('lol')
-
-  applyTransforms(this)
-
-  setStroke(d3.rgb(this.attr.fill))
-
-  ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
-
-  ctx.vertexAttribPointer(0, 3, ctx.FLOAT, false, 0, 0)
-
-  ctx.drawArrays(ctx.TRIANGLE_FAN, 0, buffer.numItems)
+var flatten = function(input) {
+  return input.reduce(flat, [])
 }
 
-var flatten = function(input) {
-  var output = []
-  input.forEach(function(value) {
-    Array.isArray(value) ? [].push.apply(output, value) : output.push(value)
-  })
-  return output
+function flat(acc, value) {
+  return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
 }
 
 var memo = {}

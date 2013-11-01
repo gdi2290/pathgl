@@ -1,7 +1,6 @@
-
 d3.select(window).on('load', function () {
-
-  pathgl.fragment = d3.select('[id]').text()
+  var x
+  //pathgl.fragment = d3.select('[id]').text()
   pathgl.forceRerender = true
 
   var canvas = d3.select('canvas')
@@ -27,10 +26,8 @@ function woah () {
     .attr('d', function (d) { return d.toString() })
     .attr('stroke', stroke)
     .attr('stroke-width', 2.5)
-    .attr('fill', 'pink')
-    .attr('transform', 'rotate (0)')
-
-    return enter
+    .attr('fill', stroke)
+    .attr('transform', 'rotate(0)')
 
     enter.transition().duration(1000)
     .attr('stroke', stroke)
@@ -39,18 +36,16 @@ function woah () {
 
       join.transition().duration(1000)
       .attr('stroke', stroke)
+      .attr('fill', stroke)
       .each('end', k)
       .attr('d', function (d) { return d.toString() })
     })
-
-      return enter
   }
 
   var x = 1
   var line = d3.svg.line()
              .x(function(d){ return d * 2})
              .y(function(d){ return d * x })
-
 
   var k = d3.svg.symbol().type('circle').size(1000)()
 
@@ -63,18 +58,18 @@ function woah () {
 
              , texas()
              , signature()
-             , {toString: heart}
-             , {toString: function () { return line(d3.range(innerWidth / 10)) + 'Z' }}
+             , { toString: heart }
+             , { toString: function () { return line(d3.range(innerWidth / 10)) + 'Z'} }
              ]
 
 
   setInterval(function () {
-    x = x === 20 ? 1 : 20
+    x = x == 20 ? 1 : 20
   }, 1000)
 
   var strokes = rando()
-  svg  = test(1)
-  webgl = test(0)
+  test(1)
+  test(0)
 
   function color(selection) {
     selection.transition().duration(1000).attr('stroke', stroke)

@@ -23,7 +23,7 @@ function run_loop(elapsed) {
     pathgl.mouse && ctx.uniform2fv(program.mouse, pathgl.mouse),
     canvas.__scene__.forEach(drawPath)
   canvas.__rerender__ = false
-  }
+}
 
 function override(canvas) {
   return extend(canvas,
@@ -196,6 +196,7 @@ function svgDomProxy(el, canvas) {
 function querySelector(query) {
   return this.querySelectorAll(query)[0]
 }
+
 function querySelectorAll(query) {
   return this.__scene__
 }
@@ -210,9 +211,11 @@ svgDomProxy.prototype =
         this.buffer = buildBuffer(this.path.coords)
         drawPolygon.call(this, this.buffer)
       }
+
     , cx: function (cx) {
         this.buffer && drawPolygon.call(this, this.buffer)
       }
+
     , cy: function (cy) {
         this.buffer && drawPolygon.call(this, this.buffer)
       }
@@ -221,15 +224,15 @@ svgDomProxy.prototype =
         function integer(i) { return + i }
         function identity(i) { return i }
 
-        if (this.tagName != 'PATH') drawPolygon.call(this, this.buffer)
-        else {
-          if (! this.buffer) this.buffer = toBuffer(this.path.coords
-                                                    .map(function (d) { return d.map(integer).filter(identity) })
-                                                    .map(function (d) { d.push(0); return d })
-                                                    .filter(function (d) { return d.length == 3 }))
-          drawPolygon.call(this, this.buffer)
-        }
+        if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
+        if (! this.buffer)
+          this.buffer = toBuffer(this.path.coords
+                                 .map(function (d) { return d.map(integer).filter(identity) })
+                                 .map(function (d) { d.push(0); return d })
+                                 .filter(function (d) { return d.length == 3 }))
+
+        drawPolygon.call(this, this.buffer)
       }
 
     , transform: function (d) {
@@ -270,7 +273,7 @@ svgDomProxy.prototype =
       }
 
     , removeAttribute: function (name) {
-        this.attr[name] = null
+        delete this.attr[name]
       }
 
     , textContent: noop
@@ -279,14 +282,25 @@ svgDomProxy.prototype =
     }
 
 var circleProto = extend(Object.create(svgDomProxy), {
-  r: ''
-, cx: ''
-, cy: ''
+  r: noop
+, cx: noop
+, cy: noop
 })
 
 var pathProto = extend(Object.create(svgDomProxy), {
-  d: ''
+  d: noop
 })
+
+var rect = extend(Object.create(svgDomProxy), {
+  height: noop
+, width: noop
+, rx: noop
+, ry: noop
+, x: noop
+, y: noop
+})
+
+//rect, line, group, text, image
 
 function buildBuffer(points){
   var buffer = ctx.createBuffer()
@@ -296,26 +310,12 @@ function buildBuffer(points){
   return buffer
 }
 
-function drawPolygon(buffer) {
-  if (! this.attr) return console.log('lol')
-
-  applyTransforms(this)
-
-  setStroke(d3.rgb(this.attr.fill))
-
-  ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
-
-  ctx.vertexAttribPointer(0, 3, ctx.FLOAT, false, 0, 0)
-
-  ctx.drawArrays(ctx.TRIANGLE_FAN, 0, buffer.numItems)
+var flatten = function(input) {
+  return input.reduce(flat, [])
 }
 
-var flatten = function(input) {
-  var output = []
-  input.forEach(function(value) {
-    Array.isArray(value) ? [].push.apply(output, value) : output.push(value)
-  })
-  return output
+function flat(acc, value) {
+  return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
 }
 
 var memo = {}
@@ -334,7 +334,8 @@ function circlePoints(r) {
 
 function toBuffer (array) {
   return buildBuffer(flatten(array))
-}function addToBuffer(datum) {
+}
+function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 
@@ -355,17 +356,28 @@ function applyTransforms(node) {
   ctx.uniform2fv(program.rotation, node.attr.rotation)
 }
 
+function drawPolygon(buffer) {
+  if (! this.attr) return console.log('lol')
+
+  setStroke(d3.rgb(this.attr.fill))
+
+  ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
+  ctx.vertexAttribPointer(program.vertexPosition, 3, ctx.FLOAT, false, 0, 0)
+  ctx.drawArrays(ctx.TRIANGLE_FAN, 0, buffer.numItems)
+}
+
 function drawPath(node) {
+  applyTransforms(node)
+
   if (node.buffer) drawPolygon.call(node, node.buffer)
 
   setStroke(d3.rgb(node.attr.stroke))
-  applyTransforms(node)
 
   var path = node.path
 
   for (var i = 0; i < path.length; i++) {
     ctx.bindBuffer(ctx.ARRAY_BUFFER, path[i])
-    ctx.vertexAttribPointer(program.vertexPositionLoc, path[i].itemSize, ctx.FLOAT, false, 0, 0)
+    ctx.vertexAttribPointer(program.vertexPosition, path[i].itemSize, ctx.FLOAT, false, 0, 0)
     ctx.drawArrays(ctx.LINE_STRIP, 0, path[i].numItems)
   }
 }
@@ -412,8 +424,6 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
 
                 , "gl_Position = vec4(clipSpace, 1, 1);"
 
-                //, "gl_Position = uPMatrix * vec4(aVertexPosition, 1.0);"
-
                 , "}"
                 ].join('\n')
 function extend (a, b) {
@@ -423,8 +433,6 @@ function extend (a, b) {
 }
 
 function twoEach(list, fn, ctx) {
-  if (list.length == 1) fn.call(ctx)
-
   var l = list.length - 1, i = 0
   while(i < l) fn.call(ctx, list[i++], list[i++])
 }
@@ -436,21 +444,14 @@ function projection(l, r, b, t, n, f) {
     , tb = t - b
     , fn = f - n
 
-  return [ 2 / rl, 0, 0, 0
-         , 0, 2 / tb, 0, 0
-         , 0, 0, -2 / fn, 0
+  return [
+    2 / rl, 0, 0, 0
+  , 0, 2 / tb, 0, 0
+  , 0, 0, -2 / fn, 0
 
-         , (l + r) / -rl
-         , (t + b) / -tb
-         , (f + n) / -fn
-         , 1
-         ]
-}
-
-d3.queue = function (fn) {
-  var args = [].slice.call(arguments, 1)
-  d3.timer(function () {
-    fn.apply(null, args)
-    return true
-  })
+  , (l + r) / -rl
+  , (t + b) / -tb
+  , (f + n) / -fn
+  , 1
+  ]
 }

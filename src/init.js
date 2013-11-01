@@ -23,7 +23,7 @@ function run_loop(elapsed) {
     pathgl.mouse && ctx.uniform2fv(program.mouse, pathgl.mouse),
     canvas.__scene__.forEach(drawPath)
   canvas.__rerender__ = false
-  }
+}
 
 function override(canvas) {
   return extend(canvas,
