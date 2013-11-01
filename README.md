@@ -11,7 +11,7 @@ d3.select(selector).append('circle')
 .attr('cy',50)
 ```
 If webgl is available then your circles will be WEBGL, if not, fallback to svg.
-It just werks.
+It just works.
 
 Alternatively:
 ```

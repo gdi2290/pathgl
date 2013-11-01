@@ -1,0 +1,48 @@
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet"
+        href="//raw.github.com/ccampbell/rainbow/master/themes/github.css">
+
+  <script src="lib/rainbow.min.js"></script>
+
+  <script src="lib/d3.js"></script>
+  <script src="dist/pathgl.js"></script>
+  <script src="test.js"></script>
+  <style>
+    body {
+      padding: 15px;
+    }
+
+    svg {
+     border: 1px solid #ddd;
+    }
+  </style>
+
+</head>
+<body class="row">
+  <div class="col-md-6">
+    <p>
+      Pathgl is a library which lets you render d3 code to a webgl context with no
+      changes to your code
+    </p>
+    <ul class="nav nav-tabs nav-justified">
+      <li ><a href="#code" data-toggle="tab">code</a></li>
+      <li class="active"><a href="#svg" data-toggle="tab">svg</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane" id="code">
+        <pre class="code"><code data-language="javascript" contenteditable="true"></code></pre>
+      </div>
+      <div class="tab-pane active" id="svg"><svg></div>
+    </div>
+  </div>
+  <canvas data-toggle="tooltip" title="this is webgl!"></canvas>
+</body>
