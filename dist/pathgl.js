@@ -222,12 +222,14 @@ svgDomProxy.prototype =
         function identity(i) { return i }
 
         if (this.tagName != 'PATH') drawPolygon.call(this, this.buffer)
-        else
-          drawPolygon.call(this, toBuffer(this.path.coords
-                                 .map(function (d) { return d.map(integer).filter(identity) })
-                                 .map(function (d) { d.push(0); return d })
-                                 .filter(function (d) { return d.length == 3 }))
-                          )
+        else {
+          if (! this.buffer) this.buffer = toBuffer(this.path.coords
+                                                    .map(function (d) { return d.map(integer).filter(identity) })
+                                                    .map(function (d) { d.push(0); return d })
+                                                    .filter(function (d) { return d.length == 3 }))
+          drawPolygon.call(this, this.buffer)
+        }
+
       }
 
     , transform: function (d) {
@@ -296,11 +298,10 @@ function buildBuffer(points){
 
 function drawPolygon(buffer) {
   if (! this.attr) return console.log('lol')
-  else console.log('f')
 
-  ctx.uniform2f(program.xy, this.attr.cx || 0, this.attr.cy || 0)
+  applyTransforms(this)
 
-  ctx.uniform4f(program.rgb, 1,0, 1, 1)
+  setStroke(d3.rgb(this.attr.fill))
 
   ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
 
@@ -330,7 +331,6 @@ function circlePoints(r) {
 
   return memo[r] = a
 }
-
 
 function toBuffer (array) {
   return buildBuffer(flatten(array))
