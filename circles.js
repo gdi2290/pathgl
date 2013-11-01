@@ -34,7 +34,7 @@ function random_color() { return '#' + Math.floor(Math.random() * 0xffffff).toSt
 d3.select('canvas').on('click', function () {
   random_shader()
 
-  c.transition().duration(2000).ease('cubic').duration(function (_, i) { return i})
+  c.transition().duration(1000).ease('linear')
   .attr('cx', function (){ return Math.random() * innerWidth})
   .attr('cy', function (){ return Math.random() * innerHeight})
 })
@@ -44,6 +44,7 @@ function random_shader () {
   var selection = d3.selectAll('.select')
     , index = ~~ (Math.random() * (selection.size()))
     , handler = selection[0][index]
+
   return handler.textContent == current_shader ?
     random_shader() :
     handler.__onclick()

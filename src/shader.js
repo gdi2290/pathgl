@@ -27,9 +27,9 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 , "vec2 zeroToTwo = zeroToOne * 2.0;"
                 , "vec2 clipSpace = zeroToTwo - 1.0;"
 
+                , "gl_Position = vec4(clipSpace, 1, 1);"
 
-                , "gl_Position = vec4(clipSpace * vec2(1, 1), 1, 1);"
-
+                //, "gl_Position = uPMatrix * vec4(aVertexPosition, 1.0);"
 
                 , "}"
                 ].join('\n')

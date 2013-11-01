@@ -1,11 +1,13 @@
 var canvas
 function init(c) {
   canvas = c
+  pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   ctx = initContext(canvas)
   initShaders()
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(run_loop)
+
   return ctx ? canvas : null
 }
 
@@ -84,10 +86,12 @@ function each(obj, fn) {
   canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
     canvas instanceof d3.selection ? canvas.node() :
     canvas
+
+
   return init(canvas)
 }
-
 pathgl.shaderParameters = {
+
   rgb: [0, 0, 0, 0]
 , xy: [0, 0]
 , time: [0]
@@ -225,10 +229,9 @@ svgDomProxy.prototype =
     , transform: function (d) {
         var parse = d3.transform(d)
           , radians = parse.rotate * Math.PI / 180
+          , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
 
-        extend(this.attr, parse)
-
-        this.attr.rotation = [ Math.sin(radians), Math.cos(radians) ]
+        extend(this.attr, parse, rotation)
 
         render()
       }
@@ -397,9 +400,9 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 , "vec2 zeroToTwo = zeroToOne * 2.0;"
                 , "vec2 clipSpace = zeroToTwo - 1.0;"
 
+                , "gl_Position = vec4(clipSpace, 1, 1);"
 
-                , "gl_Position = vec4(clipSpace * vec2(1, 1), 1, 1);"
-
+                //, "gl_Position = uPMatrix * vec4(aVertexPosition, 1.0);"
 
                 , "}"
                 ].join('\n')

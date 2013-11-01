@@ -2,10 +2,12 @@ function pathgl(canvas) {
   canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
     canvas instanceof d3.selection ? canvas.node() :
     canvas
+
+
   return init(canvas)
 }
-
 pathgl.shaderParameters = {
+
   rgb: [0, 0, 0, 0]
 , xy: [0, 0]
 , time: [0]

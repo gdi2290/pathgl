@@ -1,11 +1,13 @@
 var canvas
 function init(c) {
   canvas = c
+  pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   ctx = initContext(canvas)
   initShaders()
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(run_loop)
+
   return ctx ? canvas : null
 }
 
