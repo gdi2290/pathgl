@@ -1,6 +1,6 @@
 d3.select(window).on('load', function () {
   var x
-  //pathgl.fragment = d3.select('[id]').text()
+  pathgl.fragment = d3.select('[id]').text();
   pathgl.forceRerender = true
 
   var canvas = d3.select('canvas')

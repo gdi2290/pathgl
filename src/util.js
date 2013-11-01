@@ -27,3 +27,13 @@ function projection(l, r, b, t, n, f) {
   , 1
   ]
 }
+
+
+
+var flatten = function(input) {
+  return input.reduce(flat, [])
+}
+
+function flat(acc, value) {
+  return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
+}

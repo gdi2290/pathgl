@@ -126,21 +126,7 @@ var rect = extend(Object.create(svgDomProxy), {
 
 //rect, line, group, text, image
 
-function buildBuffer(points){
-  var buffer = ctx.createBuffer()
-  ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
-  ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array(points), ctx.STATIC_DRAW)
-  buffer.numItems = points.length / 3
-  return buffer
-}
 
-var flatten = function(input) {
-  return input.reduce(flat, [])
-}
-
-function flat(acc, value) {
-  return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
-}
 
 var memo = {}
 function circlePoints(r) {
@@ -154,8 +140,4 @@ function circlePoints(r) {
           )
 
   return memo[r] = a
-}
-
-function toBuffer (array) {
-  return buildBuffer(flatten(array))
 }

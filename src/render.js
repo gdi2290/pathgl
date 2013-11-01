@@ -23,10 +23,13 @@ function drawPolygon(buffer) {
   if (! this.attr) return console.log('lol')
 
   setStroke(d3.rgb(this.attr.fill))
+  drawBuffer(buffer, ctx.TRIANGLE_FAN)
+}
 
+function drawBuffer(buffer, type) {
   ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
-  ctx.vertexAttribPointer(program.vertexPosition, 3, ctx.FLOAT, false, 0, 0)
-  ctx.drawArrays(ctx.TRIANGLE_FAN, 0, buffer.numItems)
+  ctx.vertexAttribPointer(program.vertexPosition, buffer.itemSize, ctx.FLOAT, false, 0, 0)
+  ctx.drawArrays(type, 0, buffer.numItems)
 }
 
 function drawPath(node) {
@@ -36,13 +39,7 @@ function drawPath(node) {
 
   setStroke(d3.rgb(node.attr.stroke))
 
-  var path = node.path
-
-  for (var i = 0; i < path.length; i++) {
-    ctx.bindBuffer(ctx.ARRAY_BUFFER, path[i])
-    ctx.vertexAttribPointer(program.vertexPosition, path[i].itemSize, ctx.FLOAT, false, 0, 0)
-    ctx.drawArrays(ctx.LINE_STRIP, 0, path[i].numItems)
-  }
+  for (var i = 0; i < node.path.length; i++) drawBuffer(node.path[i], ctx.LINE_STRIP)
 }
 
 function render() {
@@ -55,4 +52,18 @@ function setStroke (c) {
                 c.g / 256,
                 c.b / 256,
                 1.0)
+}
+
+
+function buildBuffer(points){
+  var buffer = ctx.createBuffer()
+  ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
+  ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array(points), ctx.STATIC_DRAW)
+  buffer.itemSize = 3
+  buffer.numItems = points.length / buffer.itemSize
+  return buffer
+}
+
+function toBuffer (array) {
+  return buildBuffer(flatten(array))
 }
