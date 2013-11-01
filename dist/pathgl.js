@@ -218,12 +218,16 @@ svgDomProxy.prototype =
       }
 
     , fill: function (val) {
-        if (this.tagName == 'PATH') return
-        drawPolygon.call(this, this.buffer
-                         // .map(function (d) { return d.map(integer).filter(identity) })
-                         // .map(function (d) { d.push(0); return d })
-                         // .filter(function (d) { return d.length == 3 })
-                   )
+        function integer(i) { return + i }
+        function identity(i) { return i }
+
+        if (this.tagName != 'PATH') drawPolygon.call(this, this.buffer)
+        else
+          drawPolygon.call(this, toBuffer(this.path.coords
+                                 .map(function (d) { return d.map(integer).filter(identity) })
+                                 .map(function (d) { d.push(0); return d })
+                                 .filter(function (d) { return d.length == 3 }))
+                          )
       }
 
     , transform: function (d) {
@@ -282,7 +286,6 @@ var pathProto = extend(Object.create(svgDomProxy), {
   d: ''
 })
 
-
 function buildBuffer(points){
   var buffer = ctx.createBuffer()
   ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
@@ -292,10 +295,13 @@ function buildBuffer(points){
 }
 
 function drawPolygon(buffer) {
-  if (! this.attr) return
+  if (! this.attr) return console.log('lol')
+  else console.log('f')
+
   ctx.uniform2f(program.xy, this.attr.cx || 0, this.attr.cy || 0)
 
-  // points = flatten(points)
+  ctx.uniform4f(program.rgb, 1,0, 1, 1)
+
   ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer)
 
   ctx.vertexAttribPointer(0, 3, ctx.FLOAT, false, 0, 0)
@@ -324,7 +330,11 @@ function circlePoints(r) {
 
   return memo[r] = a
 }
-function addToBuffer(datum) {
+
+
+function toBuffer (array) {
+  return buildBuffer(flatten(array))
+}function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 

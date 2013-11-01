@@ -25,6 +25,7 @@ function woah () {
     .attr('fill', 'pink')
     .attr('transform', 'rotate (0)')
 
+    return enter
 
     enter.transition().duration(1000)
     .attr('stroke', stroke)
