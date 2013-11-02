@@ -1,97 +1,11 @@
-var canvas
-function init(c) {
-  canvas = c
-  pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
-  gl = initContext(canvas)
-  initShaders()
-  override(canvas)
-  d3.select(canvas).on('mousemove.pathgl', mousemoved)
-  d3.timer(run_loop)
+pathgl.supportedAttributes =
+  [ 'd'
+  , 'stroke'
+  , 'strokeWidth'
+  , 'fill'
+  ]
 
-  return gl ? canvas : null
-}
-
-function mousemoved() {
-  //set scene hover here
-  var m = d3.mouse(this)
-  pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
-}
-
-function run_loop(elapsed) {
-  if (canvas.__rerender__ || pathgl.forceRerender)
-    gl.uniform1f(program.time, pathgl.time = elapsed / 1000),
-    pathgl.mouse && gl.uniform2fv(program.mouse, pathgl.mouse),
-    canvas.__scene__.forEach(drawPath)
-  canvas.__rerender__ = false
-}
-
-function override(canvas) {
-  return extend(canvas,
-                { appendChild: svgDomProxy
-                , querySelectorAll: querySelectorAll
-                , querySelector: querySelector
-                , __scene__: []
-                , __pos__: []
-                , __program__: void 0
-                , __id__: 0
-                })
-}
-
-function compileShader (type, src) {
-  var shader = gl.createShader(type)
-  gl.shaderSource(shader, src)
-  gl.compileShader(shader)
-  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader))
-  return shader
-}
-
-function initShaders() {
-  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
-  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, pathgl.fragment)
-  program = gl.createProgram()
-  gl.attachShader(program, vertexShader)
-  gl.attachShader(program, fragmentShader)
-
-  gl.linkProgram(program)
-  gl.useProgram(program)
-
-  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) return console.error("Shader is broken")
-
-  each(pathgl.shaderParameters, bindUniform)
-
-  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
-  gl.enableVertexAttribArray(program.vertexPosition)
-
-  program.uPMatrix = gl.getUniformLocation(program, "uPMatrix")
-  gl.uniformMatrix4fv(program.uPMatrix, 0, projection(0, innerWidth / 2, 0, 500, -1, 1))
-}
-
-function bindUniform(val, key) {
-  program[key] = gl.getUniformLocation(program, key)
-  if (val) gl['uniform' + val.length + 'fv'](program[key], val)
-}
-
-function initContext(canvas) {
-  var gl = canvas.getContext('webgl')
-  if (! gl) return
-  gl.viewportWidth = canvas.width || innerWidth
-  gl.viewportHeight = canvas.height || innerHeight
-  return gl
-}
-
-
-function each(obj, fn) {
-  for(var key in obj) fn(obj[key], key, obj)
-}function pathgl(canvas) {
-  canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
-    canvas instanceof d3.selection ? canvas.node() :
-    canvas
-
-
-  return init(canvas)
-}
 pathgl.shaderParameters = {
-
   rgb: [0, 0, 0, 0]
 , xy: [0, 0]
 , time: [0]
@@ -101,109 +15,61 @@ pathgl.shaderParameters = {
 , mouse: pathgl.mouse = [0, 0]
 }
 
-pathgl.initShaders = initShaders
 
-pathgl.supportedAttributes =
-  [ 'd'
-  , 'stroke'
-  , 'strokeWidth'
-  ]
+pathgl.fragment = [ "precision mediump float;"
+                  , "uniform vec4 rgb;"
+                  , "uniform float time;"
+                  , "uniform vec2 resolution;"
+                  , "void main(void) {"
+                  , "  gl_FragColor = rgb;"
+                  , "}"
+                  ].join('\n')
 
+pathgl.vertex = [ "attribute vec3 aVertexPosition;"
+                , "uniform mat4 uPMatrix;"
+                , "uniform vec2 xy;"
+                , "uniform vec2 resolution;"
+                , "uniform vec2 rotation;"
+                , "uniform vec2 scale;"
 
-var gl
+                , "void main(void) {"
 
-this.pathgl = pathgl
-var methods = { m: moveTo
-              , z: closePath
-              , l: lineTo
+                , "vec3 scaled_position = aVertexPosition * vec3(scale, 1.0);"
 
-              , h: horizontalLine
-              , v: verticalLine
-              , c: curveTo
-              , s: shortCurveTo
-              , q: quadraticBezier
-              , t: smoothQuadraticBezier
-              , a: elipticalArc
-              }
+                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
+                + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
 
+                , "vec2 position = vec2(rotated_position.x +xy.x, rotated_position.y + xy.y );"
 
-function horizontalLine() {}
-function verticalLine() {}
-function curveTo() {}
-function shortCurveTo() {}
-function quadraticBezier() {}
-function smoothQuadraticBezier () {}
-function elipticalArc(){}
+                , "vec2 zeroToOne = position / resolution;"
+                , "vec2 zeroToTwo = zeroToOne * 2.0;"
+                , "vec2 clipSpace = zeroToTwo - 1.0;"
 
-function group(coords) {
-  var s = []
-  twoEach(coords, function (a, b) { s.push([a, b]) })
-  return s
+                , "gl_Position = vec4(clipSpace, 1, 1);"
 
-}
-function parse (str) {
-  var path = addToBuffer(this)
+                , "}"
+                ].join('\n')
 
-  if (path.length) return render()
+function pathgl(canvas) {
+  var gl, program
 
-  str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
-    var instruction = methods[segment[0].toLowerCase()]
-      , coords = segment.slice(1).trim().split(/,| /g)
+  canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
+    canvas instanceof d3.selection ? canvas.node() :
+    canvas
 
-    ;[].push.apply(path.coords, group(coords))
-    if (instruction.name == 'closePath' && match[i+1]) return instruction.call(path, match[i+1])
+  pathgl.initShaders = initShaders
 
-    if ('function' == typeof instruction)
-      coords.length == 1 ? instruction.call(path) : twoEach(coords, instruction, path)
-    else
-      console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
-  })
-}
+  this.pathgl = pathgl
 
-function moveTo(x, y) {
-  pos = [x, canvas.height - y]
-}
+  var attrDefaults = {
+    rotation: [0, 1]
+  , translate: [0, 0]
+  , scale: [1, 1]
+  , cx: 0
+  , cy: 0
+  }
 
-var subpathStart
-function closePath(next) {
-  subpathStart = pos
-  lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.coords[0])
-}
-
-
-function lineTo(x, y) {
-  addLine.apply(this, pos.concat(pos = [x, canvas.height - y]))
-}
-var attrDefaults = {
-  rotation: [0, 1]
-, translate: [0, 0]
-, scale: [1, 1]
-, cx: 0
-, cy: 0
-}
-
-function svgDomProxy(el, canvas) {
-  if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);
-
-  canvas.__scene__.push(this)
-
-  this.tagName = el.tagName
-  this.id = canvas.__id__++
-  this.attr = Object.create(attrDefaults)
-  this.parentElement = canvas
-}
-
-function querySelector(query) {
-  return this.querySelectorAll(query)[0]
-}
-
-function querySelectorAll(query) {
-  return this.__scene__
-}
-
-var types = []
-
-svgDomProxy.prototype =
+  svgDomProxy.prototype =
     {
       r: function () {
         addToBuffer(this)
@@ -280,6 +146,171 @@ svgDomProxy.prototype =
     , removeEventListener: noop
     , addEventListener: noop
     }
+
+  var methods = { m: moveTo
+                , z: closePath
+                , l: lineTo
+
+                , h: horizontalLine
+                , v: verticalLine
+                , c: curveTo
+                , s: shortCurveTo
+                , q: quadraticBezier
+                , t: smoothQuadraticBezier
+                , a: elipticalArc
+                }
+
+  return init(canvas)
+function init(c) {
+  canvas = c
+  pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
+  gl = initContext(canvas)
+  initShaders()
+  override(canvas)
+  d3.select(canvas).on('mousemove.pathgl', mousemoved)
+  d3.timer(function (elapsed) {
+    if (canvas.__rerender__ || pathgl.forceRerender)
+      gl.uniform1f(program.time, pathgl.time = elapsed / 1000),
+      gl.uniform2fv(program.mouse, pathgl.mouse),
+      canvas.__scene__.forEach(drawPath)
+    canvas.__rerender__ = false
+  })
+
+  return gl ? canvas : null
+}
+
+function mousemoved() {
+  //set scene hover here
+  var m = d3.mouse(this)
+  pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
+}
+
+function override(canvas) {
+  return extend(canvas, {
+    appendChild: svgDomProxy
+  , querySelectorAll: querySelectorAll
+  , querySelector: querySelector
+
+  , gl: gl
+  , __scene__: []
+  , __pos__: []
+  , __id__: 0
+  , __program__: void 0
+  })
+}
+
+function compileShader (type, src) {
+  var shader = gl.createShader(type)
+  gl.shaderSource(shader, src)
+  gl.compileShader(shader)
+  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader))
+  return shader
+}
+
+function initShaders() {
+  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
+  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, pathgl.fragment)
+  program = gl.createProgram()
+  gl.attachShader(program, vertexShader)
+  gl.attachShader(program, fragmentShader)
+
+  gl.linkProgram(program)
+  gl.useProgram(program)
+
+  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) return console.error("Shader is broken")
+
+  each(pathgl.shaderParameters, bindUniform)
+
+  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+  gl.enableVertexAttribArray(program.vertexPosition)
+
+  program.uPMatrix = gl.getUniformLocation(program, "uPMatrix")
+  gl.uniformMatrix4fv(program.uPMatrix, 0, projection(0, innerWidth / 2, 0, 500, -1, 1))
+}
+
+function bindUniform(val, key) {
+  program[key] = gl.getUniformLocation(program, key)
+  if (val) gl['uniform' + val.length + 'fv'](program[key], val)
+}
+
+function initContext(canvas) {
+  var gl = canvas.getContext('webgl')
+  if (! gl) return
+  gl.viewportWidth = canvas.width || innerWidth
+  gl.viewportHeight = canvas.height || innerHeight
+  return gl
+}
+
+
+function each(obj, fn) {
+  for(var key in obj) fn(obj[key], key, obj)
+}
+function horizontalLine() {}
+function verticalLine() {}
+function curveTo() {}
+function shortCurveTo() {}
+function quadraticBezier() {}
+function smoothQuadraticBezier () {}
+function elipticalArc(){}
+
+function group(coords) {
+  var s = []
+  twoEach(coords, function (a, b) { s.push([a, b]) })
+  return s
+
+}
+function parse (str) {
+  var path = addToBuffer(this)
+
+  if (path.length) return render()
+
+  str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
+    var instruction = methods[segment[0].toLowerCase()]
+      , coords = segment.slice(1).trim().split(/,| /g)
+
+    ;[].push.apply(path.coords, group(coords))
+    if (instruction.name == 'closePath' && match[i+1]) return instruction.call(path, match[i+1])
+
+    if ('function' == typeof instruction)
+      coords.length == 1 ? instruction.call(path) : twoEach(coords, instruction, path)
+    else
+      console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
+  })
+}
+
+function moveTo(x, y) {
+  pos = [x, canvas.height - y]
+}
+
+var subpathStart
+function closePath(next) {
+  subpathStart = pos
+  lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.coords[0])
+}
+
+
+function lineTo(x, y) {
+  addLine.apply(this, pos.concat(pos = [x, canvas.height - y]))
+}
+function svgDomProxy(el, canvas) {
+  if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);
+
+  canvas.__scene__.push(this)
+
+  this.tagName = el.tagName
+  this.id = canvas.__id__++
+  this.attr = Object.create(attrDefaults)
+  this.parentElement = this.canvas = canvas
+  this.gl = canvas.gl
+}
+
+function querySelector(query) {
+  return this.querySelectorAll(query)[0]
+}
+
+function querySelectorAll(query) {
+  return this.__scene__
+}
 
 var circleProto = extend(Object.create(svgDomProxy), {
   r: noop
@@ -385,39 +416,6 @@ function buildBuffer(points){
 function toBuffer (array) {
   return buildBuffer(flatten(array))
 }
-pathgl.fragment = [ "precision mediump float;"
-                  , "uniform vec4 rgb;"
-                  , "uniform float time;"
-                  , "uniform vec2 resolution;"
-                  , "void main(void) {"
-                  , "  gl_FragColor = rgb;"
-                  , "}"
-                  ].join('\n')
-
-pathgl.vertex = [ "attribute vec3 aVertexPosition;"
-                , "uniform mat4 uPMatrix;"
-                , "uniform vec2 xy;"
-                , "uniform vec2 resolution;"
-                , "uniform vec2 rotation;"
-                , "uniform vec2 scale;"
-
-                , "void main(void) {"
-
-                , "vec3 scaled_position = aVertexPosition * vec3(scale, 1.0);"
-
-                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
-                                              + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
-
-                , "vec2 position = vec2(rotated_position.x +xy.x, rotated_position.y + xy.y );"
-
-                , "vec2 zeroToOne = position / resolution;"
-                , "vec2 zeroToTwo = zeroToOne * 2.0;"
-                , "vec2 clipSpace = zeroToTwo - 1.0;"
-
-                , "gl_Position = vec4(clipSpace, 1, 1);"
-
-                , "}"
-                ].join('\n')
 function extend (a, b) {
   if (arguments.length > 2) [].forEach.call(arguments, function (b) { extend(a, b) })
   else for (var k in b) a[k] = b[k]
@@ -448,12 +446,11 @@ function projection(l, r, b, t, n, f) {
   ]
 }
 
-
-
-var flatten = function(input) {
+function flatten(input) {
   return input.reduce(flat, [])
 }
 
 function flat(acc, value) {
   return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
+}
 }

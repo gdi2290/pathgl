@@ -1,4 +1,3 @@
-var canvas
 function init(c) {
   canvas = c
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
@@ -6,7 +5,13 @@ function init(c) {
   initShaders()
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
-  d3.timer(run_loop)
+  d3.timer(function (elapsed) {
+    if (canvas.__rerender__ || pathgl.forceRerender)
+      gl.uniform1f(program.time, pathgl.time = elapsed / 1000),
+      gl.uniform2fv(program.mouse, pathgl.mouse),
+      canvas.__scene__.forEach(drawPath)
+    canvas.__rerender__ = false
+  })
 
   return gl ? canvas : null
 }
@@ -17,24 +22,18 @@ function mousemoved() {
   pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
 }
 
-function run_loop(elapsed) {
-  if (canvas.__rerender__ || pathgl.forceRerender)
-    gl.uniform1f(program.time, pathgl.time = elapsed / 1000),
-    pathgl.mouse && gl.uniform2fv(program.mouse, pathgl.mouse),
-    canvas.__scene__.forEach(drawPath)
-  canvas.__rerender__ = false
-}
-
 function override(canvas) {
-  return extend(canvas,
-                { appendChild: svgDomProxy
-                , querySelectorAll: querySelectorAll
-                , querySelector: querySelector
-                , __scene__: []
-                , __pos__: []
-                , __program__: void 0
-                , __id__: 0
-                })
+  return extend(canvas, {
+    appendChild: svgDomProxy
+  , querySelectorAll: querySelectorAll
+  , querySelector: querySelector
+
+  , gl: gl
+  , __scene__: []
+  , __pos__: []
+  , __id__: 0
+  , __program__: void 0
+  })
 }
 
 function compileShader (type, src) {

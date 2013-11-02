@@ -1,17 +1,3 @@
-var methods = { m: moveTo
-              , z: closePath
-              , l: lineTo
-
-              , h: horizontalLine
-              , v: verticalLine
-              , c: curveTo
-              , s: shortCurveTo
-              , q: quadraticBezier
-              , t: smoothQuadraticBezier
-              , a: elipticalArc
-              }
-
-
 function horizontalLine() {}
 function verticalLine() {}
 function curveTo() {}

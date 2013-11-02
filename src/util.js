@@ -28,9 +28,7 @@ function projection(l, r, b, t, n, f) {
   ]
 }
 
-
-
-var flatten = function(input) {
+function flatten(input) {
   return input.reduce(flat, [])
 }
 
