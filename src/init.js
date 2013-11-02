@@ -2,13 +2,13 @@ var canvas
 function init(c) {
   canvas = c
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
-  ctx = initContext(canvas)
+  gl = initContext(canvas)
   initShaders()
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(run_loop)
 
-  return ctx ? canvas : null
+  return gl ? canvas : null
 }
 
 function mousemoved() {
@@ -19,8 +19,8 @@ function mousemoved() {
 
 function run_loop(elapsed) {
   if (canvas.__rerender__ || pathgl.forceRerender)
-    ctx.uniform1f(program.time, pathgl.time = elapsed / 1000),
-    pathgl.mouse && ctx.uniform2fv(program.mouse, pathgl.mouse),
+    gl.uniform1f(program.time, pathgl.time = elapsed / 1000),
+    pathgl.mouse && gl.uniform2fv(program.mouse, pathgl.mouse),
     canvas.__scene__.forEach(drawPath)
   canvas.__rerender__ = false
 }
@@ -38,45 +38,45 @@ function override(canvas) {
 }
 
 function compileShader (type, src) {
-  var shader = ctx.createShader(type)
-  ctx.shaderSource(shader, src)
-  ctx.compileShader(shader)
-  if (! ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) throw new Error(ctx.getShaderInfoLog(shader))
+  var shader = gl.createShader(type)
+  gl.shaderSource(shader, src)
+  gl.compileShader(shader)
+  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader))
   return shader
 }
 
 function initShaders() {
-  var vertexShader = compileShader(ctx.VERTEX_SHADER, pathgl.vertex)
-  var fragmentShader = compileShader(ctx.FRAGMENT_SHADER, pathgl.fragment)
-  program = ctx.createProgram()
-  ctx.attachShader(program, vertexShader)
-  ctx.attachShader(program, fragmentShader)
+  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
+  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, pathgl.fragment)
+  program = gl.createProgram()
+  gl.attachShader(program, vertexShader)
+  gl.attachShader(program, fragmentShader)
 
-  ctx.linkProgram(program)
-  ctx.useProgram(program)
+  gl.linkProgram(program)
+  gl.useProgram(program)
 
-  if (! ctx.getProgramParameter(program, ctx.LINK_STATUS)) return console.error("Shader is broken")
+  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) return console.error("Shader is broken")
 
   each(pathgl.shaderParameters, bindUniform)
 
-  program.vertexPosition = ctx.getAttribLocation(program, "aVertexPosition")
-  ctx.enableVertexAttribArray(program.vertexPosition)
+  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+  gl.enableVertexAttribArray(program.vertexPosition)
 
-  program.uPMatrix = ctx.getUniformLocation(program, "uPMatrix")
-  ctx.uniformMatrix4fv(program.uPMatrix, 0, projection(0, innerWidth / 2, 0, 500, -1, 1))
+  program.uPMatrix = gl.getUniformLocation(program, "uPMatrix")
+  gl.uniformMatrix4fv(program.uPMatrix, 0, projection(0, innerWidth / 2, 0, 500, -1, 1))
 }
 
 function bindUniform(val, key) {
-  program[key] = ctx.getUniformLocation(program, key)
-  if (val) ctx['uniform' + val.length + 'fv'](program[key], val)
+  program[key] = gl.getUniformLocation(program, key)
+  if (val) gl['uniform' + val.length + 'fv'](program[key], val)
 }
 
 function initContext(canvas) {
-  var ctx = canvas.getContext('webgl')
-  if (! ctx) return
-  ctx.viewportWidth = canvas.width || innerWidth
-  ctx.viewportHeight = canvas.height || innerHeight
-  return ctx
+  var gl = canvas.getContext('webgl')
+  if (! gl) return
+  gl.viewportWidth = canvas.width || innerWidth
+  gl.viewportHeight = canvas.height || innerHeight
+  return gl
 }
 
 

@@ -26,6 +26,6 @@ pathgl.supportedAttributes =
   ]
 
 
-var ctx
+var gl
 
 this.pathgl = pathgl

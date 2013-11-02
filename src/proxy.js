@@ -84,7 +84,7 @@ svgDomProxy.prototype =
       }
 
     , 'stroke-width': function (value) {
-        ctx.lineWidth(value)
+        gl.lineWidth(value)
       }
 
     , getAttribute: function (name) {

@@ -4,9 +4,9 @@ function extend (a, b) {
   return a
 }
 
-function twoEach(list, fn, ctx) {
+function twoEach(list, fn, gl) {
   var l = list.length - 1, i = 0
-  while(i < l) fn.call(ctx, list[i++], list[i++])
+  while(i < l) fn.call(gl, list[i++], list[i++])
 }
 
 function noop () {}
