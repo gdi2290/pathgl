@@ -61,9 +61,6 @@ function initShaders() {
 
   program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
   gl.enableVertexAttribArray(program.vertexPosition)
-
-  program.uPMatrix = gl.getUniformLocation(program, "uPMatrix")
-  gl.uniformMatrix4fv(program.uPMatrix, 0, projection(0, innerWidth / 2, 0, 500, -1, 1))
 }
 
 function bindUniform(val, key) {

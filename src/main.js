@@ -16,7 +16,6 @@ pathgl.shaderParameters = {
 , mouse: pathgl.mouse = [0, 0]
 }
 
-
 pathgl.fragment = [ "precision mediump float;"
                   , "uniform vec4 rgb;"
                   , "uniform float time;"
@@ -28,7 +27,6 @@ pathgl.fragment = [ "precision mediump float;"
                   ].join('\n')
 
 pathgl.vertex = [ "attribute vec3 aVertexPosition;"
-                , "uniform mat4 uPMatrix;"
                 , "uniform vec2 xy;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
