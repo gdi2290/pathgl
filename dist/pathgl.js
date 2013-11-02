@@ -10,6 +10,7 @@ pathgl.shaderParameters = {
 , xy: [0, 0]
 , time: [0]
 , rotation: [0, 1]
+, opacity: [1]
 , resolution: [innerWidth, innerHeight]
 , scale: [1, 1]
 , mouse: pathgl.mouse = [0, 0]
@@ -19,9 +20,10 @@ pathgl.shaderParameters = {
 pathgl.fragment = [ "precision mediump float;"
                   , "uniform vec4 rgb;"
                   , "uniform float time;"
+                  , "uniform float opacity;"
                   , "uniform vec2 resolution;"
                   , "void main(void) {"
-                  , "  gl_FragColor = rgb;"
+                  , "  gl_FragColor = vec4(rgb.xyz, opacity);"
                   , "}"
                   ].join('\n')
 
@@ -235,6 +237,7 @@ var attrDefaults = {
 
 , x: 0
 , y: 0
+, opacity: 1
 }
 
 function lineBuffers(polygon) {
@@ -330,7 +333,7 @@ svgDomProxy.prototype =
 
   , setAttribute: function (name, value) {
       this.attr[name] = value
-      this[name](value)
+      this[name] && this[name](value)
     }
 
   , removeAttribute: function (name) {
@@ -375,6 +378,7 @@ function applyTransforms(node) {
                node.attr.translate[0] + node.attr.cy + node.attr.y)
   gl.uniform2fv(program.scale, node.attr.scale)
   gl.uniform2fv(program.rotation, node.attr.rotation)
+  gl.uniform1f(program.opacity, node.attr.opacity)
 }
 
 function drawPolygon(buffer) {

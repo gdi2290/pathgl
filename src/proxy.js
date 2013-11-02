@@ -25,6 +25,7 @@ var attrDefaults = {
 
 , x: 0
 , y: 0
+, opacity: 1
 }
 
 function lineBuffers(polygon) {
@@ -120,7 +121,7 @@ svgDomProxy.prototype =
 
   , setAttribute: function (name, value) {
       this.attr[name] = value
-      this[name](value)
+      this[name] && this[name](value)
     }
 
   , removeAttribute: function (name) {

@@ -29,7 +29,6 @@ function woah () {
     .attr('fill', 'pink')
     .attr('transform', 'rotate(0)')
 
-    return
     enter.transition().duration(1000)
     .attr('stroke', stroke)
     .each('end', function k(d, i) {
@@ -37,7 +36,7 @@ function woah () {
 
       join.transition().duration(1000)
       .attr('stroke', stroke)
-      .attr('fill', stroke)
+      //.attr('fill', 'white')
       .each('end', k)
       .attr('d', function (d) { return d.toString() })
     })

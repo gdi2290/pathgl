@@ -10,6 +10,7 @@ pathgl.shaderParameters = {
 , xy: [0, 0]
 , time: [0]
 , rotation: [0, 1]
+, opacity: [1]
 , resolution: [innerWidth, innerHeight]
 , scale: [1, 1]
 , mouse: pathgl.mouse = [0, 0]
@@ -19,9 +20,10 @@ pathgl.shaderParameters = {
 pathgl.fragment = [ "precision mediump float;"
                   , "uniform vec4 rgb;"
                   , "uniform float time;"
+                  , "uniform float opacity;"
                   , "uniform vec2 resolution;"
                   , "void main(void) {"
-                  , "  gl_FragColor = rgb;"
+                  , "  gl_FragColor = vec4(rgb.xyz, opacity);"
                   , "}"
                   ].join('\n')
 

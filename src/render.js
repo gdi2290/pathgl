@@ -11,6 +11,7 @@ function applyTransforms(node) {
                node.attr.translate[0] + node.attr.cy + node.attr.y)
   gl.uniform2fv(program.scale, node.attr.scale)
   gl.uniform2fv(program.rotation, node.attr.rotation)
+  gl.uniform1f(program.opacity, node.attr.opacity)
 }
 
 function drawPolygon(buffer) {
