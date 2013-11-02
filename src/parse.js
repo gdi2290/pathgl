@@ -45,7 +45,7 @@ function parse (str) {
 }
 
 function moveTo(x, y) {
-  pos = [x, canvas.height - y]
+  pos = [x, y]
 }
 
 var subpathStart
@@ -56,5 +56,5 @@ function closePath(next) {
 
 
 function lineTo(x, y) {
-  addLine.apply(this, pos.concat(pos = [x, canvas.height - y]))
+  addLine.apply(this, pos.concat(pos = [x, y]))
 }

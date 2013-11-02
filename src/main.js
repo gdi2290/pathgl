@@ -34,7 +34,10 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
 
                 , "void main(void) {"
 
-                , "vec3 scaled_position = aVertexPosition * vec3(scale, 1.0);"
+                , "vec3 pos = aVertexPosition;"
+                , "pos.y = resolution.y - pos.y;"
+
+                , "vec3 scaled_position = pos * vec3(scale, 1.0);"
 
                 , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
                 + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"

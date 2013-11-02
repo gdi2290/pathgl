@@ -28,7 +28,7 @@ svgDomProxy.prototype =
     height: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
-      if  (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
       this.buffer = buildBuffer(this.path.coords)
       drawPolygon.call(this, this.buffer)
     }
@@ -62,9 +62,8 @@ svgDomProxy.prototype =
   , transform: function (d) {
       var parse = d3.transform(d)
         , radians = parse.rotate * Math.PI / 180
-        , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
 
-      extend(this.attr, parse, rotation)
+      extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
 
       render()
     }

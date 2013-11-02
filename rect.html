@@ -43,7 +43,7 @@ var w = innerWidth
 pathgl.forceRerender = true
   d3.select('canvas').attr('height', innerHeight).attr('width', innerWidth)
 
-var data = d3.range(1e3)
+var data = d3.range(2)
            .map(function (d) { return [ Math.random() * w / 2
                                       , Math.random() * h  / 2] })
 
@@ -51,8 +51,8 @@ var c = d3.select(pathgl('canvas'))
         .attr('height', h)
         .attr('width', w)
         .selectAll('rect').data(data).enter().append('circle')
-        .attr('x', function (d) { return d[0] })
-        .attr('y', function (d) { return d[1] })
+        .attr('x', function (d) { return 0 })
+        .attr('y', function (d) { return 0 })
         .attr('width', function () { return 10  })
         .attr('height', function () { return 20 })
         .attr('fill', 'blue')

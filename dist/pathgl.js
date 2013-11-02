@@ -34,7 +34,10 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
 
                 , "void main(void) {"
 
-                , "vec3 scaled_position = aVertexPosition * vec3(scale, 1.0);"
+                , "vec3 pos = aVertexPosition;"
+                , "pos.y = resolution.y - pos.y;"
+
+                , "vec3 scaled_position = pos * vec3(scale, 1.0);"
 
                 , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
                 + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
@@ -191,7 +194,7 @@ function parse (str) {
 }
 
 function moveTo(x, y) {
-  pos = [x, canvas.height - y]
+  pos = [x, y]
 }
 
 var subpathStart
@@ -202,7 +205,7 @@ function closePath(next) {
 
 
 function lineTo(x, y) {
-  addLine.apply(this, pos.concat(pos = [x, canvas.height - y]))
+  addLine.apply(this, pos.concat(pos = [x, y]))
 }
 var attrDefaults = {
   rotation: [0, 1]
@@ -234,7 +237,7 @@ svgDomProxy.prototype =
     height: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
-      if  (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
       this.buffer = buildBuffer(this.path.coords)
       drawPolygon.call(this, this.buffer)
     }
@@ -268,9 +271,8 @@ svgDomProxy.prototype =
   , transform: function (d) {
       var parse = d3.transform(d)
         , radians = parse.rotate * Math.PI / 180
-        , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
 
-      extend(this.attr, parse, rotation)
+      extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
 
       render()
     }
