@@ -66,3 +66,17 @@ function buildBuffer(points){
 function toBuffer (array) {
   return buildBuffer(flatten(array))
 }
+
+var memo = {}
+function circlePoints(r) {
+  if (memo[r]) return memo[r]
+
+  var a = []
+  for (var i = 0; i < 360; i+=18)
+    a.push(50 + r * Math.cos(i * Math.PI / 180),
+           50 + r * Math.sin(i * Math.PI / 180),
+           0
+          )
+
+  return memo[r] = a
+}
