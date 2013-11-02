@@ -21,7 +21,7 @@ function elipticalArc(){}
 
 function group(coords) {
   var s = []
-  twoEach(coords, function (a, b) { s.push([a, b]) })
+  twoEach(coords, function (a, b) { s.push([a, b, 0]) })
   return s
 
 }

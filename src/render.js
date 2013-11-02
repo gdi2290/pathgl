@@ -30,7 +30,7 @@ function drawPath(node) {
   node.buffer && drawPolygon.call(node, node.buffer)
 
   setStroke(d3.rgb(node.attr.stroke))
-
+  
   for (var i = 0; i < node.path.length; i++)
     drawBuffer(node.path[i], gl.LINE_STRIP)
 }

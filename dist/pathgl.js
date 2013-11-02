@@ -167,7 +167,7 @@ function elipticalArc(){}
 
 function group(coords) {
   var s = []
-  twoEach(coords, function (a, b) { s.push([a, b]) })
+  twoEach(coords, function (a, b) { s.push([a, b, 0]) })
   return s
 
 }
@@ -235,12 +235,7 @@ svgDomProxy.prototype =
 
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
-      if (! this.buffer)
-        this.buffer = toBuffer(
-          this.path.coords
-          .map(function (d) { return d.map(integer).filter(identity) })
-          .map(function (d) { d.push(0); return d })
-          .filter(function (d) { return d.length == 3 }))
+      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
 
       drawPolygon.call(this, this.buffer)
     }
@@ -363,7 +358,7 @@ function drawPath(node) {
   node.buffer && drawPolygon.call(node, node.buffer)
 
   setStroke(d3.rgb(node.attr.stroke))
-
+  
   for (var i = 0; i < node.path.length; i++)
     drawBuffer(node.path[i], gl.LINE_STRIP)
 }

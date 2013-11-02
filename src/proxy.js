@@ -29,12 +29,7 @@ svgDomProxy.prototype =
 
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
-      if (! this.buffer)
-        this.buffer = toBuffer(
-          this.path.coords
-          .map(function (d) { return d.map(integer).filter(identity) })
-          .map(function (d) { d.push(0); return d })
-          .filter(function (d) { return d.length == 3 }))
+      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
 
       drawPolygon.call(this, this.buffer)
     }
