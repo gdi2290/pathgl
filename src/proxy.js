@@ -1,88 +1,89 @@
-  var attrDefaults = {
-    rotation: [0, 1]
-  , translate: [0, 0]
-  , scale: [1, 1]
-  , cx: 0
-  , cy: 0
-  }
+var attrDefaults = {
+  rotation: [0, 1]
+, translate: [0, 0]
+, scale: [1, 1]
+, cx: 0
+, cy: 0
+}
 
-  svgDomProxy.prototype =
-    {
-      r: function () {
-        addToBuffer(this)
-        this.path.coords = circlePoints(this.attr.r)
-        this.buffer = buildBuffer(this.path.coords)
-        drawPolygon.call(this, this.buffer)
-      }
-
-    , cx: function (cx) {
-        this.buffer && drawPolygon.call(this, this.buffer)
-      }
-
-    , cy: function (cy) {
-        this.buffer && drawPolygon.call(this, this.buffer)
-      }
-
-    , fill: function (val) {
-        function integer(i) { return + i }
-        function identity(i) { return i }
-
-        if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
-
-        if (! this.buffer)
-          this.buffer = toBuffer(this.path.coords
-                                 .map(function (d) { return d.map(integer).filter(identity) })
-                                 .map(function (d) { d.push(0); return d })
-                                 .filter(function (d) { return d.length == 3 }))
-
-        drawPolygon.call(this, this.buffer)
-      }
-
-    , transform: function (d) {
-        var parse = d3.transform(d)
-          , radians = parse.rotate * Math.PI / 180
-          , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
-
-        extend(this.attr, parse, rotation)
-
-        render()
-      }
-
-    , d: function (d) {
-        this.path && extend(this.path, { coords: [], length: 0 })
-
-        if (d.match(/NaN/)) return console.warn('path is invalid')
-
-        render()
-
-        parse.call(this, d)
-      }
-
-    , stroke: function (d) {
-        render()
-      }
-
-    , 'stroke-width': function (value) {
-        gl.lineWidth(value)
-      }
-
-    , getAttribute: function (name) {
-        return this.attr[name]
-      }
-
-    , setAttribute: function (name, value) {
-        this.attr[name] = value
-        this[name](value)
-      }
-
-    , removeAttribute: function (name) {
-        delete this.attr[name]
-      }
-
-    , textContent: noop
-    , removeEventListener: noop
-    , addEventListener: noop
+svgDomProxy.prototype =
+  {
+    r: function () {
+      addToBuffer(this)
+      this.path.coords = circlePoints(this.attr.r)
+      this.buffer = buildBuffer(this.path.coords)
+      drawPolygon.call(this, this.buffer)
     }
+
+  , cx: function (cx) {
+      this.buffer && drawPolygon.call(this, this.buffer)
+    }
+
+  , cy: function (cy) {
+      this.buffer && drawPolygon.call(this, this.buffer)
+    }
+
+  , fill: function (val) {
+      function integer(i) { return + i }
+      function identity(i) { return i }
+
+      if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
+
+      if (! this.buffer)
+        this.buffer = toBuffer(
+          this.path.coords
+          .map(function (d) { return d.map(integer).filter(identity) })
+          .map(function (d) { d.push(0); return d })
+          .filter(function (d) { return d.length == 3 }))
+
+      drawPolygon.call(this, this.buffer)
+    }
+
+  , transform: function (d) {
+      var parse = d3.transform(d)
+        , radians = parse.rotate * Math.PI / 180
+        , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
+
+      extend(this.attr, parse, rotation)
+
+      render()
+    }
+
+  , d: function (d) {
+      this.path && extend(this.path, { coords: [], length: 0 })
+
+      if (d.match(/NaN/)) return console.warn('path is invalid')
+
+      render()
+
+      parse.call(this, d)
+    }
+
+  , stroke: function (d) {
+      render()
+    }
+
+  , 'stroke-width': function (value) {
+      gl.lineWidth(value)
+    }
+
+  , getAttribute: function (name) {
+      return this.attr[name]
+    }
+
+  , setAttribute: function (name, value) {
+      this.attr[name] = value
+      this[name](value)
+    }
+
+  , removeAttribute: function (name) {
+      delete this.attr[name]
+    }
+
+  , textContent: noop
+  , removeEventListener: noop
+  , addEventListener: noop
+  }
 
 function svgDomProxy(el, canvas) {
   if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);

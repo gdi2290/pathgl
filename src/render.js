@@ -1,16 +1,10 @@
+
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 
 function addLine(x1, y1, x2, y2) {
-  var index = this.push(gl.createBuffer()) - 1
-  var vertices = [x1, y1, 0, x2, y2, 0]
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, this[index])
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-
-  this[index].itemSize = 3
-  this[index].numItems = vertices.length / 3
+  this.push(toBuffer([x1, y1, 0, x2, y2, 0]))
 }
 
 function applyTransforms(node) {
@@ -20,8 +14,6 @@ function applyTransforms(node) {
 }
 
 function drawPolygon(buffer) {
-  if (! this.attr) return console.log('lol')
-
   setStroke(d3.rgb(this.attr.fill))
   drawBuffer(buffer, gl.TRIANGLE_FAN)
 }
@@ -35,11 +27,12 @@ function drawBuffer(buffer, type) {
 function drawPath(node) {
   applyTransforms(node)
 
-  if (node.buffer) drawPolygon.call(node, node.buffer)
+  node.buffer && drawPolygon.call(node, node.buffer)
 
   setStroke(d3.rgb(node.attr.stroke))
 
-  for (var i = 0; i < node.path.length; i++) drawBuffer(node.path[i], gl.LINE_STRIP)
+  for (var i = 0; i < node.path.length; i++)
+    drawBuffer(node.path[i], gl.LINE_STRIP)
 }
 
 function render() {
@@ -48,10 +41,10 @@ function render() {
 
 function setStroke (c) {
   gl.uniform4f(program.rgb,
-                c.r / 256,
-                c.g / 256,
-                c.b / 256,
-                1.0)
+               c.r / 256,
+               c.g / 256,
+               c.b / 256,
+               1.0)
 }
 
 function buildBuffer(points){

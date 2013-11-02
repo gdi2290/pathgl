@@ -204,91 +204,92 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, canvas.height - y]))
 }
-  var attrDefaults = {
-    rotation: [0, 1]
-  , translate: [0, 0]
-  , scale: [1, 1]
-  , cx: 0
-  , cy: 0
-  }
+var attrDefaults = {
+  rotation: [0, 1]
+, translate: [0, 0]
+, scale: [1, 1]
+, cx: 0
+, cy: 0
+}
 
-  svgDomProxy.prototype =
-    {
-      r: function () {
-        addToBuffer(this)
-        this.path.coords = circlePoints(this.attr.r)
-        this.buffer = buildBuffer(this.path.coords)
-        drawPolygon.call(this, this.buffer)
-      }
-
-    , cx: function (cx) {
-        this.buffer && drawPolygon.call(this, this.buffer)
-      }
-
-    , cy: function (cy) {
-        this.buffer && drawPolygon.call(this, this.buffer)
-      }
-
-    , fill: function (val) {
-        function integer(i) { return + i }
-        function identity(i) { return i }
-
-        if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
-
-        if (! this.buffer)
-          this.buffer = toBuffer(this.path.coords
-                                 .map(function (d) { return d.map(integer).filter(identity) })
-                                 .map(function (d) { d.push(0); return d })
-                                 .filter(function (d) { return d.length == 3 }))
-
-        drawPolygon.call(this, this.buffer)
-      }
-
-    , transform: function (d) {
-        var parse = d3.transform(d)
-          , radians = parse.rotate * Math.PI / 180
-          , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
-
-        extend(this.attr, parse, rotation)
-
-        render()
-      }
-
-    , d: function (d) {
-        this.path && extend(this.path, { coords: [], length: 0 })
-
-        if (d.match(/NaN/)) return console.warn('path is invalid')
-
-        render()
-
-        parse.call(this, d)
-      }
-
-    , stroke: function (d) {
-        render()
-      }
-
-    , 'stroke-width': function (value) {
-        gl.lineWidth(value)
-      }
-
-    , getAttribute: function (name) {
-        return this.attr[name]
-      }
-
-    , setAttribute: function (name, value) {
-        this.attr[name] = value
-        this[name](value)
-      }
-
-    , removeAttribute: function (name) {
-        delete this.attr[name]
-      }
-
-    , textContent: noop
-    , removeEventListener: noop
-    , addEventListener: noop
+svgDomProxy.prototype =
+  {
+    r: function () {
+      addToBuffer(this)
+      this.path.coords = circlePoints(this.attr.r)
+      this.buffer = buildBuffer(this.path.coords)
+      drawPolygon.call(this, this.buffer)
     }
+
+  , cx: function (cx) {
+      this.buffer && drawPolygon.call(this, this.buffer)
+    }
+
+  , cy: function (cy) {
+      this.buffer && drawPolygon.call(this, this.buffer)
+    }
+
+  , fill: function (val) {
+      function integer(i) { return + i }
+      function identity(i) { return i }
+
+      if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
+
+      if (! this.buffer)
+        this.buffer = toBuffer(
+          this.path.coords
+          .map(function (d) { return d.map(integer).filter(identity) })
+          .map(function (d) { d.push(0); return d })
+          .filter(function (d) { return d.length == 3 }))
+
+      drawPolygon.call(this, this.buffer)
+    }
+
+  , transform: function (d) {
+      var parse = d3.transform(d)
+        , radians = parse.rotate * Math.PI / 180
+        , rotation = { rotation: [ Math.sin(radians), Math.cos(radians) ] }
+
+      extend(this.attr, parse, rotation)
+
+      render()
+    }
+
+  , d: function (d) {
+      this.path && extend(this.path, { coords: [], length: 0 })
+
+      if (d.match(/NaN/)) return console.warn('path is invalid')
+
+      render()
+
+      parse.call(this, d)
+    }
+
+  , stroke: function (d) {
+      render()
+    }
+
+  , 'stroke-width': function (value) {
+      gl.lineWidth(value)
+    }
+
+  , getAttribute: function (name) {
+      return this.attr[name]
+    }
+
+  , setAttribute: function (name, value) {
+      this.attr[name] = value
+      this[name](value)
+    }
+
+  , removeAttribute: function (name) {
+      delete this.attr[name]
+    }
+
+  , textContent: noop
+  , removeEventListener: noop
+  , addEventListener: noop
+  }
 
 function svgDomProxy(el, canvas) {
   if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);
@@ -330,19 +331,13 @@ var rect = extend(Object.create(svgDomProxy), {
 })
 
 //rect, line, group, text, image
+
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 
 function addLine(x1, y1, x2, y2) {
-  var index = this.push(gl.createBuffer()) - 1
-  var vertices = [x1, y1, 0, x2, y2, 0]
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, this[index])
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-
-  this[index].itemSize = 3
-  this[index].numItems = vertices.length / 3
+  this.push(toBuffer([x1, y1, 0, x2, y2, 0]))
 }
 
 function applyTransforms(node) {
@@ -352,8 +347,6 @@ function applyTransforms(node) {
 }
 
 function drawPolygon(buffer) {
-  if (! this.attr) return console.log('lol')
-
   setStroke(d3.rgb(this.attr.fill))
   drawBuffer(buffer, gl.TRIANGLE_FAN)
 }
@@ -367,11 +360,12 @@ function drawBuffer(buffer, type) {
 function drawPath(node) {
   applyTransforms(node)
 
-  if (node.buffer) drawPolygon.call(node, node.buffer)
+  node.buffer && drawPolygon.call(node, node.buffer)
 
   setStroke(d3.rgb(node.attr.stroke))
 
-  for (var i = 0; i < node.path.length; i++) drawBuffer(node.path[i], gl.LINE_STRIP)
+  for (var i = 0; i < node.path.length; i++)
+    drawBuffer(node.path[i], gl.LINE_STRIP)
 }
 
 function render() {
@@ -380,10 +374,10 @@ function render() {
 
 function setStroke (c) {
   gl.uniform4f(program.rgb,
-                c.r / 256,
-                c.g / 256,
-                c.b / 256,
-                1.0)
+               c.r / 256,
+               c.g / 256,
+               c.b / 256,
+               1.0)
 }
 
 function buildBuffer(points){
