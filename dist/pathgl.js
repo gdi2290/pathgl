@@ -44,7 +44,7 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
                 + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
 
-                , "vec2 position = vec2(rotated_position.x +xy.x, rotated_position.y + xy.y );"
+                , "vec2 position = vec2(rotated_position.x + xy.x, rotated_position.y - xy.y );"
 
                 , "vec2 zeroToOne = position / resolution;"
                 , "vec2 zeroToTwo = zeroToOne * 2.0;"
