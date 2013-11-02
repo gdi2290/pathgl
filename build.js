@@ -19,7 +19,7 @@ function build(_, file) {
              .map(concat)
              .join('')
 
-    , closed = '+ function() {\n' + blob + ' }()'
+    , closed = '! function() {\n' + blob + ' }()'
 
   console.log('rebuilding ' + (file ? file : ''))
 

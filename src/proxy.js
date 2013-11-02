@@ -4,11 +4,27 @@ var attrDefaults = {
 , scale: [1, 1]
 , cx: 0
 , cy: 0
+
+, x: 0
+, y: 0
 }
 
 svgDomProxy.prototype =
   {
-    r: function () {
+    x: function () {}
+  , y: function () {}
+  ,
+    height: function () {
+      addToBuffer(this)
+      this.path.coords = rectPoints(this.attr.width, this.attr.height)
+      this.buffer = buildBuffer(this.path.coords)
+      drawPolygon.call(this, this.buffer)
+    }
+  , width: function () {
+
+    }
+
+  , r: function () {
       addToBuffer(this)
       this.path.coords = circlePoints(this.attr.r)
       this.buffer = buildBuffer(this.path.coords)
@@ -24,9 +40,6 @@ svgDomProxy.prototype =
     }
 
   , fill: function (val) {
-      function integer(i) { return + i }
-      function identity(i) { return i }
-
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
       if (! this.buffer) this.buffer = toBuffer(this.path.coords)

@@ -1,0 +1,70 @@
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet"
+        href="//raw.github.com/ccampbell/rainbow/master/themes/github.css">
+
+  <script src="lib/rainbow.min.js"></script>
+
+  <script src="lib/d3.js"></script>
+  <script src="dist/pathgl.js"></script>
+  <style>
+    body {
+    padding: 15px;
+    }
+
+    svg {
+    border: 1px solid #ddd;
+    }
+
+    [id] {
+      display:none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <canvas></canvas>
+  <script>
+  </script>
+  <script>
+
+var w = innerWidth
+  , h = innerHeight
+  , current_shader
+
+pathgl.forceRerender = true
+  d3.select('canvas').attr('height', innerHeight).attr('width', innerWidth)
+
+var data = d3.range(1e3)
+           .map(function (d) { return [ Math.random() * w / 2
+                                      , Math.random() * h  / 2] })
+
+var c = d3.select(pathgl('canvas'))
+        .attr('height', h)
+        .attr('width', w)
+        .selectAll('rect').data(data).enter().append('circle')
+        .attr('x', function (d) { return d[0] })
+        .attr('y', function (d) { return d[1] })
+        .attr('width', function () { return 10  })
+        .attr('height', function () { return 20 })
+        .attr('fill', 'red')
+        .attr('stroke', 'blue')
+
+function random_color() { return '#' + Math.floor(Math.random() * 0xffffff).toString(16) }
+
+d3.select('canvas').on('click', function () {
+  c.transition().duration(1000).ease('linear')
+  .attr('x', function (){ return Math.random() * innerWidth})
+  .attr('y', function (){ return Math.random() * innerHeight})
+})
+
+  </script>
+</body>
