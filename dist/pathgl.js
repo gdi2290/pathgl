@@ -89,9 +89,10 @@ function mousemoved() {
 
 function override(canvas) {
   return extend(canvas, {
-    appendChild: svgDomProxy
+    appendChild: appendChild
   , querySelectorAll: querySelectorAll
   , querySelector: querySelector
+  , removeChild: removeChild
 
   , gl: gl
   , __scene__: []
@@ -207,6 +208,24 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }
+function removeChild(el) {
+  var i = this.__scene__.indexOf(el)
+  this.__scene__.splice(i, 1)
+
+}
+
+function appendChild(el) {
+  return new svgDomProxy(el, this)
+}
+
+function querySelector(query) {
+  return this.querySelectorAll(query)[0]
+}
+
+function querySelectorAll(query) {
+  return this.__scene__
+}
+
 var attrDefaults = {
   rotation: [0, 1]
 , translate: [0, 0]
@@ -227,6 +246,16 @@ function lineBuffers(polygon) {
   addLine.call(shit, polygon[i], polygon[i+1], polygon[0], polygon[1])
 
   return shit
+}
+
+function svgDomProxy(el, canvas) {
+  canvas.__scene__.push(this)
+
+  this.tagName = el.tagName
+  this.id = canvas.__id__++
+  this.attr = Object.create(attrDefaults)
+  this.parentNode = this.parentElement = this.canvas = canvas
+  this.gl = canvas.gl
 }
 
 svgDomProxy.prototype =
@@ -312,26 +341,6 @@ svgDomProxy.prototype =
   , removeEventListener: noop
   , addEventListener: noop
   }
-
-function svgDomProxy(el, canvas) {
-  if (! (this instanceof svgDomProxy)) return new svgDomProxy(el, this);
-
-  canvas.__scene__.push(this)
-
-  this.tagName = el.tagName
-  this.id = canvas.__id__++
-  this.attr = Object.create(attrDefaults)
-  this.parentElement = this.canvas = canvas
-  this.gl = canvas.gl
-}
-
-function querySelector(query) {
-  return this.querySelectorAll(query)[0]
-}
-
-function querySelectorAll(query) {
-  return this.__scene__
-}
 
 var circleProto = extend(Object.create(svgDomProxy), {
   r: noop

@@ -24,9 +24,10 @@ function mousemoved() {
 
 function override(canvas) {
   return extend(canvas, {
-    appendChild: svgDomProxy
+    appendChild: appendChild
   , querySelectorAll: querySelectorAll
   , querySelector: querySelector
+  , removeChild: removeChild
 
   , gl: gl
   , __scene__: []

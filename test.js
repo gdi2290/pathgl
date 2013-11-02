@@ -1,6 +1,6 @@
 d3.select(window).on('load', function () {
   var x
-  pathgl.fragment = d3.select('[id]').text();
+  //pathgl.fragment = d3.select('[id]').text();
   pathgl.forceRerender = true
 
   var canvas = d3.select('canvas')
@@ -26,9 +26,10 @@ function woah () {
     .attr('d', function (d) { return d.toString() })
     .attr('stroke', stroke)
     .attr('stroke-width', 2.5)
-    .attr('fill', stroke)
+    .attr('fill', 'pink')
     .attr('transform', 'rotate(0)')
 
+    return
     enter.transition().duration(1000)
     .attr('stroke', stroke)
     .each('end', function k(d, i) {
