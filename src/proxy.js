@@ -9,6 +9,17 @@ var attrDefaults = {
 , y: 0
 }
 
+function lineBuffers(polygon) {
+  var shit = [], p = polygon
+  for(var i = 0; i < polygon.length + 4; i+= 3)
+    addLine.call(shit, polygon[i], polygon[i+1], polygon[i+3], polygon[i+4])
+
+  i = polygon.length - 3;
+  addLine.call(shit, polygon[i], polygon[i+1], polygon[0], polygon[1])
+
+  return shit
+}
+
 svgDomProxy.prototype =
   {
     x: function () {}
@@ -17,6 +28,7 @@ svgDomProxy.prototype =
     height: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
+      if  (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
       this.buffer = buildBuffer(this.path.coords)
       drawPolygon.call(this, this.buffer)
     }

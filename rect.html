@@ -55,8 +55,7 @@ var c = d3.select(pathgl('canvas'))
         .attr('y', function (d) { return d[1] })
         .attr('width', function () { return 10  })
         .attr('height', function () { return 20 })
-        .attr('fill', 'red')
-        .attr('stroke', 'blue')
+        .attr('fill', 'blue')
 
 function random_color() { return '#' + Math.floor(Math.random() * 0xffffff).toString(16) }
 
