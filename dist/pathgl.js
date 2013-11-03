@@ -205,12 +205,6 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }
-function removeChild(el) {
-  var i = this.__scene__.indexOf(el)
-  this.__scene__.splice(i, 1)
-
-}
-
 function appendChild(el) {
   return new svgDomProxy(el, this)
 }
@@ -223,13 +217,17 @@ function querySelectorAll(query) {
   return this.__scene__
 }
 
+function removeChild(el) {
+  var i = this.__scene__.indexOf(el)
+  this.__scene__.splice(i, 1)
+}
+
 var attrDefaults = {
   rotation: [0, 1]
 , translate: [0, 0]
 , scale: [1, 1]
 , cx: 0
 , cy: 0
-
 , x: 0
 , y: 0
 , opacity: 1
@@ -260,8 +258,14 @@ svgDomProxy.prototype =
   {
     x: function () {}
   , y: function () {}
-  ,
-    height: function () {
+
+  , querySelectorAll: noop
+  , querySelector: noop
+  , createElementNS: noop
+  , insertBefore: noop
+  , ownerDocument: {createElementNS: noop}
+
+  , height: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
       if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
