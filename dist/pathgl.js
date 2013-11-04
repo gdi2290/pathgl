@@ -67,7 +67,7 @@ function init(c) {
   canvas = c
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  initShaders()
+  initShaders(pathgl.fragment)
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(function (elapsed) {
@@ -110,9 +110,13 @@ function compileShader (type, src) {
   return shader
 }
 
-function initShaders() {
+var programs = {}
+
+function initShaders(fragment, name) {
+  if (programs[name]) return programs[name]
+
   var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
-  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, pathgl.fragment)
+  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
   program = gl.createProgram()
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
@@ -126,6 +130,8 @@ function initShaders() {
 
   program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
   gl.enableVertexAttribArray(program.vertexPosition)
+
+  return programs[name] = program
 }
 
 function bindUniform(val, key) {
@@ -292,6 +298,8 @@ svgDomProxy.prototype =
     }
 
   , fill: function (val) {
+      if (val[0] === '#') initShaders(d3.select(val).text(), val)
+
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
       if (! this.buffer) this.buffer = toBuffer(this.path.coords)
@@ -392,6 +400,8 @@ function drawBuffer(buffer, type) {
 }
 
 function drawPath(node) {
+  if (node.attr.fill[0] === '#') gl.useProgram(program = programs[node.attr.flil])
+
   applyTransforms(node)
 
   node.buffer && drawPolygon.call(node, node.buffer)

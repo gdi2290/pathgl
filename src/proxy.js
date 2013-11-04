@@ -85,6 +85,8 @@ svgDomProxy.prototype =
     }
 
   , fill: function (val) {
+      if (val[0] === '#') initShaders(d3.select(val).text(), val)
+
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
       if (! this.buffer) this.buffer = toBuffer(this.path.coords)

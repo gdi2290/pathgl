@@ -26,6 +26,8 @@ function drawBuffer(buffer, type) {
 }
 
 function drawPath(node) {
+  if (node.attr.fill[0] === '#') gl.useProgram(program = programs[node.attr.flil])
+
   applyTransforms(node)
 
   node.buffer && drawPolygon.call(node, node.buffer)
