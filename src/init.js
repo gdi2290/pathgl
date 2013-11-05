@@ -17,7 +17,6 @@ function init(c) {
 }
 
 function mousemoved() {
-  //set scene hover here
   var m = d3.mouse(this)
   pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
 }
@@ -45,13 +44,11 @@ function compileShader (type, src) {
   return shader
 }
 
-var programs = {}
-
 function initShaders(fragment, name) {
   if (programs[name]) return programs[name]
-
   var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
   var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
+
   program = gl.createProgram()
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
@@ -66,6 +63,7 @@ function initShaders(fragment, name) {
   program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
   gl.enableVertexAttribArray(program.vertexPosition)
 
+  program.name = name
   return programs[name] = program
 }
 
@@ -82,7 +80,6 @@ function initContext(canvas) {
   return gl
 }
 
-
 function each(obj, fn) {
-  for(var key in obj) fn(obj[key], key, obj)
+  for (var key in obj) fn(obj[key], key, obj)
 }

@@ -54,6 +54,7 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 ].join('\n')
 
 this.pathgl = pathgl
+this.programs = {}
 
 function pathgl(canvas) {
   var gl, program

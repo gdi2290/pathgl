@@ -1,4 +1,5 @@
-+ function() {pathgl.supportedAttributes =
+! function() {
+pathgl.supportedAttributes =
   [ 'd'
   , 'stroke'
   , 'strokeWidth'
@@ -54,6 +55,7 @@ pathgl.vertex = [ "attribute vec3 aVertexPosition;"
                 ].join('\n')
 
 this.pathgl = pathgl
+this.programs = {}
 
 function pathgl(canvas) {
   var gl, program
@@ -82,7 +84,6 @@ function init(c) {
 }
 
 function mousemoved() {
-  //set scene hover here
   var m = d3.mouse(this)
   pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
 }
@@ -110,13 +111,11 @@ function compileShader (type, src) {
   return shader
 }
 
-var programs = {}
-
 function initShaders(fragment, name) {
   if (programs[name]) return programs[name]
-
   var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
   var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
+
   program = gl.createProgram()
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
@@ -131,6 +130,7 @@ function initShaders(fragment, name) {
   program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
   gl.enableVertexAttribArray(program.vertexPosition)
 
+  program.name = name
   return programs[name] = program
 }
 
@@ -147,9 +147,8 @@ function initContext(canvas) {
   return gl
 }
 
-
 function each(obj, fn) {
-  for(var key in obj) fn(obj[key], key, obj)
+  for (var key in obj) fn(obj[key], key, obj)
 }
   var methods = { m: moveTo
                 , z: closePath
@@ -400,7 +399,11 @@ function drawBuffer(buffer, type) {
 }
 
 function drawPath(node) {
-  if (node.attr.fill[0] === '#') gl.useProgram(program = programs[node.attr.flil])
+  if (node.attr.fill[0] === '#' && program.name !== node.attr.fill) {
+    gl.useProgram(program = programs[node.attr.fill])
+    program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+    gl.enableVertexAttribArray(program.vertexPosition)
+  }
 
   applyTransforms(node)
 
@@ -424,11 +427,10 @@ function setDrawColor (c) {
                1.0)
 }
 
-function buildBuffer(points){
+function buildBuffer(points) {
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW)
-  window.gl = gl
   buffer.itemSize = 3
   buffer.numItems = points.length / buffer.itemSize
   return buffer

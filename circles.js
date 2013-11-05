@@ -3,7 +3,7 @@ var w = innerWidth
   , current_shader
 
 pathgl.forceRerender = true
-pathgl.fragment = d3.select('#hello').text()
+//pathgl.fragment = d3.select('#hello').text()
 
 d3.selectAll('[id]').each(function () {
   var name = this.id
@@ -24,13 +24,13 @@ var c = d3.select(pathgl('canvas') || 'svg')
         .selectAll('circle').data(data).enter().append('circle')
         .attr('cx', function (d) { return d[0] })
         .attr('cy', function (d) { return d[1] })
-        .attr('r', function () { return Math.random() * 5 + 5})
+        .attr('r', function () { return Math.random() * 10 + 10 })
         .attr('fill', 'red')
 
 function random_color() { return '#' + Math.floor(Math.random() * 0xffffff).toString(16) }
 
 d3.select('canvas').on('click', function () {
-  random_shader()
+  c.attr('fill', random_shader)
 
   c.transition().duration(1000).ease('linear')
   .attr('cx', function (){ return Math.random() * innerWidth})
@@ -42,12 +42,12 @@ function random_shader () {
     , index = ~~ (Math.random() * (selection.size()))
     , handler = selection[0][index]
 
-  return handler.textContent == current_shader ?
-    random_shader() :
-    handler.__onclick()
+  return '#' + handler.textContent
 }
 
 a=d3.selectAll('[id]')[0].map(function (d) { return d.id })
 .map(function (d) { return '#' + d})
 
 function choice () { return a[~~ (Math.random() * a.length)]}
+
+c.attr('fill', random_shader())

@@ -26,7 +26,11 @@ function drawBuffer(buffer, type) {
 }
 
 function drawPath(node) {
-  if (node.attr.fill[0] === '#') gl.useProgram(program = programs[node.attr.flil])
+  if (node.attr.fill[0] === '#' && program.name !== node.attr.fill) {
+    gl.useProgram(program = programs[node.attr.fill])
+    program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+    gl.enableVertexAttribArray(program.vertexPosition)
+  }
 
   applyTransforms(node)
 
@@ -50,11 +54,10 @@ function setDrawColor (c) {
                1.0)
 }
 
-function buildBuffer(points){
+function buildBuffer(points) {
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW)
-  window.gl = gl
   buffer.itemSize = 3
   buffer.numItems = points.length / buffer.itemSize
   return buffer
