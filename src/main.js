@@ -21,12 +21,14 @@ pathgl.fragment = [ "precision mediump float;"
                   , "uniform float time;"
                   , "uniform float opacity;"
                   , "uniform vec2 resolution;"
+
                   , "void main(void) {"
                   , "  gl_FragColor = vec4(rgb.xyz, opacity);"
                   , "}"
                   ].join('\n')
 
-pathgl.vertex = [ "attribute vec3 aVertexPosition;"
+pathgl.vertex = [ "precision mediump float;"
+                , "attribute vec3 aVertexPosition;"
                 , "uniform vec2 xy;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"

@@ -40,7 +40,7 @@ function compileShader (type, src) {
   var shader = gl.createShader(type)
   gl.shaderSource(shader, src)
   gl.compileShader(shader)
-  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader))
+  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw (gl.getShaderInfoLog(shader))
   return shader
 }
 
@@ -50,13 +50,15 @@ function initShaders(fragment, name) {
   var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
 
   program = gl.createProgram()
+
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
 
   gl.linkProgram(program)
-  gl.useProgram(program)
 
-  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) return console.error("Shader is broken")
+  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw ("prog:" + gl.getProgramInfoLog (program));
+
+  gl.useProgram(program)
 
   each(pathgl.shaderParameters, bindUniform)
 
