@@ -12,7 +12,7 @@ pathgl.shaderParameters = {
 , time: [0]
 , rotation: [0, 1]
 , opacity: [1]
-, resolution: [innerWidth, innerHeight]
+, resolution: [0, 0]
 , scale: [1, 1]
 , mouse: pathgl.mouse = [0, 0]
 }
@@ -116,7 +116,6 @@ function compileShader (type, src) {
 }
 
 function initShaders(fragment, name) {
-  console.log(name)
   if (programs[name]) return programs[name]
   var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
   var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
@@ -148,9 +147,7 @@ function bindUniform(val, key) {
 
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
-  return gl && extend(gl, { viewportWidth: canvas.width || innerWidth
-                          , viewportHeight: canvas.height || innerHeight
-                          })
+  return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 }
 
 function each(obj, fn) {
@@ -388,8 +385,8 @@ function addLine(x1, y1, x2, y2) {
 function applyTransforms(node) {
   gl.uniform2f(program.translate, node.attr.translate[0] + node.attr.cx + node.attr.x,
                node.attr.translate[0] + node.attr.cy + node.attr.y)
-  gl.uniform2fv(program.scale, node.attr.scale)
-  gl.uniform2fv(program.rotation, node.attr.rotation)
+  gl.uniform2f(program.scale, node.attr.scale[0], node.attr.scale[1])
+  gl.uniform2f(program.rotation, node.attr.rotation[0], node.attr.rotation[1])
   gl.uniform1f(program.opacity, node.attr.opacity)
 }
 
@@ -405,7 +402,11 @@ function drawBuffer(buffer, type) {
 }
 
 function drawPath(node) {
-  if (node.attr.fill[0] === '#' && program.name !== node.attr.fill) {
+  //this check can cause race conditions when using multiple shaders
+  //but speeds up single shader code a lot. keeping it in until
+  //precompute order and batch up shader switches
+  //may have to concat shaders together like threejs
+  if (node.attr.fill[0] === '#'  && program.name !== node.attr.fill) {
     gl.useProgram(program = programs[node.attr.fill])
     program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(program.vertexPosition)
@@ -454,6 +455,7 @@ function circlePoints(r) {
            0)
   return a
 }
+
 
 function rectPoints(h, w) {
   return [0,0,0,

@@ -48,7 +48,6 @@ function compileShader (type, src) {
 }
 
 function initShaders(fragment, name) {
-  console.log(name)
   if (programs[name]) return programs[name]
   var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
   var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
@@ -80,9 +79,7 @@ function bindUniform(val, key) {
 
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
-  return gl && extend(gl, { viewportWidth: canvas.width || innerWidth
-                          , viewportHeight: canvas.height || innerHeight
-                          })
+  return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 }
 
 function each(obj, fn) {
