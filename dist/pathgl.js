@@ -78,8 +78,8 @@ function init(c) {
     //if (canvas.__rerender__ || pathgl.forceRerender)
     $.each(programs, function (k, program) {
       gl.useProgram(program)
-      gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
-      gl.uniform2fv(program.mouse, pathgl.mouse)
+      program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
+      program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false

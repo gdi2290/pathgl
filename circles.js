@@ -30,7 +30,10 @@ var c = d3.select(pathgl('canvas') || 'svg')
 function random_color() { return '#' + Math.floor(Math.random() * 0xffffff).toString(16) }
 
 d3.select('canvas').on('click', function () {
-  c.attr('fill', random_shader)
+  var   a = random_shader()
+  , b = random_shader()
+  c.filter(function (d, i) { return i < 500}).attr('fill', a)
+  c.filter(function (d, i) { return i > 500}).attr('fill', b)
 
   c.transition().duration(1000).ease('linear')
   .attr('cx', function (){ return Math.random() * innerWidth})
@@ -48,6 +51,5 @@ function random_shader () {
 a=d3.selectAll('[id]')[0].map(function (d) { return d.id })
 .map(function (d) { return '#' + d})
 
-function choice () { return a[~~ (Math.random() * a.length)]}
 
 c.attr('fill', random_shader())
