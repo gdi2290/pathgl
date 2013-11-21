@@ -8,7 +8,7 @@ pathgl.supportedAttributes =
 
 pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
-, xy: [0, 0]
+, translate: [0, 0]
 , time: [0]
 , rotation: [0, 1]
 , opacity: [1]
@@ -30,7 +30,7 @@ pathgl.fragment = [ "precision mediump float;"
 
 pathgl.vertex = [ "precision mediump float;"
                 , "attribute vec3 aVertexPosition;"
-                , "uniform vec2 xy;"
+                , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
                 , "uniform vec2 scale;"
@@ -45,7 +45,7 @@ pathgl.vertex = [ "precision mediump float;"
                 , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
                 + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
 
-                , "vec2 position = vec2(rotated_position.x + xy.x, rotated_position.y - xy.y );"
+                , "vec2 position = vec2(rotated_position.x + translate.x, rotated_position.y - translate.y);"
 
                 , "vec2 zeroToOne = position / resolution;"
                 , "vec2 zeroToTwo = zeroToOne * 2.0;"
@@ -148,10 +148,9 @@ function bindUniform(val, key) {
 
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
-  if (! gl) return
-  gl.viewportWidth = canvas.width || innerWidth
-  gl.viewportHeight = canvas.height || innerHeight
-  return gl
+  return gl && extend(gl, { viewportWidth: canvas.width || innerWidth
+                          , viewportHeight: canvas.height || innerHeight
+                          })
 }
 
 function each(obj, fn) {
@@ -387,7 +386,7 @@ function addLine(x1, y1, x2, y2) {
 }
 
 function applyTransforms(node) {
-  gl.uniform2f(program.xy, node.attr.translate[0] + node.attr.cx + node.attr.x,
+  gl.uniform2f(program.translate, node.attr.translate[0] + node.attr.cx + node.attr.x,
                node.attr.translate[0] + node.attr.cy + node.attr.y)
   gl.uniform2fv(program.scale, node.attr.scale)
   gl.uniform2fv(program.rotation, node.attr.rotation)

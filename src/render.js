@@ -7,7 +7,7 @@ function addLine(x1, y1, x2, y2) {
 }
 
 function applyTransforms(node) {
-  gl.uniform2f(program.xy, node.attr.translate[0] + node.attr.cx + node.attr.x,
+  gl.uniform2f(program.translate, node.attr.translate[0] + node.attr.cx + node.attr.x,
                node.attr.translate[0] + node.attr.cy + node.attr.y)
   gl.uniform2fv(program.scale, node.attr.scale)
   gl.uniform2fv(program.rotation, node.attr.rotation)

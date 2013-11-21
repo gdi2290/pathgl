@@ -7,7 +7,7 @@ pathgl.supportedAttributes =
 
 pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
-, xy: [0, 0]
+, translate: [0, 0]
 , time: [0]
 , rotation: [0, 1]
 , opacity: [1]
@@ -29,7 +29,7 @@ pathgl.fragment = [ "precision mediump float;"
 
 pathgl.vertex = [ "precision mediump float;"
                 , "attribute vec3 aVertexPosition;"
-                , "uniform vec2 xy;"
+                , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
                 , "uniform vec2 scale;"
@@ -44,7 +44,7 @@ pathgl.vertex = [ "precision mediump float;"
                 , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
                 + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
 
-                , "vec2 position = vec2(rotated_position.x + xy.x, rotated_position.y - xy.y );"
+                , "vec2 position = vec2(rotated_position.x + translate.x, rotated_position.y - translate.y);"
 
                 , "vec2 zeroToOne = position / resolution;"
                 , "vec2 zeroToTwo = zeroToOne * 2.0;"
