@@ -147,6 +147,7 @@ function bindUniform(val, key) {
 
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
+
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 }
 
@@ -304,7 +305,7 @@ svgDomProxy.prototype =
 
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
-      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
+      if (! this.buffer && this.path) this.buffer = toBuffer(this.path.coords)
 
       drawPolygon.call(this, this.buffer)
     }
@@ -384,15 +385,15 @@ function addLine(x1, y1, x2, y2) {
 
 function applyTransforms(node) {
   gl.uniform2f(program.translate, node.attr.translate[0] + node.attr.cx + node.attr.x,
-               node.attr.translate[0] + node.attr.cy + node.attr.y)
+               node.attr.translate[1] + node.attr.cy + node.attr.y)
   gl.uniform2f(program.scale, node.attr.scale[0], node.attr.scale[1])
   gl.uniform2f(program.rotation, node.attr.rotation[0], node.attr.rotation[1])
   gl.uniform1f(program.opacity, node.attr.opacity)
 }
 
 function drawPolygon(buffer) {
-  setDrawColor(d3.rgb(this.attr.fill))
-  drawBuffer(buffer, gl.TRIANGLE_FAN)
+  setDrawColor(d3.rgb('pink'))
+  buffer && drawBuffer(buffer, gl.TRIANGLE_FAN)
 }
 
 function drawBuffer(buffer, type) {
@@ -418,6 +419,7 @@ function drawPath(node) {
 
   setDrawColor(d3.rgb(node.attr.stroke))
 
+  if (node.path)
   for (var i = 0; i < node.path.length; i++)
     drawBuffer(node.path[i], gl.LINE_STRIP)
 }

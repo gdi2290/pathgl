@@ -7,6 +7,10 @@
   <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <script src="http://d3js.org/topojson.v1.min.js"></script>
+
   <link rel="stylesheet"
         href="//raw.github.com/ccampbell/rainbow/master/themes/github.css">
 
@@ -45,6 +49,21 @@
       changes to your code
     </p>
 
+
+
+
+
+ <div id="rgb">
+   precision mediump float;
+    uniform vec4 rgb;
+    uniform float time;
+    uniform float opacity;
+    uniform vec2 resolution;
+
+    void main(void) {
+      gl_FragColor = vec4(rgb.xyz, opacity);
+    }
+ </div>
  <div id="water">
 precision mediump float;
 uniform float time;
@@ -1387,25 +1406,25 @@ void main( void ) {
   <canvas id="map"></canvas>
   <script src="examples/map.js"></script>
 
-  <!-- <div class="row"> -->
+  <!-- <div class="row"> -- -->
 
-  <!--   <div class="col-md-6"> -->
-  <!--     <ul class="nav nav-tabs nav-justified"> -->
-  <!--       <li ><a href="#code" data-toggle="tab">code</a></li> -->
-  <!--       <li class="active"><a href="#svg" data-toggle="tab">svg</a></li> -->
-  <!--     </ul> -->
+  <!--   <div class="col-md-6"> -- -->
+  <!--     <ul class="nav nav-tabs nav-justified"> -- -->
+  <!--       <li ><a href="#code" data-toggle="tab">code</a></li> -- -->
+  <!--       <li class="active"><a href="#svg" data-toggle="tab">svg</a></li> -- -->
+  <!--     </ul> -- -->
 
-  <!--     <div class="tab-content"> -->
-  <!--       <div class="tab-pane" id="code"> -->
-  <!--         <pre class="code"><code data-language="javascript" contenteditable="true"></code></pre> -->
-  <!--       </div> -->
-  <!--       <div class="tab-pane active" id="path"> -->
-  <!--         <svg></svg> -->
-  <!--       </div> -->
-  <!--     </div> -->
-  <!--   </div> -->
+  <!--     <div class="tab-content"> -- -->
+  <!--       <div class="tab-pane" id="code"> -- -->
+  <!--         <pre class="code"><code data-language="javascript" contenteditable="true"></code></pre> -- -->
+  <!--       </div> -- -->
+  <!--       <div class="tab-pane active" id="path"> -- -->
+  <!--         <svg></svg> -- -->
+  <!--       </div> -- -->
+  <!--     </div> -- -->
+  <!--   </div> -- -->
 
-  <!--   <canvas class="col-md-6"  data-toggle="tooltip" title="this is webgl!" id="path"></canvas> -->
+  <!--   <canvas class="col-md-6"  data-toggle="tooltip" title="this is webgl!" id="path"></canvas> -- -->
 
-  <!--   <script src="path.js"></script> -->
+  <!--   <script src="examples/path.js"></script> -- -->
 </body>

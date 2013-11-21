@@ -89,7 +89,7 @@ svgDomProxy.prototype =
 
       if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
 
-      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
+      if (! this.buffer && this.path) this.buffer = toBuffer(this.path.coords)
 
       drawPolygon.call(this, this.buffer)
     }

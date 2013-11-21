@@ -19,11 +19,10 @@ d3.select('#youaremycanvasandiloveyou').call(pathgl)
 .append('circle')
 ```
 
-### TODO ###
-fill: tesselate shapes into triangles 
+### roadmap ###
 transform: translate
 
-* Make parser comply with spec
+* Make path parser comply with spec
 
 * stroke
   * thickness
@@ -41,6 +40,7 @@ transform: translate
 * antialiasing
 * event listeners
 
+* add 2d canvas renderer for phones
 
 
 ###Extensions to d3 syntax
