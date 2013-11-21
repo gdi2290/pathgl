@@ -43,11 +43,12 @@ function compileShader (type, src) {
   var shader = gl.createShader(type)
   gl.shaderSource(shader, src)
   gl.compileShader(shader)
-  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw (gl.getShaderInfoLog(shader))
+  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw src + ' ' + gl.getShaderInfoLog(shader)
   return shader
 }
 
 function initShaders(fragment, name) {
+  console.log(name)
   if (programs[name]) return programs[name]
   var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
   var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)

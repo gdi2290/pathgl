@@ -5,7 +5,7 @@ var w = innerWidth
 pathgl.forceRerender = true
 //pathgl.fragment = d3.select('#hello').text()
 
-d3.selectAll('[id]').each(function () {
+d3.selectAll('div[id]').each(function () {
   var name = this.id
   d3.select('body').append('div').attr('class', 'select').text(name).on('click', function () {
     d3.select('#circles').selectAll('circle').attr('fill', '#' + name)
@@ -34,7 +34,6 @@ d3.select('#circles').on('click', function () {
   , b = random_shader()
   c.filter(function (d, i) { return i < 500}).attr('fill', a)
   c.filter(function (d, i) { return i > 500}).attr('fill', b)
-
   c.transition().duration(1000).ease('linear')
   .attr('cx', function (){ return Math.random() * innerWidth})
   .attr('cy', function (){ return Math.random() * innerHeight})
@@ -48,7 +47,7 @@ function random_shader () {
   return '#' + handler.textContent
 }
 
-a=d3.selectAll('[id]')[0].map(function (d) { return d.id })
+a=d3.selectAll('div[id]')[0].map(function (d) { return d.id })
 .map(function (d) { return '#' + d})
 
 
