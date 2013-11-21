@@ -34,9 +34,7 @@
 
  <div id="water">
 
-#ifdef GL_ES
       precision mediump float;
-#endif
 
 uniform float time;
 uniform vec2 mouse;
@@ -172,9 +170,7 @@ void main(void)
 }
       </div>
  <div id="innerspeaker">
-#ifdef GL_ES
-precision highp float;
-#endif
+precision mediump float;
 uniform float time;
 uniform vec2 mouse;
 uniform vec2 resolution;
@@ -875,10 +871,6 @@ void main( void ) {
 } </div>
 
   <div id="hello">
-    // Insane recursion with multiple effects by Optimus
-    // Guest code by AkumaX (rand function)
-
-    // Version Zoomer
 
     precision mediump float;
 

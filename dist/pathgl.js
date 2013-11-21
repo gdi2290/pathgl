@@ -75,10 +75,13 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(function (elapsed) {
-    if (canvas.__rerender__ || pathgl.forceRerender)
-      gl.uniform1f(program.time, pathgl.time = elapsed / 1000),
-      gl.uniform2fv(program.mouse, pathgl.mouse),
-      canvas.__scene__.forEach(drawPath)
+    //if (canvas.__rerender__ || pathgl.forceRerender)
+    $.each(programs, function (k, program) {
+      gl.useProgram(program)
+      gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
+      gl.uniform2fv(program.mouse, pathgl.mouse)
+    })
+    canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
   })
 
@@ -125,7 +128,7 @@ function initShaders(fragment, name) {
 
   gl.linkProgram(program)
 
-  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw ("prog:" + gl.getProgramInfoLog (program));
+  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   gl.useProgram(program)
 
