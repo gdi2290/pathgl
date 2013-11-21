@@ -3,7 +3,6 @@ var w = innerWidth
   , current_shader
 
 pathgl.forceRerender = true
-//pathgl.fragment = d3.select('#hello').text()
 
 d3.selectAll('div[id]').each(function () {
   var name = this.id

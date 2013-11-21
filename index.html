@@ -15,6 +15,15 @@
   <script src="lib/d3.js"></script>
   <script src="dist/pathgl.js"></script>
   <style>
+
+    body {
+    padding: 15px;
+    }
+
+    svg {
+    border: 1px solid #ddd;
+    }
+
     body {
     padding: 15px;
     }
@@ -31,6 +40,10 @@
 </head>
 
 <body>
+    <p>
+      Pathgl is a library which lets you render d3 code to a webgl context with no
+      changes to your code
+    </p>
 
  <div id="water">
 precision mediump float;
@@ -1371,6 +1384,26 @@ void main( void ) {
   <canvas id="rect"></canvas>
   <script src="rect.js"></script>
 
-  <canvas id="path"></canvas>
+<div class="row">
+
+  <div class="col-md-6">
+    <ul class="nav nav-tabs nav-justified">
+      <li ><a href="#code" data-toggle="tab">code</a></li>
+      <li class="active"><a href="#svg" data-toggle="tab">svg</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane" id="code">
+        <pre class="code"><code data-language="javascript" contenteditable="true"></code></pre>
+      </div>
+      <div class="tab-pane active" id="path">
+        <svg></svg>
+      </div>
+    </div>
+  </div>
+
+  <canvas class="col-md-6"  data-toggle="tooltip" title="this is webgl!" id="path"></canvas>
+
   <script src="path.js"></script>
+</div>
 </body>
