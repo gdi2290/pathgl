@@ -56,10 +56,9 @@ pathgl.vertex = [ "precision mediump float;"
                 ].join('\n')
 
 this.pathgl = pathgl
-this.programs = {}
 
 function pathgl(canvas) {
-  var gl, program
+  var gl, program, programs = {}
 
   canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
     canvas instanceof d3.selection ? canvas.node() :

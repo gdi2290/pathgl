@@ -8,17 +8,17 @@ pathgl.forceRerender = true
 d3.selectAll('[id]').each(function () {
   var name = this.id
   d3.select('body').append('div').attr('class', 'select').text(name).on('click', function () {
-    d3.select('canvas').selectAll('circle').attr('fill', '#' + name)
+    d3.select('#circles').selectAll('circle').attr('fill', '#' + name)
   })
 })
 
-d3.select('canvas').attr('height', innerHeight).attr('width', innerWidth)
+d3.select('#circles').attr('height', innerHeight).attr('width', innerWidth)
 
 var data = d3.range(1e3)
            .map(function (d) { return [ Math.random() * w / 2
                                       , Math.random() * h  / 2] })
 
-var c = d3.select(pathgl('canvas') || 'svg')
+var c = d3.select(pathgl('#circles') || 'svg')
         .attr('height', h)
         .attr('width', w)
         .selectAll('circle').data(data).enter().append('circle')
@@ -29,7 +29,7 @@ var c = d3.select(pathgl('canvas') || 'svg')
 
 function random_color() { return '#' + Math.floor(Math.random() * 0xffffff).toString(16) }
 
-d3.select('canvas').on('click', function () {
+d3.select('#circles').on('click', function () {
   var   a = random_shader()
   , b = random_shader()
   c.filter(function (d, i) { return i < 500}).attr('fill', a)

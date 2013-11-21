@@ -23,7 +23,7 @@
     border: 1px solid #ddd;
     }
 
-    [id] {
+    div[id] {
       display:none;
     }
   </style>
@@ -33,9 +33,7 @@
 <body>
 
  <div id="water">
-
-      precision mediump float;
-
+precision mediump float;
 uniform float time;
 uniform vec2 mouse;
 uniform vec2 resolution;
@@ -1366,13 +1364,13 @@ void main( void ) {
                                                                            </div>
 
 
-  <canvas></canvas>
+
+  <canvas id="circles"></canvas>
   <script src="circles.js"></script>
 
+  <canvas id="rect"></canvas>
+  <script src="rect.js"></script>
+
+  <canvas id="path"></canvas>
+  <script src="path.js"></script>
 </body>
-
-
-
-
-
-
