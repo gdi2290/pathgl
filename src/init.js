@@ -7,7 +7,7 @@ function init(c) {
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(function (elapsed) {
     //if (canvas.__rerender__ || pathgl.forceRerender)
-    $.each(programs, function (k, program) {
+    each(programs, function (program, key) {
       gl.useProgram(program)
       program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)

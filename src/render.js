@@ -81,7 +81,6 @@ function circlePoints(r) {
   return a
 }
 
-
 function rectPoints(h, w) {
   return [0,0,0,
           0,h,0,

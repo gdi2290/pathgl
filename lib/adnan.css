@@ -1,0 +1,46 @@
+body {
+    padding: 15px;
+}
+
+svg {
+    border: 1px solid #ddd;
+}
+
+body {
+    padding: 15px;
+}
+
+svg {
+    border: 1px solid #ddd;
+}
+
+div[id] {
+    display:none;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px;
+    border-right: 2px solid #444;
+    color: #222831;
+    border-bottom: 2px solid #444;
+    height: 100%;
+}
+
+li {
+    list-style:none;
+}
+
+li:hover:after {
+    background: pink;
+    color: blue;
+    content: "YEAH";
+}
+
+.right {
+    position: fixed;
+    left: 200px;
+    top: 0px;
+}
