@@ -1,11 +1,4 @@
 ! function() {
-pathgl.supportedAttributes =
-  [ 'd'
-  , 'stroke'
-  , 'strokeWidth'
-  , 'fill'
-  ]
-
 pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
@@ -55,8 +48,14 @@ pathgl.vertex = [ "precision mediump float;"
 
                 , "}"
                 ].join('\n')
+;this.pathgl = pathgl
 
-this.pathgl = pathgl
+pathgl.supportedAttributes =
+  [ 'd'
+  , 'stroke'
+  , 'strokeWidth'
+  , 'fill'
+  ]
 
 function pathgl(canvas) {
   var gl, program, programs = {}
@@ -66,7 +65,7 @@ function pathgl(canvas) {
     canvas
 
   pathgl.initShaders = initShaders
-function init(c) {
+;function init(c) {
   canvas = c
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
@@ -154,7 +153,7 @@ function initContext(canvas) {
 function each(obj, fn) {
   for (var key in obj) fn(obj[key], key, obj)
 }
-  var methods = { m: moveTo
+;  var methods = { m: moveTo
                 , z: closePath
                 , l: lineTo
 
@@ -214,7 +213,7 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }
-function appendChild(el) {
+;function appendChild(el) {
   return new svgDomProxy(el, this)
 }
 
@@ -375,7 +374,7 @@ var rect = extend(Object.create(svgDomProxy), {
 })
 
 //rect, line, group, text, image
-function addToBuffer(datum) {
+;function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 
@@ -466,7 +465,56 @@ function rectPoints(h, w) {
           w,0,0,
          ]
 }
-function noop () {}
+;pathgl.shaderParameters = {
+  rgb: [0, 0, 0, 0]
+, translate: [0, 0]
+, time: [0]
+, rotation: [0, 1]
+, opacity: [1]
+, resolution: [0, 0]
+, scale: [1, 1]
+, mouse: pathgl.mouse = [0, 0]
+}
+
+pathgl.fragment = [ "precision mediump float;"
+                  , "uniform vec4 rgb;"
+                  , "uniform float time;"
+                  , "uniform float opacity;"
+                  , "uniform vec2 resolution;"
+
+                  , "void main(void) {"
+                  , "  gl_FragColor = vec4(rgb.xyz, opacity);"
+                  , "}"
+                  ].join('\n')
+
+pathgl.vertex = [ "precision mediump float;"
+                , "attribute vec3 aVertexPosition;"
+                , "uniform vec2 translate;"
+                , "uniform vec2 resolution;"
+                , "uniform vec2 rotation;"
+                , "uniform vec2 scale;"
+
+                , "void main(void) {"
+
+                , "vec3 pos = aVertexPosition;"
+                , "pos.y = resolution.y - pos.y;"
+
+                , "vec3 scaled_position = pos * vec3(scale, 1.0);"
+
+                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
+                + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
+
+                , "vec2 position = vec2(rotated_position.x + translate.x, rotated_position.y - translate.y);"
+
+                , "vec2 zeroToOne = position / resolution;"
+                , "vec2 zeroToTwo = zeroToOne * 2.0;"
+                , "vec2 clipSpace = zeroToTwo - 1.0;"
+
+                , "gl_Position = vec4(clipSpace, 1, 1);"
+
+                , "}"
+                ].join('\n')
+;function noop () {}
 
 function extend (a, b) {
   if (arguments.length > 2) [].forEach.call(arguments, function (b) { extend(a, b) })
@@ -486,5 +534,5 @@ function flatten(input) {
 function flat(acc, value) {
   return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
 }
-return init(canvas)
+;return init(canvas)
 } }()

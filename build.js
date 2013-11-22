@@ -12,13 +12,16 @@ build()
 fs.watch('src', build)
 
 function build(_, file) {
-  var blob = fs.readdirSync(source)
-             .filter(emacs)
-             .sort()
-             .tap(head)
-             .map(concat)
-             .join('')
-
+  var blob = [ 'shader.js'
+             , 'start.js'
+             , 'init.js'
+             , 'parse.js'
+             , 'proxy.js'
+             , 'render.js'
+             , 'shader.js'
+             , 'util.js'
+             , 'end.js'
+             ].map(concat).join(';')
     , closed = '! function() {\n' + blob + ' }()'
 
   console.log('rebuilding ' + (file ? file : ''))
