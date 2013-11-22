@@ -33,10 +33,13 @@ li {
     list-style:none;
 }
 
+li:hover {
+    background: black;
+    color: white;
+}
+
 li:hover:after {
-    background: pink;
-    color: blue;
-    content: "YEAH";
+content: "YEAH";    
 }
 
 .right {
