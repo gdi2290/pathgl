@@ -1,3 +1,7 @@
+function insertBefore(node, next) {
+
+}
+
 function appendChild(el) {
   return new svgDomProxy(el, this)
 }
@@ -19,6 +23,7 @@ var attrDefaults = {
   rotation: [0, 1]
 , translate: [0, 0]
 , scale: [1, 1]
+, fill: 'red'
 , cx: 0
 , cy: 0
 , x: 0
@@ -56,7 +61,8 @@ svgDomProxy.prototype =
   , querySelector: noop
   , createElementNS: noop
   , insertBefore: noop
-  , ownerDocument: {createElementNS: noop}
+  , ownerDocument: { createElementNS: noop }
+  , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 
   , height: function () {
       addToBuffer(this)

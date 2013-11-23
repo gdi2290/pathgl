@@ -97,6 +97,7 @@ function override(canvas) {
   , querySelectorAll: querySelectorAll
   , querySelector: querySelector
   , removeChild: removeChild
+  , insertBefore: insertBefore
 
   , gl: gl
   , __scene__: []
@@ -190,6 +191,7 @@ function parse (str) {
       , coords = segment.slice(1).trim().split(/,| /g)
 
     ;[].push.apply(path.coords, group(coords))
+    if (! instruction) return
     if (instruction.name == 'closePath' && match[i+1]) return instruction.call(path, match[i+1])
 
     if ('function' == typeof instruction)
@@ -213,7 +215,11 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }
-;function appendChild(el) {
+;function insertBefore(node, next) {
+
+}
+
+function appendChild(el) {
   return new svgDomProxy(el, this)
 }
 
@@ -234,6 +240,7 @@ var attrDefaults = {
   rotation: [0, 1]
 , translate: [0, 0]
 , scale: [1, 1]
+, fill: 'red'
 , cx: 0
 , cy: 0
 , x: 0
@@ -271,7 +278,8 @@ svgDomProxy.prototype =
   , querySelector: noop
   , createElementNS: noop
   , insertBefore: noop
-  , ownerDocument: {createElementNS: noop}
+  , ownerDocument: { createElementNS: noop }
+  , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 
   , height: function () {
       addToBuffer(this)

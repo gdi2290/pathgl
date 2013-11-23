@@ -30,6 +30,7 @@ function override(canvas) {
   , querySelectorAll: querySelectorAll
   , querySelector: querySelector
   , removeChild: removeChild
+  , insertBefore: insertBefore
 
   , gl: gl
   , __scene__: []

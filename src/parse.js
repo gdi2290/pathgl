@@ -35,6 +35,7 @@ function parse (str) {
       , coords = segment.slice(1).trim().split(/,| /g)
 
     ;[].push.apply(path.coords, group(coords))
+    if (! instruction) return
     if (instruction.name == 'closePath' && match[i+1]) return instruction.call(path, match[i+1])
 
     if ('function' == typeof instruction)
