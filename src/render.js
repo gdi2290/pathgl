@@ -15,7 +15,7 @@ function applyTransforms(node) {
 }
 
 function drawPolygon(buffer) {
-  setDrawColor(d3.rgb('pink'))
+  setDrawColor(d3.rgb(this.attr.fill))
   buffer && drawBuffer(buffer, gl.TRIANGLE_FAN)
 }
 
@@ -30,21 +30,24 @@ function drawPath(node) {
   //but speeds up single shader code a lot. keeping it in until
   //precompute order and batch up shader switches
   //may have to concat shaders together like threejs
-  if (node.attr.fill[0] === '#'  && program.name !== node.attr.fill) {
+  if (isId(node.attr.fill) && program.name !== node.attr.fill) {
     gl.useProgram(program = programs[node.attr.fill])
     program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(program.vertexPosition)
+  } else {
+    gl.useProgram(program = (programs["_identity"]))
+    program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+    gl.enableVertexAttribArray(program.vertexPosition)
   }
-
-  applyTransforms(node)
 
   node.buffer && drawPolygon.call(node, node.buffer)
 
   setDrawColor(d3.rgb(node.attr.stroke))
 
-  if (node.path)
   for (var i = 0; i < node.path.length; i++)
     drawBuffer(node.path[i], gl.LINE_STRIP)
+
+  applyTransforms(node)
 }
 
 function render() {

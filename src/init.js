@@ -2,7 +2,7 @@ function init(c) {
   canvas = c
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  initShaders(pathgl.fragment)
+  initShaders(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(function (elapsed) {

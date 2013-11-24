@@ -1,5 +1,4 @@
 function insertBefore(node, next) {
-
 }
 
 function appendChild(el) {
@@ -11,7 +10,7 @@ function querySelector(query) {
 }
 
 function querySelectorAll(query) {
-  return this.__scene__
+  return this.__scene__.filter(function (node) { return node.tagName.toLowerCase() === query })
 }
 
 function removeChild(el) {
@@ -23,7 +22,7 @@ var attrDefaults = {
   rotation: [0, 1]
 , translate: [0, 0]
 , scale: [1, 1]
-, fill: 'red'
+, fill: 0
 , cx: 0
 , cy: 0
 , x: 0
@@ -91,13 +90,7 @@ svgDomProxy.prototype =
     }
 
   , fill: function (val) {
-      if (val[0] === '#') initShaders(d3.select(val).text(), val)
-
-      if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
-
-      if (! this.buffer && this.path) this.buffer = toBuffer(this.path.coords)
-
-      drawPolygon.call(this, this.buffer)
+      isId(val) && initShaders(d3.select(val).text(), val)
     }
 
   , transform: function (d) {
@@ -114,9 +107,13 @@ svgDomProxy.prototype =
 
       if (d.match(/NaN/)) return console.warn('path is invalid')
 
-      render()
-
       parse.call(this, d)
+
+      if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
+
+      if (! this.buffer && this.path) this.buffer = toBuffer(this.path.coords)
+
+      drawPolygon.call(this, this.buffer)
     }
 
   , stroke: function (d) {

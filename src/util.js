@@ -18,3 +18,8 @@ function flatten(input) {
 function flat(acc, value) {
   return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
 }
+
+
+function isId(str) {
+  return str[0] == '#' && isNaN(parseInt(str.slice(1), 16))
+}

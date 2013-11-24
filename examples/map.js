@@ -1,5 +1,4 @@
-var size = {width: 960, height: 500}
-  , projection = d3.geo.albersUsa().scale(1070)
+var projection = d3.geo.albersUsa().scale(1070)
   , path = d3.geo.path().projection(projection)
   , svg = d3.select("canvas").attr(size).call(pathgl)
   , centered
@@ -42,9 +41,4 @@ function clicked(d) {
   .attr("transform",
         "translate(" + size.width / 2 + "," + size.height / 2 +
         ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-}
-
-function random_shader () {
-  var selection = d3.selectAll('div[id]')[0].map(function (x) { return '#' + x.id })
-  return selection[~~ (Math.random() * (selection.length - 1))]
 }
