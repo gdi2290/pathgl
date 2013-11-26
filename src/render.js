@@ -30,8 +30,8 @@ function drawPath(node) {
   //but speeds up single shader code a lot. keeping it in until
   //precompute order and batch up shader switches
   //may have to concat shaders together like threejs
-  if (isId(node.attr.fill) && program.name !== node.attr.fill) {
-    gl.useProgram(program = programs[node.attr.fill])
+  if (program.name !== node.attr.fill) {
+    gl.useProgram(program = programs[isId(node.attr.fill) ? node.attr.fill : '_identity'])
     program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(program.vertexPosition)
   }

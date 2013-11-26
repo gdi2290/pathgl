@@ -215,8 +215,7 @@ function closePath(next) {
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }
-;function insertBefore(node, next) {
-}
+;function insertBefore(node, next) {}
 
 function appendChild(el) {
   return new svgDomProxy(el, this)
@@ -324,9 +323,7 @@ svgDomProxy.prototype =
 
       parse.call(this, d)
 
-      if (this.tagname != 'path') return drawPolygon.call(this, this.buffer)
-
-      if (! this.buffer && this.path) console.log(this.buffer = tobuffer(this.path.coords))
+      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
 
       drawPolygon.call(this, this.buffer)
     }
@@ -409,8 +406,8 @@ function drawPath(node) {
   //but speeds up single shader code a lot. keeping it in until
   //precompute order and batch up shader switches
   //may have to concat shaders together like threejs
-  if (isId(node.attr.fill) && program.name !== node.attr.fill) {
-    gl.useProgram(program = programs[node.attr.fill])
+  if (program.name !== node.attr.fill) {
+    gl.useProgram(program = programs[isId(node.attr.fill) ? node.attr.fill : '_identity'])
     program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(program.vertexPosition)
   }

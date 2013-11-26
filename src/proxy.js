@@ -1,5 +1,4 @@
-function insertBefore(node, next) {
-}
+function insertBefore(node, next) {}
 
 function appendChild(el) {
   return new svgDomProxy(el, this)
@@ -107,9 +106,7 @@ svgDomProxy.prototype =
 
       parse.call(this, d)
 
-      if (this.tagname != 'path') return drawPolygon.call(this, this.buffer)
-
-      if (! this.buffer && this.path) console.log(this.buffer = tobuffer(this.path.coords))
+      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
 
       drawPolygon.call(this, this.buffer)
     }
