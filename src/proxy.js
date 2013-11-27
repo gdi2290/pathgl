@@ -105,13 +105,11 @@ svgDomProxy.prototype =
   , d: function (d) {
       this.path && extend(this.path, { coords: [], length: 0 })
 
-      if (d.match(/NaN/)) return console.warn('path is invalid')
-
       parse.call(this, d)
 
-      if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
+      if (this.tagname != 'path') return drawPolygon.call(this, this.buffer)
 
-      if (! this.buffer && this.path) this.buffer = toBuffer(this.path.coords)
+      if (! this.buffer && this.path) console.log(this.buffer = tobuffer(this.path.coords))
 
       drawPolygon.call(this, this.buffer)
     }

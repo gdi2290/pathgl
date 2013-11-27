@@ -12,7 +12,6 @@ function renderMap(err, data) {
   .on("click", clicked)
   .attr('d', path)
   .attr('stroke', 'red')
-  .attr('fill', '#rgb') //TODO
   .transition().duration(0).delay(function (d, i) { return i * 300 })
   .attrTween('fill', function () { return random_shader } )
 }

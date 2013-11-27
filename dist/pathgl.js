@@ -322,13 +322,11 @@ svgDomProxy.prototype =
   , d: function (d) {
       this.path && extend(this.path, { coords: [], length: 0 })
 
-      if (d.match(/NaN/)) return console.warn('path is invalid')
-
       parse.call(this, d)
 
-      if (this.tagName != 'PATH') return drawPolygon.call(this, this.buffer)
+      if (this.tagname != 'path') return drawPolygon.call(this, this.buffer)
 
-      if (! this.buffer && this.path) this.buffer = toBuffer(this.path.coords)
+      if (! this.buffer && this.path) console.log(this.buffer = tobuffer(this.path.coords))
 
       drawPolygon.call(this, this.buffer)
     }
@@ -415,18 +413,14 @@ function drawPath(node) {
     gl.useProgram(program = programs[node.attr.fill])
     program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(program.vertexPosition)
-  } else {
-    gl.useProgram(program = (programs["_identity"]))
-    program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
-    gl.enableVertexAttribArray(program.vertexPosition)
   }
 
   node.buffer && drawPolygon.call(node, node.buffer)
 
   setDrawColor(d3.rgb(node.attr.stroke))
-
-  for (var i = 0; i < node.path.length; i++)
-    drawBuffer(node.path[i], gl.LINE_STRIP)
+  if (node.path) //this should be impossible
+    for (var i = 0; i < node.path.length; i++)
+      drawBuffer(node.path[i], gl.LINE_STRIP)
 
   applyTransforms(node)
 }

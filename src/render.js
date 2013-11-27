@@ -34,18 +34,14 @@ function drawPath(node) {
     gl.useProgram(program = programs[node.attr.fill])
     program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(program.vertexPosition)
-  } else {
-    gl.useProgram(program = (programs["_identity"]))
-    program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
-    gl.enableVertexAttribArray(program.vertexPosition)
   }
 
   node.buffer && drawPolygon.call(node, node.buffer)
 
   setDrawColor(d3.rgb(node.attr.stroke))
-
-  for (var i = 0; i < node.path.length; i++)
-    drawBuffer(node.path[i], gl.LINE_STRIP)
+  if (node.path) //this should be impossible
+    for (var i = 0; i < node.path.length; i++)
+      drawBuffer(node.path[i], gl.LINE_STRIP)
 
   applyTransforms(node)
 }
