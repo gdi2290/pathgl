@@ -112,12 +112,12 @@ svgDomProxy.prototype =
       drawPolygon.call(this, this.buffer)
     }
 
-  , stroke: function (d) {
-      render()
+  , stroke: function (val) {
+      isId(val) && initShaders(d3.select(val).text(), val)
     }
 
   , 'stroke-width': function (value) {
-      gl.lineWidth(value)
+      gl.lineWidth(node.attr['stroke-width'])
     }
 
   , getAttribute: function (name) {
