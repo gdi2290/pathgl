@@ -239,6 +239,7 @@ var attrDefaults = {
 , translate: [0, 0]
 , scale: [1, 1]
 , fill: 0
+, stroke: 0
 , cx: 0
 , cy: 0
 , x: 0
@@ -401,18 +402,26 @@ function drawBuffer(buffer, type) {
   gl.drawArrays(type, 0, buffer.numItems)
 }
 
+function swapProgram(name) {
+  gl.useProgram(program = programs[name])
+  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+  gl.enableVertexAttribArray(program.vertexPosition)
+}
+
+
 function drawPath(node) {
+  if (program.name !== node.attr.fill)
+    swapProgram(isId(node.attr.fill) ? node.attr.fill : '_identity')
+
+  node.buffer && drawPolygon.call(node, node.buffer)
+
   //this check can cause race conditions when using multiple shaders
   //but speeds up single shader code a lot. keeping it in until
   //precompute order and batch up shader switches
   //may have to concat shaders together like threejs
-  if (program.name !== node.attr.fill) {
-    gl.useProgram(program = programs[isId(node.attr.fill) ? node.attr.fill : '_identity'])
-    program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
-    gl.enableVertexAttribArray(program.vertexPosition)
-  }
 
-  node.buffer && drawPolygon.call(node, node.buffer)
+  if (program.name !== node.attr.stroke)
+    swapProgram(isId(node.attr.stroke) ? node.attr.stroke : '_identity')
 
   setDrawColor(d3.rgb(node.attr.stroke))
   if (node.path) //this should be impossible

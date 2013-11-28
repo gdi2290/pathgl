@@ -22,6 +22,7 @@ var attrDefaults = {
 , translate: [0, 0]
 , scale: [1, 1]
 , fill: 0
+, stroke: 0
 , cx: 0
 , cy: 0
 , x: 0

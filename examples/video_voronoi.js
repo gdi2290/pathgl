@@ -26,9 +26,9 @@ function redraw() {
   path.enter().append("path")
   .attr("class", function(d, i) { return "q" + (i % 9) + "-9"; })
   .attr("d", polygon)
-  .attr('stroke', 'white')
+  .attr('stroke', '#stone')
   .attr('stroke-width', 10)
-  .attr('fill', random_shader)
+  .attr('fill', '#water')
 
   path
   .filter(function (d) { return this.attr.d !=  polygon(d) })
