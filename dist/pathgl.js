@@ -236,7 +236,7 @@ var attrDefaults = {
 , scale: [1, 1]
 , fill: 0
 , stroke: 0
-, 'stroke-width': 1
+, 'stroke-width': 2
 , cx: 0
 , cy: 0
 , x: 0
@@ -290,15 +290,14 @@ svgDomProxy.prototype =
 
   , r: function () {
       addToBuffer(this)
-      this.path.coords = circlePoints(this.attr.r)
+      extend(this.path.coords, circlePoints(this.attr.r))
+      extend(this.path, [toBuffer(this.path.coords)])
       this.buffer = buildBuffer(this.path.coords)
     }
 
-  , cx: function (cx) {
-    }
+  , cx: function (cx) {}
 
-  , cy: function (cy) {
-    }
+  , cy: function (cy) {}
 
   , fill: function (val) {
       isId(val) && initShaders(d3.select(val).text(), val)
