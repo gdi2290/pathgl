@@ -7,6 +7,8 @@ pathgl.supportedAttributes =
   , 'fill'
   ]
 
+pathgl.stop = d3.functor()
+
 function pathgl(canvas) {
   var gl, program, programs
   canvas = 'string' == typeof canvas ? document.querySelector(canvas) :

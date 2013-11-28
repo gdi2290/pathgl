@@ -1,3 +1,5 @@
+var stopRendering = false
+pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
@@ -12,10 +14,10 @@ function init(c) {
       gl.useProgram(program)
       program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
-      //return canvas.stopRendering
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
+    return stopRendering
   })
   return gl ? canvas : null
 }
@@ -49,7 +51,6 @@ function compileShader (type, src) {
   return shader
 }
 
-window.initShaders = initShaders
 function initShaders(fragment, name) {
   if (programs[name]) return program = programs[name]
 

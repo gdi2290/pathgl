@@ -57,12 +57,16 @@ pathgl.supportedAttributes =
   , 'fill'
   ]
 
+pathgl.stop = d3.functor()
+
 function pathgl(canvas) {
   var gl, program, programs
   canvas = 'string' == typeof canvas ? document.querySelector(canvas) :
     canvas instanceof d3.selection ? canvas.node() :
     canvas
-;function init(c) {
+;var stopRendering = false
+pathgl.stop = function () { stopRendering = true }
+function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
@@ -76,10 +80,10 @@ function pathgl(canvas) {
       gl.useProgram(program)
       program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
-      //return canvas.stopRendering
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
+    return stopRendering
   })
   return gl ? canvas : null
 }
@@ -113,7 +117,6 @@ function compileShader (type, src) {
   return shader
 }
 
-window.initShaders = initShaders
 function initShaders(fragment, name) {
   if (programs[name]) return program = programs[name]
 
@@ -147,8 +150,7 @@ function bindUniform(val, key) {
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
-}
-;  var methods = { m: moveTo
+};  var methods = { m: moveTo
                 , z: closePath
                 , l: lineTo
 
