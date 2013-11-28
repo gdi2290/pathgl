@@ -79,15 +79,12 @@ svgDomProxy.prototype =
       addToBuffer(this)
       this.path.coords = circlePoints(this.attr.r)
       this.buffer = buildBuffer(this.path.coords)
-      drawPolygon.call(this, this.buffer)
     }
 
   , cx: function (cx) {
-      this.buffer && drawPolygon.call(this, this.buffer)
     }
 
   , cy: function (cy) {
-      this.buffer && drawPolygon.call(this, this.buffer)
     }
 
   , fill: function (val) {
@@ -109,8 +106,6 @@ svgDomProxy.prototype =
       parse.call(this, d)
 
       if (! this.buffer) this.buffer = toBuffer(this.path.coords)
-
-      drawPolygon.call(this, this.buffer)
     }
 
   , stroke: function (val) {

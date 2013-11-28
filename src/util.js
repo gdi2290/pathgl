@@ -12,14 +12,14 @@ function twoEach(list, fn, gl) {
 }
 
 function flatten(input) {
-  return input.reduce(flat, [])
+  return input.reduce(function (a, b) { return (b && b.map ? [].push.apply(a, b) : a.push(b)) && a },
+                      [])
 }
-
-function flat(acc, value) {
-  return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
-}
-
 
 function isId(str) {
   return str[0] == '#' && isNaN(parseInt(str.slice(1), 16))
+}
+
+function each(obj, fn) {
+  for (var key in obj) fn(obj[key], key, obj)
 }

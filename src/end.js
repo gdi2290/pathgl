@@ -1,2 +1,2 @@
-return init(canvas)
+  return init(canvas)
 }

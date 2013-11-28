@@ -58,15 +58,13 @@ pathgl.supportedAttributes =
   ]
 
 function pathgl(canvas) {
-  var gl, program, programs = {}
-  this.programs = program
-  canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
+  var gl, program, programs
+  canvas = 'string' == typeof canvas ? document.querySelector(canvas) :
     canvas instanceof d3.selection ? canvas.node() :
     canvas
-
-  pathgl.initShaders = initShaders
 ;function init(c) {
   canvas = c
+  programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
   initShaders(pathgl.fragment, '_identity')
@@ -78,11 +76,11 @@ function pathgl(canvas) {
       gl.useProgram(program)
       program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
+      //return canvas.stopRendering
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
   })
-
   return gl ? canvas : null
 }
 
@@ -115,28 +113,29 @@ function compileShader (type, src) {
   return shader
 }
 
+window.initShaders = initShaders
 function initShaders(fragment, name) {
-  if (programs[name]) return programs[name]
-  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
-  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
+  if (programs[name]) return program = programs[name]
 
   program = gl.createProgram()
+
+  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
+  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
 
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
 
   gl.linkProgram(program)
+  gl.useProgram(program)
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  gl.useProgram(program)
-
   each(pathgl.shaderParameters, bindUniform)
-
   program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
   gl.enableVertexAttribArray(program.vertexPosition)
 
   program.name = name
+
   return programs[name] = program
 }
 
@@ -147,12 +146,7 @@ function bindUniform(val, key) {
 
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
-
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
-}
-
-function each(obj, fn) {
-  for (var key in obj) fn(obj[key], key, obj)
 }
 ;  var methods = { m: moveTo
                 , z: closePath
@@ -296,15 +290,12 @@ svgDomProxy.prototype =
       addToBuffer(this)
       this.path.coords = circlePoints(this.attr.r)
       this.buffer = buildBuffer(this.path.coords)
-      drawPolygon.call(this, this.buffer)
     }
 
   , cx: function (cx) {
-      this.buffer && drawPolygon.call(this, this.buffer)
     }
 
   , cy: function (cy) {
-      this.buffer && drawPolygon.call(this, this.buffer)
     }
 
   , fill: function (val) {
@@ -326,8 +317,6 @@ svgDomProxy.prototype =
       parse.call(this, d)
 
       if (! this.buffer) this.buffer = toBuffer(this.path.coords)
-
-      drawPolygon.call(this, this.buffer)
     }
 
   , stroke: function (val) {
@@ -536,15 +525,16 @@ function twoEach(list, fn, gl) {
 }
 
 function flatten(input) {
-  return input.reduce(flat, [])
+  return input.reduce(function (a, b) { return (b && b.map ? [].push.apply(a, b) : a.push(b)) && a },
+                      [])
 }
-
-function flat(acc, value) {
-  return (Array.isArray(value) ? [].push.apply(acc, value) : acc.push(value)) && acc
-}
-
 
 function isId(str) {
   return str[0] == '#' && isNaN(parseInt(str.slice(1), 16))
-};return init(canvas)
+}
+
+function each(obj, fn) {
+  for (var key in obj) fn(obj[key], key, obj)
+}
+;  return init(canvas)
 } }()

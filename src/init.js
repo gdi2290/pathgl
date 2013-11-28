@@ -1,5 +1,6 @@
 function init(c) {
   canvas = c
+  programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
   initShaders(pathgl.fragment, '_identity')
@@ -11,11 +12,11 @@ function init(c) {
       gl.useProgram(program)
       program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
+      //return canvas.stopRendering
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
   })
-
   return gl ? canvas : null
 }
 
@@ -48,28 +49,29 @@ function compileShader (type, src) {
   return shader
 }
 
+window.initShaders = initShaders
 function initShaders(fragment, name) {
-  if (programs[name]) return programs[name]
-  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
-  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
+  if (programs[name]) return program = programs[name]
 
   program = gl.createProgram()
+
+  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
+  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
 
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
 
   gl.linkProgram(program)
+  gl.useProgram(program)
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  gl.useProgram(program)
-
   each(pathgl.shaderParameters, bindUniform)
-
   program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
   gl.enableVertexAttribArray(program.vertexPosition)
 
   program.name = name
+
   return programs[name] = program
 }
 
@@ -80,10 +82,5 @@ function bindUniform(val, key) {
 
 function initContext(canvas) {
   var gl = canvas.getContext('webgl')
-
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
-}
-
-function each(obj, fn) {
-  for (var key in obj) fn(obj[key], key, obj)
 }

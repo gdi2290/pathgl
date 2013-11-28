@@ -8,10 +8,7 @@ pathgl.supportedAttributes =
   ]
 
 function pathgl(canvas) {
-  var gl, program, programs = {}
-  this.programs = program
-  canvas = 'string' == typeof canvas ? d3.select(canvas).node() :
+  var gl, program, programs
+  canvas = 'string' == typeof canvas ? document.querySelector(canvas) :
     canvas instanceof d3.selection ? canvas.node() :
     canvas
-
-  pathgl.initShaders = initShaders
