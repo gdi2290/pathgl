@@ -240,6 +240,7 @@ var attrDefaults = {
 , scale: [1, 1]
 , fill: 0
 , stroke: 0
+, 'stroke-width': 1
 , cx: 0
 , cy: 0
 , x: 0
@@ -334,7 +335,6 @@ svgDomProxy.prototype =
     }
 
   , 'stroke-width': function (value) {
-      gl.lineWidth(node.attr['stroke-width'])
     }
 
   , getAttribute: function (name) {
@@ -419,7 +419,8 @@ function drawPath(node) {
   //but speeds up single shader code a lot. keeping it in until
   //precompute order and batch up shader switches
   //may have to concat shaders together like threejs
-  
+  gl.lineWidth(node.attr['stroke-width'])
+
   if (program.name !== node.attr.stroke)
     swapProgram(isId(node.attr.stroke) ? node.attr.stroke : '_identity')
 

@@ -23,6 +23,7 @@ var attrDefaults = {
 , scale: [1, 1]
 , fill: 0
 , stroke: 0
+, 'stroke-width': 1
 , cx: 0
 , cy: 0
 , x: 0
@@ -117,7 +118,6 @@ svgDomProxy.prototype =
     }
 
   , 'stroke-width': function (value) {
-      gl.lineWidth(node.attr['stroke-width'])
     }
 
   , getAttribute: function (name) {

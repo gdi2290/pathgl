@@ -27,7 +27,7 @@ function redraw() {
   .attr("class", function(d, i) { return "q" + (i % 9) + "-9"; })
   .attr("d", polygon)
   .attr('stroke', '#stone')
-  .attr('stroke-width', 10)
+  .attr('stroke-width', function () { return Math.random() * 15 })
   .attr('fill', '#water')
 
   path
