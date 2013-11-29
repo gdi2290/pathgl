@@ -83,7 +83,7 @@ function init(c) {
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
-    return stopRendering
+    return stopRendering &&g ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   })
   return gl ? canvas : null
 }
@@ -289,10 +289,10 @@ svgDomProxy.prototype =
     }
 
   , r: function () {
-      addToBuffer(this)
-      extend(this.path.coords, circlePoints(this.attr.r))
-      extend(this.path, [toBuffer(this.path.coords)])
-      this.buffer = buildBuffer(this.path.coords)
+      // addToBuffer(this)
+      // extend(this.path.coords, circlePoints(this.attr.r))
+      // extend(this.path, { 0: toBuffer(this.path.coords) })
+      // //this.buffer = this.path[0]
     }
 
   , cx: function (cx) {}

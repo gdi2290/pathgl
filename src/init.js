@@ -17,7 +17,7 @@ function init(c) {
     })
     canvas.__scene__.forEach(drawPath)
     canvas.__rerender__ = false
-    return stopRendering
+    return stopRendering &&g ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   })
   return gl ? canvas : null
 }

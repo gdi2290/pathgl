@@ -76,10 +76,10 @@ svgDomProxy.prototype =
     }
 
   , r: function () {
-      addToBuffer(this)
-      extend(this.path.coords, circlePoints(this.attr.r))
-      extend(this.path, [toBuffer(this.path.coords)])
-      this.buffer = buildBuffer(this.path.coords)
+      // addToBuffer(this)
+      // extend(this.path.coords, circlePoints(this.attr.r))
+      // extend(this.path, { 0: toBuffer(this.path.coords) })
+      // //this.buffer = this.path[0]
     }
 
   , cx: function (cx) {}
