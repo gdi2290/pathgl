@@ -43,6 +43,9 @@ function parse (str) {
     else
       console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
   })
+  var buff = toBuffer(this.path.coords)
+  this.path.length = 0
+  this.path.push(buff)
 }
 
 function moveTo(x, y) {
@@ -56,5 +59,6 @@ function closePath(next) {
 }
 
 function lineTo(x, y) {
-  addLine.apply(this, pos.concat(pos = [x, y]))
+  this.push.apply((this, [x, y, 0]))
+  //addLine.apply(this, pos.concat(pos = [x, y]))
 }
