@@ -70,8 +70,12 @@ svgDomProxy.prototype =
       if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
       this.buffer = buildBuffer(this.path.coords)
     }
-  , width: function () {
 
+  , width: function () {
+      addToBuffer(this)
+      this.path.coords = rectPoints(this.attr.width, this.attr.height)
+      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      this.buffer = buildBuffer(this.path.coords)
     }
 
   , r: function () {
@@ -113,7 +117,7 @@ svgDomProxy.prototype =
   , setAttribute: function (name, value) {
       this.attr[name] = value
       this[name] && this[name](value)
-      render()
+      //force render
     }
 
   , removeAttribute: function (name) {

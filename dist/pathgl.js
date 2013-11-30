@@ -82,7 +82,6 @@ function init(c) {
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
     })
     canvas.__scene__.forEach(render)
-    canvas.__rerender__ = false
     return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   })
   return gl ? canvas : null
@@ -207,7 +206,6 @@ function closePath(next) {
   lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.coords[0])
 }
 
-
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }
@@ -283,8 +281,12 @@ svgDomProxy.prototype =
       if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
       this.buffer = buildBuffer(this.path.coords)
     }
-  , width: function () {
 
+  , width: function () {
+      addToBuffer(this)
+      this.path.coords = rectPoints(this.attr.width, this.attr.height)
+      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      this.buffer = buildBuffer(this.path.coords)
     }
 
   , r: function () {
@@ -326,7 +328,7 @@ svgDomProxy.prototype =
   , setAttribute: function (name, value) {
       this.attr[name] = value
       this[name] && this[name](value)
-      render()
+      //force render
     }
 
   , removeAttribute: function (name) {
@@ -394,7 +396,7 @@ function drawFill(buffer) {
 }
 
 function render(node) {
-  node.buffer && drawFill.call(node, node.buffer)
+  drawFill.call(node, node.buffer)
   drawStroke(node)
 }
 
@@ -408,10 +410,6 @@ function drawStroke(node) {
       drawBuffer(node.path[i], gl.LINE_STRIP)
   //else console.log(node.id)
   //this should be impossible
-}
-
-function render() {
-  canvas.__rerender__ = true
 }
 
 function setDrawColor (c) {
@@ -444,7 +442,7 @@ function circlePoints(r) {
   return a
 }
 
-function rectPoints(h, w) {
+function rectPoints(w, h) {
   return [0,0,0,
           0,h,0,
           w,h,0,

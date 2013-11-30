@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <link href="lib/adnan.css" rel="stylesheet"></link>
-  <div id="water">
+  <div id="water" class="shader">
     precision mediump float;
     uniform float time;
     uniform vec2 mouse;
@@ -136,7 +136,7 @@
                                               gl_FragColor.w = 1.;
                                               }
                                               </div>
-  <div id="innerspeaker">
+  <div id="innerspeaker" class="shader">
     precision mediump float;
     uniform float time;
     uniform vec2 mouse;
@@ -242,7 +242,7 @@
                                               }
 
                                               </div> 
-  <div id="crosshatch">
+  <div id="crosshatch" class="shader">
     precision mediump float;
 
     uniform float time;
@@ -293,7 +293,7 @@
       gl_FragColor = vec4(mod(red,1.0), mod(green,1.0), mod(blue,1.0), 1.0);
       }
   </div>
-  <div id="stone">
+  <div id="stone" class="shader">
     // Procedural Tiles // Based on http://www.iquilezles.org/www/articles/smoothvoronoi/smoothvoronoi.htm
 
     #ifdef GL_ES
@@ -391,7 +391,7 @@
                                                                                             }
 
                                                                                             </div>
-  <div id="beam">
+  <div id="beam" class="shader">
 
     #ifdef GL_ES
     precision mediump float;
@@ -449,7 +449,7 @@
           }
 
   </div>
-  <div id="voronoi">
+  <div id="voronoi" class="shader">
     //Very funky shader ripped from Shadertoy.com (only the voronoi pattern part).
     //Originally written by srtuss. Modified by Vlad.
 
@@ -579,7 +579,7 @@
 
                                                                                                                                                    </div>
 
-  <div id="roots">
+  <div id="roots" class="shader">
     #ifdef GL_ES
     precision mediump float;
     #endif
@@ -744,7 +744,7 @@
 
 
 
-  <div id="static">
+  <div id="static" class="shader">
     precision mediump float;
 
     #define PI 3.14159265359
@@ -807,7 +807,7 @@
                                            }
                                            </div>
 
-  <div id="sky">
+  <div id="sky" class="shader">
     precision mediump float;                                                                               
     
     uniform float time;
@@ -837,7 +837,7 @@
                        1.0)*vec4(0.1,0.3,0.5,1.0)+vec4(0.2,0.1,0.2,1.0);     
                        } </div>
 
-  <div id="hello">
+  <div id="hello" class="shader">
 
     precision mediump float;
 
@@ -1335,6 +1335,7 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <link rel="stylesheet" href="//raw.github.com/ccampbell/rainbow/master/themes/github.css">
+	<link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
 
   <script src="lib/codemirror.js"></script>
   <script src="lib/d3.js"></script>
@@ -1362,7 +1363,7 @@
   </div>
 </div>
 <div class="right">
-  <button class="edit">edit codemirror</button>
+  <button class="edit">Edit code</button>
   <canvas>:(</canvas>
 </div>
 <script src="lib/setup.js"></script>

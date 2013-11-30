@@ -55,7 +55,6 @@ function closePath(next) {
   lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.coords[0])
 }
 
-
 function lineTo(x, y) {
   addLine.apply(this, pos.concat(pos = [x, y]))
 }

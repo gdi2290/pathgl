@@ -16,7 +16,6 @@ function init(c) {
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
     })
     canvas.__scene__.forEach(render)
-    canvas.__rerender__ = false
     return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   })
   return gl ? canvas : null

@@ -34,7 +34,7 @@ function drawFill(buffer) {
 }
 
 function render(node) {
-  node.buffer && drawFill.call(node, node.buffer)
+  drawFill.call(node, node.buffer)
   drawStroke(node)
 }
 
@@ -48,10 +48,6 @@ function drawStroke(node) {
       drawBuffer(node.path[i], gl.LINE_STRIP)
   //else console.log(node.id)
   //this should be impossible
-}
-
-function render() {
-  canvas.__rerender__ = true
 }
 
 function setDrawColor (c) {
@@ -84,7 +80,7 @@ function circlePoints(r) {
   return a
 }
 
-function rectPoints(h, w) {
+function rectPoints(w, h) {
   return [0,0,0,
           0,h,0,
           w,h,0,
