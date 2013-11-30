@@ -76,10 +76,7 @@ svgDomProxy.prototype =
     }
 
   , r: function () {
-      // addToBuffer(this)
-      // extend(this.path.coords, circlePoints(this.attr.r))
-      // extend(this.path, { 0: toBuffer(this.path.coords) })
-      // //this.buffer = this.path[0]
+      this.path = [this.buffer = toBuffer(circlePoints(this.attr.r))]
     }
 
   , cx: function (cx) {}
@@ -95,16 +92,12 @@ svgDomProxy.prototype =
         , radians = parse.rotate * Math.PI / 180
 
       extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
-
-      render()
     }
 
   , d: function (d) {
-      this.path && extend(this.path, { coords: [], length: 0 })
-
       parse.call(this, d)
 
-      if (! this.buffer) this.buffer = toBuffer(this.path.coords)
+      this.buffer = toBuffer(this.path.coords)
     }
 
   , stroke: function (val) {
@@ -121,6 +114,7 @@ svgDomProxy.prototype =
   , setAttribute: function (name, value) {
       this.attr[name] = value
       this[name] && this[name](value)
+      render()
     }
 
   , removeAttribute: function (name) {

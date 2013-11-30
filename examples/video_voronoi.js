@@ -11,7 +11,6 @@ var vertices = d3.range(100).map(function(d) {
   , voronoi = d3.geom.voronoi()
               .clipExtent([[0, 0], [size.width, size.height]])
 
-
 svg.selectAll("circle")
 .data(vertices.slice(1))
 .enter().append("circle")

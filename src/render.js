@@ -36,23 +36,23 @@ function drawPath(node) {
   if (program.name !== node.attr.fill)
     swapProgram(isId(node.attr.fill) ? node.attr.fill : '_identity')
 
+  applyTransforms(node)
   node.buffer && drawPolygon.call(node, node.buffer)
+
+  gl.lineWidth(node.attr['stroke-width'])
 
   //this check can cause race conditions when using multiple shaders
   //but speeds up single shader code a lot. keeping it in until
   //precompute order and batch up shader switches
   //may have to concat shaders together like threejs
-  gl.lineWidth(node.attr['stroke-width'])
-
   if (program.name !== node.attr.stroke)
     swapProgram(isId(node.attr.stroke) ? node.attr.stroke : '_identity')
+  applyTransforms(node)
 
   setDrawColor(d3.rgb(node.attr.stroke))
   if (node.path) //this should be impossible
     for (var i = 0; i < node.path.length; i++)
       drawBuffer(node.path[i], gl.LINE_STRIP)
-
-  applyTransforms(node)
 }
 
 function render() {
@@ -82,7 +82,7 @@ function toBuffer (array) {
 
 function circlePoints(r) {
   var a = []
-  for (var i = 0; i < 360; i+=18)
+  for (var i = 0; i < 361; i+=18)
     a.push(50 + r * Math.cos(i * Math.PI / 180),
            50 + r * Math.sin(i * Math.PI / 180),
            0)
