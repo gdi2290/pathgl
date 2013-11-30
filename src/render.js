@@ -14,11 +14,6 @@ function applyTransforms(node) {
   gl.uniform1f(program.opacity, node.attr.opacity)
 }
 
-function drawPolygon(buffer) {
-  setDrawColor(d3.rgb(this.attr.fill))
-  buffer && drawBuffer(buffer, gl.TRIANGLE_FAN)
-}
-
 function drawBuffer(buffer, type) {
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
   gl.vertexAttribPointer(program.vertexPosition, buffer.itemSize, gl.FLOAT, false, 0, 0)
@@ -31,28 +26,28 @@ function swapProgram(name) {
   gl.enableVertexAttribArray(program.vertexPosition)
 }
 
+function drawFill(buffer) {
+  swapProgram(isId(this.attr.fill) ? this.attr.fill : '_identity')
+  applyTransforms(this)
+  setDrawColor(d3.rgb(this.attr.fill))
+  buffer && drawBuffer(buffer, gl.TRIANGLE_FAN)
+}
 
-function drawPath(node) {
-  if (program.name !== node.attr.fill)
-    swapProgram(isId(node.attr.fill) ? node.attr.fill : '_identity')
+function render(node) {
+  node.buffer && drawFill.call(node, node.buffer)
+  drawStroke(node)
+}
 
-  applyTransforms(node)
-  node.buffer && drawPolygon.call(node, node.buffer)
-
+function drawStroke(node) {
   gl.lineWidth(node.attr['stroke-width'])
-
-  //this check can cause race conditions when using multiple shaders
-  //but speeds up single shader code a lot. keeping it in until
-  //precompute order and batch up shader switches
-  //may have to concat shaders together like threejs
-  if (program.name !== node.attr.stroke)
-    swapProgram(isId(node.attr.stroke) ? node.attr.stroke : '_identity')
+  swapProgram(isId(node.attr.stroke) ? node.attr.stroke : '_identity')
   applyTransforms(node)
-
   setDrawColor(d3.rgb(node.attr.stroke))
-  if (node.path) //this should be impossible
+  if (node.path)
     for (var i = 0; i < node.path.length; i++)
       drawBuffer(node.path[i], gl.LINE_STRIP)
+  //else console.log(node.id)
+  //this should be impossible
 }
 
 function render() {

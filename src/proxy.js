@@ -69,7 +69,6 @@ svgDomProxy.prototype =
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
       if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
       this.buffer = buildBuffer(this.path.coords)
-      drawPolygon.call(this, this.buffer)
     }
   , width: function () {
 
