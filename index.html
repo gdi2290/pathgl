@@ -1,17 +1,6 @@
 <head>
   <meta charset="utf-8">
   <link href="lib/adnan.css" rel="stylesheet"></link>
-  <div id="rgb">
-    precision mediump float;
-    uniform vec4 rgb;
-    uniform float time;
-    uniform float opacity;
-    uniform vec2 resolution;
-
-    void main(void) {
-    gl_FragColor = vec4(rgb.xyz, opacity);
-    }
-  </div>
   <div id="water">
     precision mediump float;
     uniform float time;
@@ -1357,8 +1346,9 @@
     <p> Pathgl is a library which lets you render d3 code to a webgl context with no changes to your code
       <ul>
         <li>Map
-        <li>Point Lighting
+				<li>Point Lighting
         <li>Video Voronoi
+			  <li>Mosaic
         <!-- <li>Game -->
         <!-- <li>1 million circles -->
       </ul>

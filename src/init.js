@@ -15,7 +15,7 @@ function init(c) {
       program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
       program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
     })
-    canvas.__scene__.forEach(drawPath)
+    canvas.__scene__.forEach(render)
     canvas.__rerender__ = false
     return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   })
