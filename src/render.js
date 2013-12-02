@@ -2,10 +2,6 @@ function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 
-function addLine(x1, y1, x2, y2) {
-  this.push(toBuffer([x1, y1, 0, x2, y2, 0]))
-}
-
 function applyTransforms(node) {
   gl.uniform2f(program.translate, node.attr.translate[0] + node.attr.cx + node.attr.x,
                node.attr.translate[1] + node.attr.cy + node.attr.y)
@@ -26,15 +22,15 @@ function swapProgram(name) {
   gl.enableVertexAttribArray(program.vertexPosition)
 }
 
-function drawFill(buffer) {
-  swapProgram(isId(this.attr.fill) ? this.attr.fill : '_identity')
-  applyTransforms(this)
-  setDrawColor(d3.rgb(this.attr.fill))
-  buffer && drawBuffer(buffer, gl.TRIANGLE_FAN)
+function drawFill(node) {
+  swapProgram(isId(node.attr.fill) ? node.attr.fill : '_identity')
+  applyTransforms(node)
+  setDrawColor(d3.rgb(node.attr.fill))
+  drawBuffer(node.buffer, gl.TRIANGLE_FAN)
 }
 
 function render(node) {
-  drawFill.call(node, node.buffer)
+  node.buffer && drawFill(node)
   drawStroke(node)
 }
 
@@ -45,7 +41,7 @@ function drawStroke(node) {
   setDrawColor(d3.rgb(node.attr.stroke))
   if (node.path)
     for (var i = 0; i < node.path.length; i++)
-      drawBuffer(node.path[i], gl.LINE_STRIP)
+      drawBuffer(node.path[i], gl.LINE_LOOP)
   //else console.log(node.id)
   //this should be impossible
 }

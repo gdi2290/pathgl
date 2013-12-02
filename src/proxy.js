@@ -1,6 +1,22 @@
+var types = {
+  circle: noop
+, ellipse: noop
+, line: noop
+, path: noop
+, polygon: noop
+, polyline: noop
+, rect: noop
+
+, image: noop
+, text: noop
+, g: noop
+, use: noop
+}
+
 function insertBefore(node, next) {}
 
 function appendChild(el) {
+  types[el.tagName]
   return new svgDomProxy(el, this)
 }
 
@@ -67,14 +83,14 @@ svgDomProxy.prototype =
   , height: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
-      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      extend(this.path, [buildBuffer(this.path.coords)])
       this.buffer = buildBuffer(this.path.coords)
     }
 
-  , width: function () {
+  ,width: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
-      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      extend(this.path, [buildBuffer(this.path.coords)])
       this.buffer = buildBuffer(this.path.coords)
     }
 
@@ -128,24 +144,5 @@ svgDomProxy.prototype =
   , removeEventListener: noop
   , addEventListener: noop
   }
-
-var circleProto = extend(Object.create(svgDomProxy), {
-  r: noop
-, cx: noop
-, cy: noop
-})
-
-var pathProto = extend(Object.create(svgDomProxy), {
-  d: noop
-})
-
-var rect = extend(Object.create(svgDomProxy), {
-  height: noop
-, width: noop
-, rx: noop
-, ry: noop
-, x: noop
-, y: noop
-})
 
 //rect, line, group, text, image

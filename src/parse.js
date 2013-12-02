@@ -59,6 +59,5 @@ function closePath(next) {
 }
 
 function lineTo(x, y) {
-  this.push.apply((this, [x, y, 0]))
-  //addLine.apply(this, pos.concat(pos = [x, y]))
+  this.push(x, y, 0)
 }

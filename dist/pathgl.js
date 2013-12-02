@@ -210,12 +210,27 @@ function closePath(next) {
 }
 
 function lineTo(x, y) {
-  this.push.apply((this, [x, y, 0]))
-  //addLine.apply(this, pos.concat(pos = [x, y]))
+  this.push(x, y, 0)
 }
-;function insertBefore(node, next) {}
+;var types = {
+  circle: noop
+, ellipse: noop
+, line: noop
+, path: noop
+, polygon: noop
+, polyline: noop
+, rect: noop
+
+, image: noop
+, text: noop
+, g: noop
+, use: noop
+}
+
+function insertBefore(node, next) {}
 
 function appendChild(el) {
+  types[el.tagName]
   return new svgDomProxy(el, this)
 }
 
@@ -282,14 +297,14 @@ svgDomProxy.prototype =
   , height: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
-      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      extend(this.path, [buildBuffer(this.path.coords)])
       this.buffer = buildBuffer(this.path.coords)
     }
 
-  , width: function () {
+  ,width: function () {
       addToBuffer(this)
       this.path.coords = rectPoints(this.attr.width, this.attr.height)
-      if (this.attr.stroke) [].push.apply(this.path, lineBuffers(this.path.coords))
+      extend(this.path, [buildBuffer(this.path.coords)])
       this.buffer = buildBuffer(this.path.coords)
     }
 
@@ -344,32 +359,9 @@ svgDomProxy.prototype =
   , addEventListener: noop
   }
 
-var circleProto = extend(Object.create(svgDomProxy), {
-  r: noop
-, cx: noop
-, cy: noop
-})
-
-var pathProto = extend(Object.create(svgDomProxy), {
-  d: noop
-})
-
-var rect = extend(Object.create(svgDomProxy), {
-  height: noop
-, width: noop
-, rx: noop
-, ry: noop
-, x: noop
-, y: noop
-})
-
 //rect, line, group, text, image
 ;function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
-}
-
-function addLine(x1, y1, x2, y2) {
-  this.push(toBuffer([x1, y1, 0, x2, y2, 0]))
 }
 
 function applyTransforms(node) {
@@ -392,15 +384,15 @@ function swapProgram(name) {
   gl.enableVertexAttribArray(program.vertexPosition)
 }
 
-function drawFill(buffer) {
-  swapProgram(isId(this.attr.fill) ? this.attr.fill : '_identity')
-  applyTransforms(this)
-  setDrawColor(d3.rgb(this.attr.fill))
-  buffer && drawBuffer(buffer, gl.TRIANGLE_FAN)
+function drawFill(node) {
+  swapProgram(isId(node.attr.fill) ? node.attr.fill : '_identity')
+  applyTransforms(node)
+  setDrawColor(d3.rgb(node.attr.fill))
+  drawBuffer(node.buffer, gl.TRIANGLE_FAN)
 }
 
 function render(node) {
-  drawFill.call(node, node.buffer)
+  node.buffer && drawFill(node)
   drawStroke(node)
 }
 
@@ -411,7 +403,7 @@ function drawStroke(node) {
   setDrawColor(d3.rgb(node.attr.stroke))
   if (node.path)
     for (var i = 0; i < node.path.length; i++)
-      drawBuffer(node.path[i], gl.LINE_STRIP)
+      drawBuffer(node.path[i], gl.LINE_LOOP)
   //else console.log(node.id)
   //this should be impossible
 }
