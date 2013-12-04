@@ -81,6 +81,6 @@ function bindUniform(val, key) {
 }
 
 function initContext(canvas) {
-  var gl = canvas.getContext('webgl')
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 }
