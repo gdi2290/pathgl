@@ -76,6 +76,19 @@ function circlePoints(r) {
   return a
 }
 
+
+function buildLine () {}
+function buildPath () {}
+function points () {}
+function ellipsePoints(r) {
+  var a = []
+  for (var i = 0; i < 361; i+=18)
+    a.push(50 + r * Math.cos(i * Math.PI / 180),
+           50 + r * Math.sin(i * Math.PI / 180),
+           0)
+  return a
+}
+
 function rectPoints(w, h) {
   return [0,0,0,
           0,h,0,
