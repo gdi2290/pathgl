@@ -143,3 +143,19 @@ var attrDefaults = {
 , y: 0
 , opacity: 1
 }
+var e = {}
+
+//keep track of what element is being hovered over
+function event (type, listener) {
+  //console.log(this.id)
+  if (! e[type]) {
+    d3.select('canvas').on(type, function () {
+      this.__scene__.filter(function () {
+        //check what shape cursor is on top of
+        //if the id is in e[type], dispatch listener
+      })
+    })
+    e[type] = []
+  }
+  e[type].push(this.id)
+}
