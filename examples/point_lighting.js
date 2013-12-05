@@ -2,7 +2,7 @@ var c = d3.select('canvas')
         .attr(size)
         .call(pathgl)
 
-c.selectAll('circle').data(d3.range(100))
+c.selectAll('circle').data(d3.range(1000))
 .enter().append('circle')
 .attr('r', function () { return 10 + arguments[1]})
 .attr('stroke', 'blue')

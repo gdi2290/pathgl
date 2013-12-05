@@ -15,33 +15,30 @@ It just works.
 
 Alternatively:
 ```
-d3.select('#youaremycanvasandiloveyou').call(pathgl)
+d3.select('canvas').call(pathgl)
 .append('circle')
 ```
 
 ### roadmap ###
-transform: translate
-
 * Make path parser comply with spec
 
 * stroke
-  * thickness
-  * dasharray
-  * length
-  * opacity
-  * color
+  [x] thickness
+  [] dasharray
+  [] length
+  [x] opacity
+  [x] color
 
 * fill
-  * pattern
-  * gradient + shaders
-  * color
-  * opacity
+  [] pattern
+  [x] gradient + shaders
+  [x] color
+  [x] opacity
 
 * antialiasing
 * event listeners
 
 * add 2d canvas renderer for phones
-
 
 ###Extensions to d3 syntax
 .attr('fill', '#shader') //if fill attr starts with a dot or hash, select the

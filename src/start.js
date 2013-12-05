@@ -1,12 +1,5 @@
 this.pathgl = pathgl
 
-pathgl.supportedAttributes =
-  [ 'd'
-  , 'stroke'
-  , 'strokeWidth'
-  , 'fill'
-  ]
-
 pathgl.stop = d3.functor()
 
 function pathgl(canvas) {

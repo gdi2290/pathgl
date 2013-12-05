@@ -50,13 +50,6 @@ pathgl.vertex = [ "precision mediump float;"
                 ].join('\n')
 ;this.pathgl = pathgl
 
-pathgl.supportedAttributes =
-  [ 'd'
-  , 'stroke'
-  , 'strokeWidth'
-  , 'fill'
-  ]
-
 pathgl.stop = d3.functor()
 
 function pathgl(canvas) {
@@ -305,7 +298,7 @@ svgDomProxy.prototype = {
 
   , textContent: noop
   , removeEventListener: noop
-  , addEventListener: noop
+  , addEventListener: event
   }
 
 var types = [
@@ -326,6 +319,7 @@ function appendChild(el) {
   canvas.__scene__.push(self)
 
   self.attr = Object.create(attrDefaults)
+  self.tagName = el.tagName
   self.parentNode = self.parentElement = this
   return self
 }
@@ -356,21 +350,22 @@ var attrDefaults = {
 , y: 0
 , opacity: 1
 }
+var e = {}
 
-function lineBuffers(polygon) {
-  var shit = [], p = polygon
-  for(var i = 0; i < polygon.length + 4; i+= 3)
-    addLine.call(shit, polygon[i], polygon[i+1], polygon[i+3], polygon[i+4])
-
-  i = polygon.length - 3;
-  addLine.call(shit, polygon[i], polygon[i+1], polygon[0], polygon[1])
-
-  return shit
-}
-
-
-//rect, line, group, text, image
-;function addToBuffer(datum) {
+//keep track of what element is being hovered over
+function event (type, listener) {
+  //console.log(this.id)
+  if (! e[type]) {
+    d3.select('canvas').on(type, function () {
+      this.__scene__.filter(function () {
+        //check what shape cursor is on top of
+        //if the id is in e[type], dispatch listener
+      })
+    })
+    e[type] = []
+  }
+  e[type].push(this.id)
+};function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
 
