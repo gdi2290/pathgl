@@ -54,6 +54,7 @@ function setDrawColor (c) {
                1.0)
 }
 
+//subData
 function buildBuffer(points) {
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
