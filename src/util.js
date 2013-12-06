@@ -23,3 +23,7 @@ function isId(str) {
 function each(obj, fn) {
   for (var key in obj) fn(obj[key], key, obj)
 }
+
+function hash(str) {
+  return str.split("").reduce(function(a,b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)
+}
