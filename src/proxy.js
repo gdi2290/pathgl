@@ -16,6 +16,7 @@ var types = {
 }
 
 var roundedCorner = noop
+
 var proto = {
   circle: { r: circlePoints, cx: noop, cy: noop }
 , ellipse: {cx: ellipsePoints, cy: ellipsePoints, rx: ellipsePoints, ry: ellipsePoints}
@@ -26,7 +27,7 @@ var proto = {
 , rect: { width: rectPoints, height: rectPoints, x: noop, y: noop, rx: roundedCorner }
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
-, g: {}
+, g: { appendChild: noop }
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 }
 
@@ -57,13 +58,18 @@ svgDomProxy.prototype = {
   }
 
 , fill: function (val) {
-    isId(val) && initShaders(d3.select(val).text(), val)
+    isId(val) && initShader(d3.select(val).text(), val)
   }
 
 , transform: function (d) {
     var parse = d3.transform(d)
       , radians = parse.rotate * Math.PI / 180
+    if (parse.rotate) {
 
+      delete parse.translate
+      // parse.translate[0] *= -68
+      // parse.translate[1] *= 68
+    }
     extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
 
@@ -73,7 +79,7 @@ svgDomProxy.prototype = {
   }
 
 , stroke: function (val) {
-    isId(val) && initShaders(d3.select(val).text(), val)
+    isId(val) && initShader(d3.select(val).text(), val)
   }
 
   , getAttribute: function (name) {
@@ -95,15 +101,14 @@ svgDomProxy.prototype = {
   }
 
 var types = [
-  function circle () {  }
+  function circle () {}
 , function rect() {}
 , function path() {}
-].reduce(function (a, b) {
-              a[b.name] = b
-              b.prototype = Object.create(svgDomProxy.prototype)
+].reduce(function (a, type) {
+              a[type.name] = type
+              type.prototype = Object.create(svgDomProxy.prototype)
               return a
             }, {})
-
 
 function insertBefore(node, next) {}
 

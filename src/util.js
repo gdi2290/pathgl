@@ -45,3 +45,8 @@ List.prototype = {
 , car: function () { return this.head }
 , cdr: function () { return this.tail }
 }
+
+function reverseEach(arr, fn) {
+  var l = arr.length
+  while(l--) fn(arr[l], l)
+}

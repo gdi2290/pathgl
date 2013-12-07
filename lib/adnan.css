@@ -1,5 +1,6 @@
 body {
     padding: 15px;
+    color: #333;
 }
 
 svg {
@@ -51,4 +52,10 @@ content: "YEAH";
 
 .edit {
 
+}
+
+
+a {
+    color: #333;
+    text-decoration: none;
 }

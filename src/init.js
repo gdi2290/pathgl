@@ -5,7 +5,7 @@ function init(c) {
   programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  initShaders(pathgl.fragment, '_identity')
+  initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(function (elapsed) {
@@ -50,7 +50,8 @@ function compileShader (type, src) {
   return shader
 }
 
-function initShaders(fragment, name) {
+pathgl.initShader
+function initShader(fragment, name) {
   if (programs[name]) return program = programs[name]
 
   program = gl.createProgram()
@@ -71,7 +72,6 @@ function initShaders(fragment, name) {
   gl.enableVertexAttribArray(program.vertexPosition)
 
   program.name = name
-
   return programs[name] = program
 }
 

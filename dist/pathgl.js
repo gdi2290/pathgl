@@ -64,7 +64,7 @@ function init(c) {
   programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  initShaders(pathgl.fragment, '_identity')
+  initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(function (elapsed) {
@@ -109,7 +109,8 @@ function compileShader (type, src) {
   return shader
 }
 
-function initShaders(fragment, name) {
+pathgl.initShader
+function initShader(fragment, name) {
   if (programs[name]) return program = programs[name]
 
   program = gl.createProgram()
@@ -130,7 +131,6 @@ function initShaders(fragment, name) {
   gl.enableVertexAttribArray(program.vertexPosition)
 
   program.name = name
-
   return programs[name] = program
 }
 
@@ -223,6 +223,7 @@ var types = {
 }
 
 var roundedCorner = noop
+
 var proto = {
   circle: { r: circlePoints, cx: noop, cy: noop }
 , ellipse: {cx: ellipsePoints, cy: ellipsePoints, rx: ellipsePoints, ry: ellipsePoints}
@@ -233,7 +234,7 @@ var proto = {
 , rect: { width: rectPoints, height: rectPoints, x: noop, y: noop, rx: roundedCorner }
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
-, g: {}
+, g: { appendChild: noop }
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 }
 
@@ -252,7 +253,7 @@ svgDomProxy.prototype = {
     this.buffer = buildBuffer(this.path.coords)
   }
 
-,width: function () {
+, width: function () {
    addToBuffer(this)
    this.path.coords = rectPoints(this.attr.width, this.attr.height)
    extend(this.path, [buildBuffer(this.path.coords)])
@@ -264,13 +265,18 @@ svgDomProxy.prototype = {
   }
 
 , fill: function (val) {
-    isId(val) && initShaders(d3.select(val).text(), val)
+    isId(val) && initShader(d3.select(val).text(), val)
   }
 
 , transform: function (d) {
     var parse = d3.transform(d)
       , radians = parse.rotate * Math.PI / 180
+    if (parse.rotate) {
 
+      delete parse.translate
+      // parse.translate[0] *= -68
+      // parse.translate[1] *= 68
+    }
     extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
 
@@ -280,7 +286,7 @@ svgDomProxy.prototype = {
   }
 
 , stroke: function (val) {
-    isId(val) && initShaders(d3.select(val).text(), val)
+    isId(val) && initShader(d3.select(val).text(), val)
   }
 
   , getAttribute: function (name) {
@@ -302,15 +308,14 @@ svgDomProxy.prototype = {
   }
 
 var types = [
-  function circle () {  }
+  function circle () {}
 , function rect() {}
 , function path() {}
-].reduce(function (a, b) {
-              a[b.name] = b
-              b.prototype = Object.create(svgDomProxy.prototype)
+].reduce(function (a, type) {
+              a[type.name] = type
+              type.prototype = Object.create(svgDomProxy.prototype)
               return a
             }, {})
-
 
 function insertBefore(node, next) {}
 
@@ -421,6 +426,7 @@ function setDrawColor (c) {
                1.0)
 }
 
+//subData
 function buildBuffer(points) {
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
@@ -537,5 +543,31 @@ function isId(str) {
 function each(obj, fn) {
   for (var key in obj) fn(obj[key], key, obj)
 }
-;  return init(canvas)
+
+
+function List(data) {
+  this.data = data || null
+  this.next = null
+}
+
+List.prototype = {
+  cons: function (data) {
+    if (! this.data) this.next = new List(data)
+    this.data = data
+    return this
+  }
+, remove: function (data, parent) {
+    return (this.next != null) &&
+      this.data == data ? this.parent.next = this :
+      this.next.remove(data, parent)
+  }
+, each: function (fn) { fn(this.data), this.next && this.next.each(fn) }
+, car: function () { return this.head }
+, cdr: function () { return this.tail }
+}
+
+function reverseEach(arr, fn) {
+  var l = arr.length
+  while(l--) fn(arr[l], l)
+};  return init(canvas)
 } }()
