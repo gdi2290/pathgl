@@ -58,7 +58,9 @@ function pathgl(canvas) {
     canvas instanceof d3.selection ? canvas.node() :
     canvas
 ;var stopRendering = false
+
 pathgl.stop = function () { stopRendering = true }
+
 function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
@@ -92,6 +94,7 @@ function override(canvas) {
   , querySelector: querySelector
   , removeChild: removeChild
   , insertBefore: insertBefore
+  , children: Object.freeze(Object.create(__scene__))
 
   , gl: gl
   , __scene__: []
@@ -109,7 +112,8 @@ function compileShader (type, src) {
   return shader
 }
 
-pathgl.initShader
+pathgl.initShader = initShader
+
 function initShader(fragment, name) {
   if (programs[name]) return program = programs[name]
 
