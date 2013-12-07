@@ -1,3 +1,25 @@
+function drawScene(order) {
+  render(order.head)
+  order.next && drawScene(order.next)
+}
+
+function ref(i) {
+  return { index: i, id: __scene__[i].id }
+}
+
+
+function buildScene() {
+  var order = {}, last, l = __scene__.length
+  reverseEach(__scene__, function (_, i) {
+    var node  = ref(l - i)
+      , next = (order[node.attr.fill] ||order[node.attr.fill] = new List()).cons(node)
+    if (last !== node.attr.fill) order[last].cons(next)
+    last = node.attr.fill
+  })
+  order.head  = __scene__[l - 1]
+  return order
+}
+
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
 }
