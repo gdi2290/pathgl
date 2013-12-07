@@ -375,21 +375,26 @@ function event (type, listener) {
   order.next && drawScene(order.next)
 }
 
-function ref(i) {
+function makeRef(i) {
   return { index: i, id: __scene__[i].id }
 }
 
-
-function buildScene() {
-  var order = {}, last, l = __scene__.length
-  reverseEach(__scene__, function (_, i) {
-    var node  = ref(l - i)
-      , next = (order[node.attr.fill] ||order[node.attr.fill] = new List()).cons(node)
-    if (last !== node.attr.fill) order[last].cons(next)
+//builds order-by-model scene graph from table
+function buildScene(arr, attr) {
+  var order = {}, len = attr.length, next, last,
+  reverseEach(attr, function (node, i) {
+    next = (order[node[attr]] || (order[node[attr]] = new List())).cons(makeRef(len - i))
+    if (last !== node[attr]) order[last].cons(next)
     last = node.attr.fill
   })
-  order.head  = __scene__[l - 1]
+  order.head  = arr[len - 1]
+  order.end = next
   return order
+}
+
+//refits order to scene
+function reorderScene(order) {
+
 }
 
 function addToBuffer(datum) {
@@ -568,22 +573,22 @@ function each(obj, fn) {
 
 
 function List(data) {
-  this.data = data || null
+  this.head = data || null
   this.next = null
 }
 
 List.prototype = {
   cons: function (data) {
     if (! this.data) this.next = new List(data)
-    this.data = data
+    this.head = data
     return this
   }
 , remove: function (data, parent) {
     return (this.next != null) &&
-      this.data == data ? this.parent.next = this :
+      this.head == data ? this.parent.next = this :
       this.next.remove(data, parent)
   }
-, each: function (fn) { fn(this.data), this.next && this.next.each(fn) }
+, each: function (fn) { fn(this.head), this.next && this.next.each(fn) }
 , car: function () { return this.head }
 , cdr: function () { return this.tail }
 }
