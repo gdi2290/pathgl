@@ -3,27 +3,20 @@ function drawScene(order) {
   order.next && drawScene(order.next)
 }
 
-function makeRef(i) {
-  return { index: i, id: __scene__[i].id }
-}
-
 //builds order-by-model scene graph from table
 function buildScene(arr, attr) {
-  var order = {}, len = attr.length, next, last,
-  reverseEach(attr, function (node, i) {
-    next = (order[node[attr]] || (order[node[attr]] = new List())).cons(makeRef(len - i))
+  var order = {}, next, last
+  reverseEach(attr, function (node, index) {
+    next = (order[node[attr]] || (order[node[attr]] = new List())).cons(node)
     if (last !== node[attr]) order[last].cons(next)
     last = node.attr.fill
   })
-  order.head  = arr[len - 1]
+  order.head  = arr[arr.length - 1]
   order.end = next
   return order
 }
 
-//refits order to scene
-function reorderScene(order) {
-
-}
+function reorderScene(order) {}
 
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
