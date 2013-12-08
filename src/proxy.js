@@ -12,8 +12,7 @@ var proto = {
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 }
 
-function svgDomProxy(el, canvas) {}
-svgDomProxy.prototype = {
+var baseProto = {
   querySelectorAll: noop
 , querySelector: noop
 , createElementNS: noop
@@ -36,7 +35,6 @@ svgDomProxy.prototype = {
     }
     extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
-
 
 , stroke: function (val) {
     isId(val) && initShader(d3.select(val).text(), val)
@@ -79,7 +77,7 @@ var types = [
 , function use() {}
 ].reduce(function (a, type) {
               a[type.name] = type
-              type.prototype = extend(Object.create(svgDomProxy.prototype), proto[type.name])
+              type.prototype = extend(Object.create(baseProto), proto[type.name])
               return a
             }, {})
 
@@ -172,9 +170,7 @@ var attrDefaults = {
 , opacity: 1
 }
 
-
 var e = {}
-
 //keep track of what element is being hovered over
 function event (type, listener) {
   //console.log(this.id)
