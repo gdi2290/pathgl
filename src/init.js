@@ -30,16 +30,7 @@ function init(c) {
   initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
-  d3.timer(function (elapsed) {
-    //if (canvas.__rerender__ || pathgl.forceRerender)
-    each(programs, function (program, key) {
-      gl.useProgram(program)
-      program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
-      program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
-    })
-    canvas.__scene__.forEach(render)
-    return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-  })
+  d3.timer(runLoop)
   return gl ? canvas : null
 }
 

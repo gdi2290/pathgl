@@ -1,3 +1,18 @@
+//builds order-by-model scene graph from table
+function buildScene(arr, attr) {
+  var order = {}, next, last
+  reverseEach(attr, function (node, index) {
+    next = (order[node[attr]] || (order[node[attr]] = new List())).cons(node)
+    if (last !== node[attr]) order[last].cons(next)
+    last = node.attr.fill
+  })
+  order.head  = arr[arr.length - 1]
+  order.end = next
+  return order
+}
+
+function reorderScene(order) {}
+
 function drawScene(order) {
   order.each(render)
 }

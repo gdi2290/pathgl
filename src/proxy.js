@@ -1,5 +1,5 @@
 var proto = {
-  circle: { r: buildCircle, cx: noop, cy: noop } //point
+  circle: { r: buildCircle, cx: noop, cy: noop }
 , ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //point
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
 , path: { d: buildPath, pathLength: buildPath} //lines
@@ -10,6 +10,21 @@ var proto = {
 , text: { x: noop, y: noop, dx: noop, dy: noop } //...
 , g: { appendChild: noop } //fake
 }
+var allCircles = new Float32Array(1e6);
+
+//cx
+//cy
+//r
+//fill rgba
+//stroke rgba
+//width
+//height
+
+//stroke-width
+
+function renderCircles() {
+
+}
 
 var baseProto = {
   querySelectorAll: noop
@@ -17,6 +32,10 @@ var baseProto = {
 , createElementNS: noop
 , insertBefore: noop
 , ownerDocument: { createElementNS: noop }
+, render: function render(node) {
+  this.buffer && drawFill(this)
+  drawStroke(this)
+}
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 
 , fill: function (val) {

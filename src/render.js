@@ -1,17 +1,20 @@
-//builds order-by-model scene graph from table
-function buildScene(arr, attr) {
-  var order = {}, next, last
-  reverseEach(attr, function (node, index) {
-    next = (order[node[attr]] || (order[node[attr]] = new List())).cons(node)
-    if (last !== node[attr]) order[last].cons(next)
-    last = node.attr.fill
+function runloop(elapsed) {
+  each(programs, function (program, key) {
+    gl.useProgram(program)
+    program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
+    program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
   })
-  order.head  = arr[arr.length - 1]
-  order.end = next
-  return order
+    canvas.__scene__.forEach(function (node) { node.render() })
+  drawCircles()
+  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 }
 
-function reorderScene(order) {}
+function drawCircles () {
+  gl.bufferData(gl.ARRAY_BUFFER, allCircles, gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(vertexAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(vertexAttributeLocation);
+  gl.drawArrays(gl.POINTS, 0, allCircles);
+}
 
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
@@ -42,11 +45,6 @@ function drawFill(node) {
   applyTransforms(node)
   setDrawColor(d3.rgb(node.attr.fill))
   drawBuffer(node.buffer, gl.TRIANGLE_FAN)
-}
-
-function render(node) {
-  node.buffer && drawFill(node)
-  drawStroke(node)
 }
 
 function drawStroke(node) {
