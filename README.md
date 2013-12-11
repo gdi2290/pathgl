@@ -7,8 +7,8 @@ This is a function that lets you control webgl with d3.
 var selector = pathgl('canvas') || 'svg'
 d3.select(selector).append('circle')
 .attr('r', 100)
-.attr('cx',50)
-.attr('cy',50)
+.attr('cx', 50)
+.attr('cy', 50)
 ```
 If webgl is available then your circles will be WEBGL, if not, fallback to svg.
 It just works.

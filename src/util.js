@@ -23,30 +23,3 @@ function isId(str) {
 function each(obj, fn) {
   for (var key in obj) fn(obj[key], key, obj)
 }
-
-
-function List(data) {
-  this.head = data || null
-  this.next = null
-}
-
-List.prototype = {
-  cons: function (data) {
-    if (! this.data) this.next = new List(data)
-    this.head = data
-    return this
-  }
-, remove: function (data, parent) {
-    return (this.next != null) &&
-      this.head == data ? this.parent.next = this :
-      this.next.remove(data, parent)
-  }
-, each: function (fn) { fn(this.head), this.next && this.next.each(fn) }
-, car: function () { return this.head }
-, cdr: function () { return this.tail }
-}
-
-function reverseEach(arr, fn) {
-  var l = arr.length
-  while(l--) fn(arr[l], l)
-}

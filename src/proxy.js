@@ -1,25 +1,15 @@
 function svgDomProxy(el, canvas) {}
 
+//expose this to allow custom shapes??
 var types = {
-  circle: noop
-, ellipse: noop
-, line: noop
-, path: noop
-, polygon: noop
-, polyline: noop
-, rect: noop
 
-, image: noop
-, text: noop
-, g: noop
-, use: noop
 }
 
 var roundedCorner = noop
 
 var proto = {
-  circle: { r: circlePoints, cx: noop, cy: noop }
-, ellipse: {cx: ellipsePoints, cy: ellipsePoints, rx: ellipsePoints, ry: ellipsePoints}
+  circle: { r: buildCircle, cx: noop, cy: noop }
+, ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse }
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine }
 , path: { d: buildPath, pathLength: buildPath}
 , polygon: { points: points }
@@ -31,6 +21,44 @@ var proto = {
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 }
 
+function buildCircle () {
+  var a = [], r = this.attr.r
+  for (var i = 0; i < 361; i+=18)
+    a.push(50 + r * Math.cos(i * Math.PI / 180),
+           50 + r * Math.sin(i * Math.PI / 180),
+           0)
+  this.path = [this.buffer = toBuffer(circlePoints(this.attr.r))]
+}
+
+function buildRect() {
+  if (! this.attr.width && this.attr.height) return
+  addToBuffer(this)
+  this.path.coords = rectPoints(this.attr.width, this.attr.height)
+  extend(this.path, [buildBuffer(this.path.coords)])
+  this.buffer = buildBuffer(this.path.coords)
+}
+
+function buildLine () {}
+function buildPath () {}
+function points () {}
+function buildEllipse() {
+  return;
+  var a = []
+  for (var i = 0; i < 361; i+=18)
+    a.push(50 + r * Math.cos(i * Math.PI / 180),
+           50 + r * Math.sin(i * Math.PI / 180),
+           0)
+  return a
+}
+
+function rectPoints(w, h) {
+  return [0,0,0,
+          0,h,0,
+          w,h,0,
+          w,0,0,
+         ]
+}
+
 svgDomProxy.prototype = {
   querySelectorAll: noop
 , querySelector: noop
@@ -39,22 +67,8 @@ svgDomProxy.prototype = {
 , ownerDocument: { createElementNS: noop }
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 
-, height: function () {
-    addToBuffer(this)
-    this.path.coords = rectPoints(this.attr.width, this.attr.height)
-    extend(this.path, [buildBuffer(this.path.coords)])
-    this.buffer = buildBuffer(this.path.coords)
-  }
-
-, width: function () {
-   addToBuffer(this)
-   this.path.coords = rectPoints(this.attr.width, this.attr.height)
-   extend(this.path, [buildBuffer(this.path.coords)])
-   this.buffer = buildBuffer(this.path.coords)
- }
-
 , r: function () {
-    this.path = [this.buffer = toBuffer(circlePoints(this.attr.r))]
+
   }
 
 , fill: function (val) {
@@ -104,13 +118,30 @@ var types = [
   function circle () {}
 , function rect() {}
 , function path() {}
+, function ellipse() {}
+, function line() {}
+, function path() {}
+, function polygon() {}
+, function polyline() {}
+, function rect() {}
+
+, function image() {}
+, function text() {}
+, function g() {}
+, function use() {}
 ].reduce(function (a, type) {
               a[type.name] = type
               type.prototype = Object.create(svgDomProxy.prototype)
               return a
             }, {})
 
-function insertBefore(node, next) {}
+function insertBefore(node, next) {
+  var scene = canvas.__scene__
+    , i = scene.indexOf(next)
+  reverseEach(scene.slice(i, scene.push('shit')),
+                          function (d, i) { scene[i] = scene[i - 1] })
+
+}
 
 function appendChild(el) {
   var self = new types[el.tagName.toLowerCase()]

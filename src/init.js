@@ -29,16 +29,16 @@ function mousemoved() {
 }
 
 function override(canvas) {
+  var scene = []
   return extend(canvas, {
     appendChild: appendChild
   , querySelectorAll: querySelectorAll
   , querySelector: querySelector
   , removeChild: removeChild
   , insertBefore: insertBefore
-  , children: Object.freeze(Object.create(__scene__))
 
   , gl: gl
-  , __scene__: []
+  , __scene__: scene
   , __pos__: []
   , __id__: 0
   , __program__: void 0
@@ -52,8 +52,6 @@ function compileShader (type, src) {
   if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw src + ' ' + gl.getShaderInfoLog(shader)
   return shader
 }
-
-pathgl.initShader = initShader
 
 function initShader(fragment, name) {
   if (programs[name]) return program = programs[name]

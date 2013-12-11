@@ -1,6 +1,13 @@
 function drawScene(order) {
-  render(order.head)
-  order.next && drawScene(order.next)
+  order.each(render)
+}
+
+function addNode() {
+
+}
+
+function removeNode() {
+
 }
 
 //builds order-by-model scene graph from table
@@ -86,34 +93,4 @@ function buildBuffer(points) {
 
 function toBuffer (array) {
   return buildBuffer(flatten(array))
-}
-
-function circlePoints(r) {
-  var a = []
-  for (var i = 0; i < 361; i+=18)
-    a.push(50 + r * Math.cos(i * Math.PI / 180),
-           50 + r * Math.sin(i * Math.PI / 180),
-           0)
-  return a
-}
-
-
-function buildLine () {}
-function buildPath () {}
-function points () {}
-function ellipsePoints(r) {
-  var a = []
-  for (var i = 0; i < 361; i+=18)
-    a.push(50 + r * Math.cos(i * Math.PI / 180),
-           50 + r * Math.sin(i * Math.PI / 180),
-           0)
-  return a
-}
-
-function rectPoints(w, h) {
-  return [0,0,0,
-          0,h,0,
-          w,h,0,
-          w,0,0,
-         ]
 }
