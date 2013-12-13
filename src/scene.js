@@ -18,7 +18,6 @@ function agressive (arr, attr) {
          }, {})
 }
 
-
 //builds order-by-model scene graph from table
 function scene(arr, attr) {
   var order = {}, next, last

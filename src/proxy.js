@@ -1,12 +1,3 @@
-function svgDomProxy(el, canvas) {}
-
-//expose this to allow custom shapes??
-var types = {
-
-}
-
-var roundedCorner = noop
-
 var proto = {
   circle: { r: buildCircle, cx: noop, cy: noop }
 , ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse }
@@ -21,44 +12,7 @@ var proto = {
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 }
 
-function buildCircle () {
-  var a = [], r = this.attr.r
-  for (var i = 0; i < 361; i+=18)
-    a.push(50 + r * Math.cos(i * Math.PI / 180),
-           50 + r * Math.sin(i * Math.PI / 180),
-           0)
-  this.path = [this.buffer = toBuffer(circlePoints(this.attr.r))]
-}
-
-function buildRect() {
-  if (! this.attr.width && this.attr.height) return
-  addToBuffer(this)
-  this.path.coords = rectPoints(this.attr.width, this.attr.height)
-  extend(this.path, [buildBuffer(this.path.coords)])
-  this.buffer = buildBuffer(this.path.coords)
-}
-
-function buildLine () {}
-function buildPath () {}
-function points () {}
-function buildEllipse() {
-  return;
-  var a = []
-  for (var i = 0; i < 361; i+=18)
-    a.push(50 + r * Math.cos(i * Math.PI / 180),
-           50 + r * Math.sin(i * Math.PI / 180),
-           0)
-  return a
-}
-
-function rectPoints(w, h) {
-  return [0,0,0,
-          0,h,0,
-          w,h,0,
-          w,0,0,
-         ]
-}
-
+function svgDomProxy(el, canvas) {}
 svgDomProxy.prototype = {
   querySelectorAll: noop
 , querySelector: noop
@@ -66,10 +20,6 @@ svgDomProxy.prototype = {
 , insertBefore: noop
 , ownerDocument: { createElementNS: noop }
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
-
-, r: function () {
-
-  }
 
 , fill: function (val) {
     isId(val) && initShader(d3.select(val).text(), val)
@@ -114,6 +64,8 @@ svgDomProxy.prototype = {
   , addEventListener: event
   }
 
+var roundedCorner = noop
+
 var types = [
   function circle () {}
 , function rect() {}
@@ -131,9 +83,50 @@ var types = [
 , function use() {}
 ].reduce(function (a, type) {
               a[type.name] = type
-              type.prototype = Object.create(svgDomProxy.prototype)
+              type.prototype = extend(Object.create(svgDomProxy.prototype), proto[type.name])
               return a
             }, {})
+
+
+function buildCircle () {
+  console.log(123)
+  var a = [], r = this.attr.r
+  for (var i = 0; i < 361; i+=18)
+    a.push(50 + r * Math.cos(i * Math.PI / 180),
+           50 + r * Math.sin(i * Math.PI / 180),
+           0)
+  this.path = [this.buffer = toBuffer(a)]
+}
+
+function buildRect() {
+  if (! this.attr.width && this.attr.height) return
+  addToBuffer(this)
+  this.path.coords = rectPoints(this.attr.width, this.attr.height)
+  extend(this.path, [buildBuffer(this.path.coords)])
+  this.buffer = buildBuffer(this.path.coords)
+}
+
+function buildLine () {}
+function buildPath () {}
+function points () {}
+function buildEllipse() {
+  return;
+  var a = []
+  for (var i = 0; i < 361; i+=18)
+    a.push(50 + r * Math.cos(i * Math.PI / 180),
+           50 + r * Math.sin(i * Math.PI / 180),
+           0)
+  return a
+}
+
+function rectPoints(w, h) {
+  return [0,0,0,
+          0,h,0,
+          w,h,0,
+          w,0,0,
+         ]
+}
+
 
 function insertBefore(node, next) {
   var scene = canvas.__scene__
@@ -179,6 +172,8 @@ var attrDefaults = {
 , y: 0
 , opacity: 1
 }
+
+
 var e = {}
 
 //keep track of what element is being hovered over

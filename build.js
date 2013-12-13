@@ -27,7 +27,7 @@ function build(_, file) {
   console.log('rebuilding ' + (file ? file : ''))
 
   try {
-    if (! fs.exists('dist/')) fs.mkdirSync('dist')
+    if (! fs.existsSync('dist/')) fs.mkdirSync('dist/')
     fs.writeFileSync('dist/pathgl.js', closed)
     fs.writeFileSync('dist/pathgl.min.js',
                      compressor.minify(closed, { fromString: true }).code
