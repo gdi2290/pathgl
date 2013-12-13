@@ -1,10 +1,10 @@
-var c = d3.select('canvas')
+var c = d3.select('svg')
         .attr(size)
         .call(pathgl)
 
 c.selectAll('circle').data(d3.range(2e3))
 .enter().append('circle')
-.attr('r', 0)
+.attr('r', 5)
 .attr('stroke', 'blue')
 .attr('fill', 'pink')
 .attr('stroke', 'red')
