@@ -1,3 +1,7 @@
+function drawScene(order) {
+  order.each(render)
+}
+
 function addNode(node, order) {
   //find last node in order
 }

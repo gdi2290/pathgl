@@ -1,15 +1,3 @@
-function drawScene(order) {
-  order.each(render)
-}
-
-function addNode() {
-
-}
-
-function removeNode() {
-
-}
-
 //builds order-by-model scene graph from table
 function buildScene(arr, attr) {
   var order = {}, next, last

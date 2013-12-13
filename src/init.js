@@ -1,3 +1,23 @@
+var circleVertex = [
+  'attribute vec2 vertexCoords;'
+, 'uniform mat3 coordinateTransform;'
+, 'uniform float pointSize;'
+, 'void main() {'
+, '    vec3 transformedCoords = coordinateTransform * vec3(vertexCoords, 1.0);'
+, '    gl_Position = vec4(transformedCoords.xy, 0.0, 1.0);'
+, '    gl_PointSize = pointSize;'
+, '}'
+].join('\n')
+
+var circleFragment = [
+  'precision mediump float;'
+, 'uniform bool antialiased;'
+, 'void main() {'
+, '    if (distance( gl_PointCoord, vec2(0.5)) > 0.5) discard;'
+, '		 gl_FragColor = vec4(0, .5 ,1, 1);'
+, '}'
+].join('\n')
+
 var stopRendering = false
 
 pathgl.stop = function () { stopRendering = true }
@@ -53,16 +73,17 @@ function compileShader (type, src) {
   return shader
 }
 
-function initShader(fragment, name) {
-  if (programs[name]) return program = programs[name]
+function initShader(_, name) {
+  return program = (programs[name] ?
+                    programs[name] :
+                    programs[name] = createProgram(pathgl.vertex, _))
+}
 
+function createProgram(vs, fs) {
   program = gl.createProgram()
 
-  var vertexShader = compileShader(gl.VERTEX_SHADER, pathgl.vertex)
-  var fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragment)
-
-  gl.attachShader(program, vertexShader)
-  gl.attachShader(program, fragmentShader)
+  gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vs))
+  gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fs))
 
   gl.linkProgram(program)
   gl.useProgram(program)
@@ -74,7 +95,7 @@ function initShader(fragment, name) {
   gl.enableVertexAttribArray(program.vertexPosition)
 
   program.name = name
-  return programs[name] = program
+  return program
 }
 
 function bindUniform(val, key) {

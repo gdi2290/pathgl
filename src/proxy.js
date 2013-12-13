@@ -1,15 +1,14 @@
 var proto = {
-  circle: { r: buildCircle, cx: noop, cy: noop }
-, ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse }
-, line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine }
-, path: { d: buildPath, pathLength: buildPath}
-, polygon: { points: points }
-, polyline: { points: points }
-, rect: { width: rectPoints, height: rectPoints, x: noop, y: noop, rx: roundedCorner }
-, image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
-, text: { x: noop, y: noop, dx: noop, dy: noop }
-, g: { appendChild: noop }
-, image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
+  circle: { r: buildCircle, cx: noop, cy: noop } //point
+, ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //point
+, line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
+, path: { d: buildPath, pathLength: buildPath} //lines
+, polygon: { points: points } //lines
+, polyline: { points: points } //lines
+, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
+, image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
+, text: { x: noop, y: noop, dx: noop, dy: noop } //...
+, g: { appendChild: noop } //fake
 }
 
 var baseProto = {
@@ -27,12 +26,9 @@ var baseProto = {
 , transform: function (d) {
     var parse = d3.transform(d)
       , radians = parse.rotate * Math.PI / 180
-    if (parse.rotate) {
 
-      delete parse.translate
-      // parse.translate[0] *= -68
-      // parse.translate[1] *= 68
-    }
+    if (parse.rotate) delete parse.translate//fixme
+
     extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
 
@@ -81,9 +77,7 @@ var types = [
               return a
             }, {})
 
-
 function buildCircle () {
-  console.log(123)
   var a = [], r = this.attr.r
   for (var i = 0; i < 361; i+=18)
     a.push(50 + r * Math.cos(i * Math.PI / 180),
@@ -124,13 +118,11 @@ function rectPoints(w, h) {
          ]
 }
 
-
 function insertBefore(node, next) {
   var scene = canvas.__scene__
     , i = scene.indexOf(next)
   reverseEach(scene.slice(i, scene.push('shit')),
-                          function (d, i) { scene[i] = scene[i - 1] })
-
+              function (d, i) { scene[i] = scene[i - 1] })
 }
 
 function appendChild(el) {
@@ -173,7 +165,6 @@ var attrDefaults = {
 var e = {}
 //keep track of what element is being hovered over
 function event (type, listener) {
-  //console.log(this.id)
   if (! e[type]) {
     d3.select('canvas').on(type, function () {
       this.__scene__.filter(function () {
