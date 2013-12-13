@@ -1,20 +1,21 @@
 var circleVertex = [
-  'attribute vec2 vertexCoords;'
-, 'uniform mat3 coordinateTransform;'
-, 'uniform float pointSize;'
+  'precision mediump float;'
+, 'attribute vec3 aVertexPosition;'
+, "uniform vec2 resolution;"
 , 'void main() {'
-, '    vec3 transformedCoords = coordinateTransform * vec3(vertexCoords, 1.0);'
-, '    gl_Position = vec4(transformedCoords.xy, 0.0, 1.0);'
-, '    gl_PointSize = pointSize;'
+, "    vec2 normalize = aVertexPosition.xy / resolution;"
+, "    vec2 clipSpace = (normalize * 2.0) - 1.0;"
+, "    gl_Position = vec4(clipSpace, 1, 1);"
+, '    gl_PointSize = 20.0;'
 , '}'
 ].join('\n')
 
 var circleFragment = [
   'precision mediump float;'
-, 'uniform bool antialiased;'
 , 'void main() {'
-, '    if (distance( gl_PointCoord, vec2(0.5)) > 0.5) discard;'
-, '		 gl_FragColor = vec4(0, .5 ,1, 1);'
+, '    if (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard;'
+, '    if (distance(gl_PointCoord, vec2(0.5)) > 0.4) gl_FragColor = vec4(.5, 1, 0, 1);'
+, '		 else gl_FragColor = vec4(1, .5 ,1, 1);'
 , '}'
 ].join('\n')
 
@@ -31,6 +32,7 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(runLoop)
+  extend(programs.circle = createProgram(circleVertex, circleFragment), {name : 'circle'})
   return gl ? canvas : null
 }
 

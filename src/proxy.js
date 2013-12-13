@@ -1,8 +1,8 @@
 var proto = {
-  circle: { r: noop, cx: noop, cy: noop, render: renderCircles}
+  circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //point
 , ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //point
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
-, path: { d: buildPath, pathLength: buildPath} //lines
+, path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: points } //lines
 , polyline: { points: points } //lines
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
@@ -19,7 +19,6 @@ var allCircles = new Float32Array(1e6);
 //stroke rgba
 //width
 //height
-
 //stroke-width
 
 function renderCircles() {}
