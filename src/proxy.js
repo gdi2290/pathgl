@@ -37,10 +37,6 @@ svgDomProxy.prototype = {
     extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
 
-, d: function (d) {
-    parse.call(this, d)
-    this.buffer = toBuffer(this.path.coords)
-  }
 
 , stroke: function (val) {
     isId(val) && initShader(d3.select(val).text(), val)
@@ -107,7 +103,10 @@ function buildRect() {
 }
 
 function buildLine () {}
-function buildPath () {}
+function buildPath () {
+  parse.call(this, this.attr.d)
+  this.buffer = toBuffer(this.path.coords)
+}
 function points () {}
 function buildEllipse() {
   return;
