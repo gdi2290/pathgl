@@ -10,7 +10,7 @@ c.selectAll('circle').data(d3.range(2e3))
 .attr('stroke', 'red')
 
 +function k() {
-  c.selectAll('circle').transition().duration(1000).ease('cubic')
+  c.selectAll('circle').transition().duration(1000)
   .attr('cy', function (d, i ) { return Math.random() * 500})
   .attr('cx', function () { return Math.random() * 900 })
   .each('end', function (d, i) { if (!i) k() })

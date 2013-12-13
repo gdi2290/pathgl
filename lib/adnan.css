@@ -2,17 +2,12 @@ body {
     padding: 15px;
     color: #333;
 }
-
 svg {
-    border: 1px solid #ddd;
+    margin-top: -500px;
 }
 
 body {
     padding: 15px;
-}
-
-svg {
-    border: 1px solid #ddd;
 }
 
 .shader {
