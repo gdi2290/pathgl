@@ -6,16 +6,31 @@ var circleVertex = [
 , "    vec2 normalize = aVertexPosition.xy / resolution;"
 , "    vec2 clipSpace = (normalize * 2.0) - 1.0;"
 , "    gl_Position = vec4(clipSpace, 1, 1);"
-, '    gl_PointSize = 20.0;'
+, '    gl_PointSize = 40.0;'
+, '}'
+].join('\n')
+
+'    if (distance(gl_PointCoord, vec2(0.5)) > 0.4) gl_FragColor = vec4(.5, 1, 0, 1);'
+'		 else gl_FragColor = vec4(1, .5 ,1, 1);'
+
+var ccccfff = [
+  'precision mediump float;'
+, 'void main() {'
+, 'if (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard;'
+, 'gl_FragColor = vec4(noise1(),0,0,1);'
 , '}'
 ].join('\n')
 
 var circleFragment = [
   'precision mediump float;'
+,'float adnan(vec2 co){'
+, '    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);'
+, '}'
 , 'void main() {'
-, '    if (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard;'
-, '    if (distance(gl_PointCoord, vec2(0.5)) > 0.4) gl_FragColor = vec4(.5, 1, 0, 1);'
-, '		 else gl_FragColor = vec4(1, .5 ,1, 1);'
+, 'float dist = distance(gl_PointCoord, vec2(0.5));'
+, 'if (dist > 0.5) discard;'
+//, 'float alpha = 1.0 - smoothstep(0.45, 0.5, dist);'
+, 'gl_FragColor = vec4(adnan(gl_PointCoord), 0, 1.2-dist, 1.1-dist);'
 , '}'
 ].join('\n')
 

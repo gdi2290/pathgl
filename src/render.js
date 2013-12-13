@@ -13,6 +13,7 @@ function runLoop(elapsed) {
   return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 }
 
+var cacheCircles
 function drawCircles() {
   var allCircles = canvas.__scene__
                    .filter(function (d) { return d instanceof types['circle'] })
@@ -24,7 +25,7 @@ function drawCircles() {
                  buffer[2 * i + 1] = circle[1]
                  //buffer[i * 3] = circle[2]
                  return buffer
-               }, new Float32Array(allCircles.length * 2))
+               }, cacheCircles || (cacheCircles = new Float32Array(allCircles.length * 2)))
   window.ac = allCircles
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, allCircles, gl.DYNAMIC_DRAW)
