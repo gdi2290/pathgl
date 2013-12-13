@@ -107,8 +107,8 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  program[key] = gl.getUniformLocation(program, key)
-  if (val) gl['uniform' + val.length + 'fv'](program[key], val)
+  var loc = program[key] || (program[key] = gl.getUniformLocation(program, key))
+  gl['uniform' + val.length + 'fv'](loc, val)
 }
 
 function initContext(canvas) {
