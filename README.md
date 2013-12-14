@@ -1,17 +1,23 @@
-pathgl
-======
-This is a function that lets you control webgl with d3.
+# Pathgl
+Pathgl sits between d3 and the dom and lets you draw to webgl instead of svg.
 
-#usage
+## Usage
+Download the [latest version](http://adnanwahab.org/pathgl/dist/pathgl.zip) and include in your html.
+
+```html
+<script src="http://adnanwahab.org/pathgl/dist/pathgl.min.js" charset="utf-8"></script>
 ```
+
+If webgl is available then your circles will be WEBGL, if not, fallback to svg.
+```html
+<script>
 var selector = pathgl('canvas') || 'svg'
 d3.select(selector).append('circle')
 .attr('r', 100)
 .attr('cx', 50)
 .attr('cy', 50)
+</script>
 ```
-If webgl is available then your circles will be WEBGL, if not, fallback to svg.
-It just works.
 
 Alternatively:
 ```
@@ -19,29 +25,12 @@ d3.select('canvas').call(pathgl)
 .append('circle')
 ```
 
-### roadmap ###
-* Make path parser comply with spec
-
-* stroke
-  [x] thickness
-  [] dasharray
-  [] length
-  [x] opacity
-  [x] color
-
-* fill
-  [] pattern
-  [x] gradient + shaders
-  [x] color
-  [x] opacity
-
-* antialiasing
-* event listeners
-
-* add 2d canvas renderer for phones
-
-###Extensions to d3 syntax
-.attr('fill', '#shader') //if fill attr starts with a dot or hash, select the
-matching element and evaluate it as a fragment shader
-
-
+## roadmap
+ - batch all rendering so only 3 draws per frame if shapes are grouped: points, lines, triangle_fan
+ - event listeners
+ - Make path parser comply with spec
+ - stroke-dasharray
+ - antialiasing
+ - patterns, post processing effects, inject code/data into shaders
+ - datatextures
+ - custom shapes (hexagon, 3d??)
