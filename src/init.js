@@ -30,7 +30,7 @@ var circleFragment = [
 //, '    if (distance(gl_PointCoord, vec2(0.5)) > 0.4) gl_FragColor = vec4(.5, 1, 0, 1);'
 //, '		 else gl_FragColor = vec4(1, .5 ,1, 1);'
 , 'float alpha = 1.0 - smoothstep(0.45, 0.5, dist);'
-, 'gl_FragColor = vec4(0, adnan(gl_PointCoord), 1.2-dist, 1.1-dist);'
+, 'gl_FragColor = vec4(dist, .8 - dist, .8, 1.1-dist);'
 , '}'
 ].join('\n')
 
