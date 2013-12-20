@@ -72,7 +72,7 @@ function init(c) {
   initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
-  d3.timer(runLoop)
+  d3.timer(drawLoop)
   extend(programs.circle = createProgram(circleVertex, circleFragment), {name : 'circle'})
   return gl ? canvas : null
 }
@@ -401,7 +401,7 @@ function event (type, listener) {
 //render lines
 //render linefills
 
-function runLoop(elapsed) {
+function drawLoop(elapsed) {
   each(programs, function (program, key) {
     gl.useProgram(program)
     program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
@@ -451,8 +451,6 @@ function drawStroke(node) {
   if (node.path)
     for (var i = 0; i < node.path.length; i++)
       drawBuffer(node.path[i], gl.LINE_LOOP)
-  //else console.log(node.id)
-  //this should be impossible
 }
 
 function setDrawColor (c) {
@@ -476,7 +474,64 @@ function buildBuffer(points) {
 function toBuffer (array) {
   return buildBuffer(flatten(array))
 }
-;pathgl.shaderParameters = {
+;var circleVertex = [
+  'precision mediump float;'
+, 'attribute vec4 aVertexPosition;'
+, 'uniform vec2 resolution;'
+, 'varying vec3 rgb;'
+
+, 'vec3 parse_color(int n){'
+, ' return vec3(1, .5, .51);'
+, '}'
+
+, 'void main() {'
+, '    vec2 normalize = aVertexPosition.xy / resolution;'
+, '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
+, '    gl_Position = vec4(clipSpace, 1, 1);'
+, '    gl_PointSize = aVertexPosition.z / 10.0;'
+, '    rgb = parse_color(5);'
+, '}'
+
+].join('\n')
+
+var circleFragment = [
+  'precision mediump float;'
+, 'varying vec3 rgb;'
+, 'void main() {'
+, '    float dist = distance(gl_PointCoord, vec2(0.5));'
+, '    if (dist > 0.5) discard;'
+, '    float alpha = 1.0 - smoothstep(0.45, 0.5, dist);'
+, '    gl_FragColor = vec4(rgb, alpha);'
+, '}'
+].join('\n')
+
+var cacheCircles
+
+function rgbToNum(fill) {
+  var c = d3.rgb(fill)
+  return [ c.r, c.g, c.b ].join('')
+}
+function drawCircles() {
+  var allCircles = canvas.__scene__
+                   .filter(function (d) { return d instanceof types['circle'] })
+                   .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r, rgbToNum(d.attr.fill) ] })
+
+  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+
+  allCircles = allCircles.reduce(function (buffer, circle, i) {
+                 buffer[i * 1] = circle[0]
+                 buffer[i * 2] = circle[1]
+                 buffer[i * 3] = circle[2]
+                 buffer[i * 4] = circle[4]
+                 return buffer
+               }, cacheCircles || (cacheCircles = new Float32Array(allCircles.length * 4)))
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, allCircles, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0)
+	gl.enableVertexAttribArray(0);
+  gl.drawArrays(gl.POINTS, 0, allCircles.length / 4)
+};pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
 , time: [0]

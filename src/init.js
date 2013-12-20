@@ -10,7 +10,7 @@ function init(c) {
   initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
-  d3.timer(runLoop)
+  d3.timer(drawLoop)
   extend(programs.circle = createProgram(circleVertex, circleFragment), {name : 'circle'})
   return gl ? canvas : null
 }

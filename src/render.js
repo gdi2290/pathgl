@@ -2,7 +2,7 @@
 //render lines
 //render linefills
 
-function runLoop(elapsed) {
+function drawLoop(elapsed) {
   each(programs, function (program, key) {
     gl.useProgram(program)
     program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
@@ -52,8 +52,6 @@ function drawStroke(node) {
   if (node.path)
     for (var i = 0; i < node.path.length; i++)
       drawBuffer(node.path[i], gl.LINE_LOOP)
-  //else console.log(node.id)
-  //this should be impossible
 }
 
 function setDrawColor (c) {
