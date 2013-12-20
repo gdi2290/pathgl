@@ -479,12 +479,11 @@ function toBuffer (array) {
 , 'attribute vec4 aVertexPosition;'
 , 'uniform vec2 resolution;'
 , 'varying vec3 rgb;'
-
-, 'vec3 parse_color(int n){'
-// , '   float r = mod(n = n / 1000, 1) * 1000 / 255;'
-// , '   float g = mod(n = n / 1000, 1) * 1000 / 255;'
-// , '   float b = mod(n = n / 1000, 1) * 1000 / 255;'
-, '   return vec3(r, g, b);'
+, 'vec3 parse_color(float n){'
+, '   float r = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
+, '   float g = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
+, '   float b = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
+, '   return vec3(1.0, 1.0, .5);'
 , '}'
 
 , 'void main() {'
@@ -492,9 +491,8 @@ function toBuffer (array) {
 , '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
 , '    gl_Position = vec4(clipSpace, 1, 1);'
 , '    gl_PointSize = aVertexPosition.z / 20.0;'
-, '    rgb = parse_color(5);'
+, '    rgb = parse_color(5.0);'
 , '}'
-
 ].join('\n')
 
 var circleFragment = [
@@ -503,7 +501,7 @@ var circleFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    float alpha = 1.0 - smoothstep(0.45, 0.5, dist);'
+, '    float alpha = 1.0 - smoothstep(0.47, 0.5, dist);'
 , '    gl_FragColor = vec4(rgb, alpha);'
 , '}'
 ].join('\n')
@@ -512,12 +510,13 @@ var cacheCircles
 
 function rgbToNum(fill) {
   var c = d3.rgb(fill)
+  window.y = [ c.r, c.g, c.b ].join('')
   return [ c.r, c.g, c.b ].join('')
 }
 function drawCircles() {
   var allCircles = canvas.__scene__
                    .filter(function (d) { return d instanceof types['circle'] })
-                   .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r, rgbToNum(d.attr.fill) ] })
+                   .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r, rgbToNum('pink') ] })
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
