@@ -1,4 +1,4 @@
-function map(selector) {
+examples.map = function (selector) {
   var projection = d3.geo.albersUsa().scale(1070)
     , path = d3.geo.path().projection(projection)
     , svg = d3.select(selector).attr(size).call(pathgl)

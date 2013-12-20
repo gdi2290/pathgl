@@ -1,4 +1,4 @@
-function video_voronoi(selector) {
+examples.video_voronoi = function (selector) {
   var vertices = d3.range(100).map(function(d) {
                    return [Math.random() * size.width, Math.random() * size.height]
                  })

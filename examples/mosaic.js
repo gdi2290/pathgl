@@ -1,4 +1,4 @@
-function mosaic(selector){
+examples.mosaic = function (selector){
   var c = d3.select(selector)
           .attr(size)
           .call(pathgl)
