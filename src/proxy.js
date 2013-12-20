@@ -12,16 +12,9 @@ var proto = {
 }
 var allCircles = new Float32Array(1e6);
 
-//cx
-//cy
-//r
-//fill rgba
-//stroke rgba
-//width
-//height
-//stroke-width
-
-function renderCircles() {}
+function renderCircles() {
+  gl.circlesToRender = true
+}
 
 var baseProto = {
   querySelectorAll: noop

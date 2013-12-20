@@ -218,16 +218,9 @@ function lineTo(x, y) {
 }
 var allCircles = new Float32Array(1e6);
 
-//cx
-//cy
-//r
-//fill rgba
-//stroke rgba
-//width
-//height
-//stroke-width
-
-function renderCircles() {}
+function renderCircles() {
+  gl.circlesToRender = true
+}
 
 var baseProto = {
   querySelectorAll: noop
@@ -514,6 +507,8 @@ function rgbToNum(fill) {
   return [ c.r, c.g, c.b ].join('')
 }
 function drawCircles() {
+  if (! gl.circlesToRender) return
+  gl.circlesToRender = false
   var allCircles = canvas.__scene__
                    .filter(function (d) { return d instanceof types['circle'] })
                    .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r, rgbToNum('pink') ] })
