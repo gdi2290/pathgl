@@ -481,14 +481,17 @@ function toBuffer (array) {
 , 'varying vec3 rgb;'
 
 , 'vec3 parse_color(int n){'
-, ' return vec3(1, .5, .51);'
+// , '   float r = mod(n = n / 1000, 1) * 1000 / 255;'
+// , '   float g = mod(n = n / 1000, 1) * 1000 / 255;'
+// , '   float b = mod(n = n / 1000, 1) * 1000 / 255;'
+, '   return vec3(r, g, b);'
 , '}'
 
 , 'void main() {'
 , '    vec2 normalize = aVertexPosition.xy / resolution;'
 , '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
 , '    gl_Position = vec4(clipSpace, 1, 1);'
-, '    gl_PointSize = aVertexPosition.z / 10.0;'
+, '    gl_PointSize = aVertexPosition.z / 20.0;'
 , '    rgb = parse_color(5);'
 , '}'
 

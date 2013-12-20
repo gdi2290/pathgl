@@ -1,10 +1,11 @@
 examples.point_lighting = function (selector) {
+
   var data = d3.range(1e4).map(function() {
-               return {xloc: 0, yloc: 0, xvel: 0, yvel: 0}
+               return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
   var width = innerWidth * .7,
-      height = innerHeight
+      height = innerHeight * .9
 
   var x = d3.scale.linear()
           .domain([-5, 5])
@@ -13,8 +14,6 @@ examples.point_lighting = function (selector) {
   var y = d3.scale.linear()
           .domain([-5, 5])
           .range([0, height])
-
-  var time0 = Date.now(), time1
 
   var svg = d3.select(selector)
             .attr('height', height).attr('width', width)
@@ -42,7 +41,5 @@ examples.point_lighting = function (selector) {
     .attr("cy", function(d) { return y(d.yloc) })
     .attr("r", function(d) { return Math.min(1 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
 
-    time1 = Date.now()
-    time0 = time1
   })
 }
