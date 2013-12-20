@@ -1,5 +1,6 @@
 body {
     padding: 15px;
+    background: ;
     color: #333;
 }
 svg {
@@ -34,21 +35,15 @@ li:hover {
     color: white;
 }
 
-li:hover:after {
-content: "YEAH";    
-}
-
 .right {
     position: fixed;
     left: 200px;
     top: 0px;
 }
 
-
 .edit {
 
 }
-
 
 a {
     color: #333;

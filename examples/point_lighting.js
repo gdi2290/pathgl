@@ -38,10 +38,9 @@ examples.point_lighting = function (selector) {
 
     circle
     .attr("transform", function(d) { return "translate(" + x(d.xloc) + "," + y(d.yloc) + ")"; })
-    .attr("r", function(d) { return Math.min(1 + 1000 * Math.abs(d.xvel * d.yvel), 10); });
+    //.attr("r", function(d) { return Math.min(1 + 1000 * Math.abs(d.xvel * d.yvel), 10); });
 
     time1 = Date.now();
-    fps.text(Math.round(1000 / (time1 - time0)));
     time0 = time1;
   });
 }
