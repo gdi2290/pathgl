@@ -10,18 +10,24 @@
     "rendering",
     "motiongraphics"
   ],
+
   "author": {
     "name": "adnan wahab",
     "url": "http://adnanwahab.com"
   },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/adnan-wahab/pathgl"
   },
+
   "bugs": {
     "url": "https://github.com/adnan-wahab/pathgl/issues"
   },
-  "dependencies" : {},
+  
+  "dependencies" : {
+    "d3": "3.3.13"
+  },
   
   "devDependencies": {
     "uglify-js": "2.4.0"

@@ -1,6 +1,6 @@
 var proto = {
-  circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //point
-, ellipse: {cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //point
+  circle: { r: noop, cx: noop, cy: noop, render: renderCircles }
+, ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse }
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: points } //lines
