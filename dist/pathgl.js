@@ -60,43 +60,7 @@ function pathgl(canvas) {
     canvas
 
   if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas')
-;var circleVertex = [
-  'precision mediump float;'
-, 'attribute vec3 aVertexPosition;'
-, "uniform vec2 resolution;"
-, 'void main() {'
-, "    vec2 normalize = aVertexPosition.xy / resolution;"
-, "    vec2 clipSpace = (normalize * 2.0) - 1.0;"
-, "    gl_Position = vec4(clipSpace, 1, 1);"
-, '    gl_PointSize = 20.0;'
-, '}'
-].join('\n')
-
-
-var ccccfff = [
-  'precision mediump float;'
-, 'void main() {'
-, 'if (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard;'
-, 'gl_FragColor = vec4(noise1(),0,0,1);'
-, '}'
-].join('\n')
-
-var circleFragment = [
-  'precision mediump float;'
-,'float adnan(vec2 co){'
-, '    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);'
-, '}'
-, 'void main() {'
-, 'float dist = distance(gl_PointCoord, vec2(0.5));'
-, 'if (dist > 0.5) discard;'
-//, '    if (distance(gl_PointCoord, vec2(0.5)) > 0.4) gl_FragColor = vec4(.5, 1, 0, 1);'
-//, '		 else gl_FragColor = vec4(1, .5 ,1, 1);'
-, 'float alpha = 1.0 - smoothstep(0.45, 0.5, dist);'
-, 'gl_FragColor = vec4(dist, .8 - dist, .8, 1.1-dist);'
-, '}'
-].join('\n')
-
-var stopRendering = false
+;var stopRendering = false
 
 pathgl.stop = function () { stopRendering = true }
 
@@ -445,28 +409,7 @@ function runLoop(elapsed) {
   })
     canvas.__scene__.forEach(function (node) { node.render() })
   drawCircles()
-  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-}
-
-var cacheCircles
-function drawCircles() {
-  var allCircles = canvas.__scene__
-                   .filter(function (d) { return d instanceof types['circle'] })
-                   .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r] })
-  var prog = programs.circle
-  gl.useProgram(prog)
-  allCircles = allCircles.reduce(function (buffer, circle, i) {
-                 buffer[i * 2] = circle[0]
-                 buffer[2 * i + 1] = circle[1]
-                 //buffer[i * 3] = circle[2]
-                 return buffer
-               }, cacheCircles || (cacheCircles = new Float32Array(allCircles.length * 2)))
-  window.ac = allCircles
-	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, allCircles, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
-	gl.enableVertexAttribArray(0);
-  gl.drawArrays(gl.POINTS, 0, allCircles.length / 2)
+  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
 function addToBuffer(datum) {

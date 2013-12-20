@@ -10,28 +10,7 @@ function runLoop(elapsed) {
   })
     canvas.__scene__.forEach(function (node) { node.render() })
   drawCircles()
-  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-}
-
-var cacheCircles
-function drawCircles() {
-  var allCircles = canvas.__scene__
-                   .filter(function (d) { return d instanceof types['circle'] })
-                   .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r] })
-  var prog = programs.circle
-  gl.useProgram(prog)
-  allCircles = allCircles.reduce(function (buffer, circle, i) {
-                 buffer[i * 2] = circle[0]
-                 buffer[2 * i + 1] = circle[1]
-                 //buffer[i * 3] = circle[2]
-                 return buffer
-               }, cacheCircles || (cacheCircles = new Float32Array(allCircles.length * 2)))
-  window.ac = allCircles
-	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, allCircles, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
-	gl.enableVertexAttribArray(0);
-  gl.drawArrays(gl.POINTS, 0, allCircles.length / 2)
+  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
 function addToBuffer(datum) {

@@ -1,5 +1,5 @@
 examples.point_lighting = function (selector) {
-  var data = d3.range(50).map(function() {
+  var data = d3.range(6.5e3).map(function() {
                return {xloc: 0, yloc: 0, xvel: 0, yvel: 0}
              })
 
@@ -40,7 +40,7 @@ examples.point_lighting = function (selector) {
     circle
     .attr("cx", function(d) { return x(d.xloc) })
     .attr("cy", function(d) { return y(d.yloc) })
-    //.attr("r", function(d) { return Math.min(1 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
+    .attr("r", function(d) { return Math.min(1 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
 
     time1 = Date.now()
     time0 = time1

@@ -49,3 +49,10 @@ a {
     color: #333;
     text-decoration: none;
 }
+
+
+svg{
+    position: relative;
+    top: 0px;
+    left: 30%;
+}

@@ -18,6 +18,7 @@ function build(_, file) {
              , 'parse.js'
              , 'proxy.js'
              , 'render.js'
+             , 'circle.js'
              , 'shader.js'
              , 'util.js'
              , 'end.js'
