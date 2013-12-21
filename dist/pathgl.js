@@ -505,7 +505,7 @@ var circleFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    if (dist > 0.4) gl_FragColor = vec4(vstroke, 1.);'
+, '    if (dist > 0.42) gl_FragColor = vec4(vstroke, 1.);'
 , '    else gl_FragColor = vec4(rgb, 1.0);'
 , '}'
 ].join('\n')
@@ -527,7 +527,7 @@ function drawCircles() {
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
   var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4)), c
-  program.setstroke(packRgb('pink'))
+  //program.setstroke(packRgb('pink'))
   for(var i = 0; i < models.length;) {
     var j = i * 4
     c = models[i++]
