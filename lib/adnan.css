@@ -30,11 +30,6 @@ li {
     list-style:none;
 }
 
-li:hover {
-    background: black;
-    color: white;
-}
-
 .right {
     position: fixed;
     left: 200px;
@@ -50,9 +45,16 @@ a {
     text-decoration: none;
 }
 
+a:hover {
+    background: grey;
+    color: white;
+    width: 100%;
+}
 
-svg{
+
+svg {
     position: relative;
     top: 0px;
     left: 30%;
+    pointer-events: none;
 }
