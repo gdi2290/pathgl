@@ -27,9 +27,12 @@ body {
     height: 100%;
 }
 
-li {
+div, li {
     list-style:none;
+    overflow: hidden;
 }
+
+
 
 .right {
     position: fixed;
