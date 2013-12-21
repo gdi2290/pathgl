@@ -16,7 +16,7 @@ function renderCircles() {
   gl.circlesToRender = true
 }
 
-var baseProto = {
+var baseProto = extend(Object.create(null), {
   querySelectorAll: noop
 , querySelector: noop
 , createElementNS: noop
@@ -135,7 +135,7 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var self = new types[el.tagName.toLowerCase()]
+  var self = Object.create(types[el.tagName.toLowerCase()])
   canvas.__scene__.push(self)
 
   self.attr = Object.create(attrDefaults)
