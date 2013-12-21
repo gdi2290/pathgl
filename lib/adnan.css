@@ -2,6 +2,7 @@ body {
     padding: 15px;
     background: ;
     color: #333;
+    font: .8em "freight-sans-pro", sans-serif;
 }
 svg {
     margin-top: -500px;
@@ -41,8 +42,10 @@ li {
 }
 
 a {
+    padding: 9px 12px;
     color: #333;
     text-decoration: none;
+    display: block;
 }
 
 a:hover {
@@ -51,6 +54,12 @@ a:hover {
     width: 100%;
 }
 
+
+ul {
+    padding: 0px;
+    margin: 0px;
+    
+}
 
 svg {
     position: relative;

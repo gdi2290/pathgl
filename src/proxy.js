@@ -10,7 +10,8 @@ var proto = {
 , text: { x: noop, y: noop, dx: noop, dy: noop } //...
 , g: { appendChild: noop } //fake
 }
-var allCircles = new Float32Array(1e6);
+
+var allCircles = new Float32Array(1e6)
 
 function renderCircles() {
   gl.circlesToRender = true
@@ -45,23 +46,23 @@ var baseProto = extend(Object.create(null), {
     isId(val) && initShader(d3.select(val).text(), val)
   }
 
-  , getAttribute: function (name) {
-      return this.attr[name]
-    }
-
-  , setAttribute: function (name, value) {
-      this.attr[name] = value
-      this[name] && this[name](value)
-    }
-
-  , removeAttribute: function (name) {
-      delete this.attr[name]
-    }
-
-  , textContent: noop
-  , removeEventListener: noop
-  , addEventListener: event
+, getAttribute: function (name) {
+    return this.attr[name]
   }
+
+, setAttribute: function (name, value) {
+    this.attr[name] = value
+    this[name] && this[name](value)
+  }
+
+, removeAttribute: function (name) {
+    delete this.attr[name]
+  }
+
+, textContent: noop
+, removeEventListener: noop
+, addEventListener: event
+})
 
 var roundedCorner = noop
 
