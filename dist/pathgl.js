@@ -7,6 +7,7 @@ pathgl.shaderParameters = {
 , opacity: [1]
 , resolution: [0, 0]
 , scale: [1, 1]
+, stroke: [0]
 , mouse: pathgl.mouse = [0, 0]
 }
 
@@ -133,8 +134,11 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  var loc = program[key] || (program[key] = gl.getUniformLocation(program, key))
-  gl['uniform' + val.length + 'fv'](loc, val)
+  var loc = program[key] || (program[key] = gl.getUniformLocation(program, key)), method = 'set' + key
+  program[method] = function (data) {
+    gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
+  }
+  program[method](val)
 }
 
 function initContext(canvas) {
@@ -472,41 +476,45 @@ function toBuffer (array) {
   'precision mediump float;'
 , 'attribute vec4 attr;'
 , 'uniform vec2 resolution;'
+, 'uniform float stroke;'
+
+, 'varying vec3 vstroke;'
 , 'varying vec3 rgb;'
-, 'void parse_color() {'
-, '    float f = attr.w;'
+, 'vec3 parse_color(float f) {'
 , '    vec3 color;'
 , '    color.b = mod(f, 1e3);'
 , '    color.g = mod(f / 1e3, 1e3);'
 , '    color.r = mod(f / 1e6, 1e3);'
-, '    rgb = (color - 100.) / 255.;'
-
+, '    return(color - 100.) / 255.;'
 , '}'
+
 , 'void main() {'
 , '    vec2 normalize = attr.xy / resolution;'
 , '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
 , '    gl_Position = vec4(clipSpace, 1, 1);'
 , '    gl_PointSize = attr.z * 5.;'
-, '    parse_color();'
+, '    vstroke = parse_color(stroke);'
+, '    rgb = parse_color(attr.w);'
 , '}'
 ].join('\n')
 
 var circleFragment = [
   'precision mediump float;'
 , 'varying vec3 rgb;'
+, 'varying vec3 vstroke;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    float alpha = 1.0 - smoothstep(0.47, 0.5, dist);'
-, '    gl_FragColor = vec4(rgb, alpha);'
+, '    if (dist > 0.4) gl_FragColor = vec4(vstroke, 1.);'
+, '    else gl_FragColor = vec4(rgb, 1.0);'
 , '}'
 ].join('\n')
 
 var vbo
 var packCache = {}
 function packRgb(fill) {
-  return packCache[fill] ||
-    (packCache[fill] = d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join(''))
+  return + (packCache[fill] ||
+            (packCache[fill] = d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
 function drawCircles() {
@@ -518,9 +526,8 @@ function drawCircles() {
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-
-  var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4))
-    , c
+  var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4)), c
+  program.setstroke(packRgb('pink'))
   for(var i = 0; i < models.length;) {
     var j = i * 4
     c = models[i++]
@@ -542,6 +549,7 @@ function drawCircles() {
 , opacity: [1]
 , resolution: [0, 0]
 , scale: [1, 1]
+, stroke: [0]
 , mouse: pathgl.mouse = [0, 0]
 }
 

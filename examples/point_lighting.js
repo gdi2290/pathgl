@@ -39,6 +39,6 @@ examples.point_lighting = function (selector) {
     .attr("cx", function(d) { return x(d.xloc) })
     .attr("cy", function(d) { return y(d.yloc) })
     .attr("r", function(d) { return Math.min(1 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
-    .attr("fill", function (d) { return d.xvel> d.yvel ? 'aliceblue' : 'steelblue' })
+    .attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
   })
 }

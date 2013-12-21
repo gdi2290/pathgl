@@ -6,6 +6,7 @@ pathgl.shaderParameters = {
 , opacity: [1]
 , resolution: [0, 0]
 , scale: [1, 1]
+, stroke: [0]
 , mouse: pathgl.mouse = [0, 0]
 }
 
