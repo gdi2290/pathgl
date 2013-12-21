@@ -216,13 +216,14 @@ function lineTo(x, y) {
 , text: { x: noop, y: noop, dx: noop, dy: noop } //...
 , g: { appendChild: noop } //fake
 }
-var allCircles = new Float32Array(1e6);
+
+var allCircles = new Float32Array(1e6)
 
 function renderCircles() {
   gl.circlesToRender = true
 }
 
-var baseProto = {
+var baseProto = extend(Object.create(null), {
   querySelectorAll: noop
 , querySelector: noop
 , createElementNS: noop
@@ -251,23 +252,23 @@ var baseProto = {
     isId(val) && initShader(d3.select(val).text(), val)
   }
 
-  , getAttribute: function (name) {
-      return this.attr[name]
-    }
-
-  , setAttribute: function (name, value) {
-      this.attr[name] = value
-      this[name] && this[name](value)
-    }
-
-  , removeAttribute: function (name) {
-      delete this.attr[name]
-    }
-
-  , textContent: noop
-  , removeEventListener: noop
-  , addEventListener: event
+, getAttribute: function (name) {
+    return this.attr[name]
   }
+
+, setAttribute: function (name, value) {
+    this.attr[name] = value
+    this[name] && this[name](value)
+  }
+
+, removeAttribute: function (name) {
+    delete this.attr[name]
+  }
+
+, textContent: noop
+, removeEventListener: noop
+, addEventListener: event
+})
 
 var roundedCorner = noop
 
@@ -341,7 +342,7 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var self = new types[el.tagName.toLowerCase()]
+  var self = Object.create(types[el.tagName.toLowerCase()].prototype)
   canvas.__scene__.push(self)
 
   self.attr = Object.create(attrDefaults)
@@ -476,7 +477,7 @@ function toBuffer (array) {
 , '   float r = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
 , '   float g = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
 , '   float b = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
-, '   return vec3(1.0, 1.0, .5);'
+, '   return vec3(r, g, .5);'
 , '}'
 
 , 'void main() {'

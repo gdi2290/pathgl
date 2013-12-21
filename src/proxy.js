@@ -136,7 +136,7 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var self = Object.create(types[el.tagName.toLowerCase()])
+  var self = Object.create(types[el.tagName.toLowerCase()].prototype)
   canvas.__scene__.push(self)
 
   self.attr = Object.create(attrDefaults)
