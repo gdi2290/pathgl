@@ -33,7 +33,7 @@ function drawBuffer(buffer, type) {
 
 function swapProgram(name) {
   gl.useProgram(program = programs[name])
-  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+  program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 }
 

@@ -22,7 +22,7 @@ pathgl.fragment = [ "precision mediump float;"
                   ].join('\n')
 
 pathgl.vertex = [ "precision mediump float;"
-                , "attribute vec3 aVertexPosition;"
+                , "attribute vec3 attr;"
                 , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
@@ -30,7 +30,7 @@ pathgl.vertex = [ "precision mediump float;"
 
                 , "void main(void) {"
 
-                , "vec3 pos = aVertexPosition;"
+                , "vec3 pos = attr;"
                 , "pos.y = resolution.y - pos.y;"
 
                 , "vec3 scaled_position = pos * vec3(scale, 1.0);"
@@ -125,7 +125,7 @@ function createProgram(vs, fs) {
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   each(pathgl.shaderParameters, bindUniform)
-  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+  program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 
   program.name = name
@@ -426,7 +426,7 @@ function drawBuffer(buffer, type) {
 
 function swapProgram(name) {
   gl.useProgram(program = programs[name])
-  program.vertexPosition = gl.getAttribLocation(program, "aVertexPosition")
+  program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 }
 
@@ -470,22 +470,24 @@ function toBuffer (array) {
 }
 ;var circleVertex = [
   'precision mediump float;'
-, 'attribute vec4 aVertexPosition;'
+, 'attribute vec4 attr;'
 , 'uniform vec2 resolution;'
 , 'varying vec3 rgb;'
-, 'vec3 parse_color(float n){'
-, '   float r = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
-, '   float g = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
-, '   float b = mod(n *= .001, 1.0) * 1000.0 / 255.0;'
-, '   return vec3(r, g, .5);'
-, '}'
+, 'void parse_color() {'
+, '    float f = attr.w;'
+, '    vec3 color;'
+, '    color.b = mod(f, 1e3);'
+, '    color.g = mod(f / 1e3, 1e3);'
+, '    color.r = mod(f / 1e6, 1e3);'
+, '    rgb = (color - 100.) / 255.;'
 
+, '}'
 , 'void main() {'
-, '    vec2 normalize = aVertexPosition.xy / resolution;'
+, '    vec2 normalize = attr.xy / resolution;'
 , '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
 , '    gl_Position = vec4(clipSpace, 1, 1);'
-, '    gl_PointSize = aVertexPosition.z / 20.0;'
-, '    rgb = parse_color(5.0);'
+, '    gl_PointSize = attr.z * 5.;'
+, '    parse_color();'
 , '}'
 ].join('\n')
 
@@ -500,35 +502,38 @@ var circleFragment = [
 , '}'
 ].join('\n')
 
-var cacheCircles
-
-function rgbToNum(fill) {
-  var c = d3.rgb(fill)
-  window.y = [ c.r, c.g, c.b ].join('')
-  return [ c.r, c.g, c.b ].join('')
+var vbo
+var packCache = {}
+function packRgb(fill) {
+  return packCache[fill] ||
+    (packCache[fill] = d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join(''))
 }
+
 function drawCircles() {
   if (! gl.circlesToRender) return
   gl.circlesToRender = false
-  var allCircles = canvas.__scene__
+  var models = canvas.__scene__
                    .filter(function (d) { return d instanceof types['circle'] })
-                   .map(function (d) { return [d.attr.cx, d.attr.cy, d.attr.r, rgbToNum('pink') ] })
+                   .map(function (d) { return d.attr  })
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-  allCircles = allCircles.reduce(function (buffer, circle, i) {
-                 buffer[i * 1] = circle[0]
-                 buffer[i * 2] = circle[1]
-                 buffer[i * 3] = circle[2]
-                 buffer[i * 4] = circle[4]
-                 return buffer
-               }, cacheCircles || (cacheCircles = new Float32Array(allCircles.length * 4)))
 
+  var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4))
+    , c
+  for(var i = 0; i < models.length;) {
+    var j = i * 4
+    c = models[i++]
+    buffer[j++] = c.cx
+    buffer[j++] = c.cy
+    buffer[j++] = c.r
+    buffer[j++] = packRgb(c.fill)
+  }
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, allCircles, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0)
+  gl.bufferData(gl.ARRAY_BUFFER, vbo, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
 	gl.enableVertexAttribArray(0);
-  gl.drawArrays(gl.POINTS, 0, allCircles.length / 4)
+  gl.drawArrays(gl.POINTS, 0, models.length)
 };pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
@@ -552,7 +557,7 @@ pathgl.fragment = [ "precision mediump float;"
                   ].join('\n')
 
 pathgl.vertex = [ "precision mediump float;"
-                , "attribute vec3 aVertexPosition;"
+                , "attribute vec3 attr;"
                 , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
@@ -560,7 +565,7 @@ pathgl.vertex = [ "precision mediump float;"
 
                 , "void main(void) {"
 
-                , "vec3 pos = aVertexPosition;"
+                , "vec3 pos = attr;"
                 , "pos.y = resolution.y - pos.y;"
 
                 , "vec3 scaled_position = pos * vec3(scale, 1.0);"

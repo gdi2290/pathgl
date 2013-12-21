@@ -21,7 +21,7 @@ pathgl.fragment = [ "precision mediump float;"
                   ].join('\n')
 
 pathgl.vertex = [ "precision mediump float;"
-                , "attribute vec3 aVertexPosition;"
+                , "attribute vec3 attr;"
                 , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
@@ -29,7 +29,7 @@ pathgl.vertex = [ "precision mediump float;"
 
                 , "void main(void) {"
 
-                , "vec3 pos = aVertexPosition;"
+                , "vec3 pos = attr;"
                 , "pos.y = resolution.y - pos.y;"
 
                 , "vec3 scaled_position = pos * vec3(scale, 1.0);"
