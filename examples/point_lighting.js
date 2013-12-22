@@ -1,6 +1,6 @@
 examples.point_lighting = function (selector) {
 
-  var data = d3.range(1e3).map(function() {
+  var data = d3.range(1e4).map(function() {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
@@ -39,7 +39,6 @@ examples.point_lighting = function (selector) {
     .attr("cx", function(d) { return x(d.xloc) })
     .attr("cy", function(d) { return y(d.yloc) })
     .attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
-
     //.attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
   })
 }

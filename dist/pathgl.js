@@ -444,7 +444,6 @@ function event (type, listener) {
 };//render points
 //render lines
 //render linefills
-
 var time1 = Date.now()
 var frames = {}
 pathgl.frameCounter = frames
@@ -459,26 +458,31 @@ function drawLoop(elapsed) {
     program.setmouse(pathgl.mouse)
   })
 
+  beforeRender()
+  //canvas.__scene__.forEach(function (node) { node.render() })
+  drawPoints(elapsed)
+  //drawStrokes(elapsed)
+  //drawPolygons(elapsed)
+  afterRender()
+
+  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+}
+
+function beforeRender() {
   gl.colorMask(true, true, true, true);
   gl.depthMask(true);
   gl.clearColor(1,1,1,0);
   gl.clearDepth(1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
   // gl.enable(gl.CULL_FACE);
-  // //gl.enable(gl.DEPTH_TEST);
-
-  //canvas.__scene__.forEach(function (node) { node.render() })
-  drawPoints(elapsed)
-  //drawStrokes(elapsed)
-  //drawPolygons(elapsed)
-
+  //gl.enable(gl.DEPTH_TEST);
+}
+function afterRender() {
   gl.colorMask(false, false, false, true);
   gl.clearColor(0,0,0,1);
   gl.clear(gl.COLOR_BUFFER_BIT);
-
-  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
+
 
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
@@ -585,8 +589,6 @@ function packRgb(fill) {
 }
 
 function drawPoints(elapsed) {
-  if (! gl.circlesToRender) return
-  gl.circlesToRender = false
   var models = canvas.__scene__
                    .filter(function (d) { return d instanceof types['circle'] })
                    .map(function (d) { return d.attr  })
@@ -611,7 +613,6 @@ function drawPoints(elapsed) {
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   //gl.enableVertexAttribArray(0);
   gl.drawArrays(gl.POINTS, 0, models.length)
-
   // var buffer2 = new Float32Array(models.length * 4)
   // for(var i = 0; i < models.length;) {
   //   var j = i * 4
