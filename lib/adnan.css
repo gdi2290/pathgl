@@ -4,9 +4,6 @@ body {
     color: #333;
     font: .8em "freight-sans-pro", sans-serif;
 }
-svg {
-    margin-top: -500px;
-}
 
 body {
     padding: 15px;
@@ -32,16 +29,12 @@ div, li {
     overflow: hidden;
 }
 
-
-
 .right {
     position: fixed;
     left: 200px;
     top: 0px;
-}
-
-.edit {
-
+    height: 100%;
+    width: 100%;
 }
 
 a {
@@ -61,12 +54,15 @@ a:hover {
 ul {
     padding: 0px;
     margin: 0px;
-    
 }
 
-svg {
-    position: relative;
+.edit, canvas, svg {
+    position: absolute; 
     top: 0px;
-    left: 30%;
+    left: 0px;
+    padding-left: 1px;
+}
+
+canvas {
     pointer-events: none;
 }
