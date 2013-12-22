@@ -1,7 +1,15 @@
 //render points
 //render lines
 //render linefills
+
+var time1 = Date.now()
+var frames = {}
+pathgl.frameCounter = frames
 function drawLoop(elapsed) {
+  var dt = elapsed - time1
+  frames[dt] = (frames[dt] || (frames[dt] = 0)) + 1
+  time1 = elapsed
+
   each(programs, function (program, key) {
     gl.useProgram(program)
     program.settime(pathgl.time = elapsed / 1000)
@@ -18,7 +26,7 @@ function drawLoop(elapsed) {
   // //gl.enable(gl.DEPTH_TEST);
 
   canvas.__scene__.forEach(function (node) { node.render() })
-  drawCircles()
+  drawCircles(elapsed)
   gl.colorMask(false, false, false, true);
   gl.clearColor(0,0,0,1);
   gl.clear(gl.COLOR_BUFFER_BIT);

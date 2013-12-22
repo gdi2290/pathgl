@@ -64,11 +64,11 @@ function createProgram(vs, fs) {
 
   each(pathgl.shaderParameters, bindUniform)
 
-  program.testvert = gl.getAttribLocation(program, "testvert")
-  //gl.enableVertexAttribArray(program.testvert)
-
   program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
+
+  program.testvert = gl.getAttribLocation(program, "testvert")
+  //gl.enableVertexAttribArray(program.testvert)
 
   program.name = name
   return program

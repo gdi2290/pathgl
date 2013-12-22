@@ -1,6 +1,6 @@
 examples.point_lighting = function (selector) {
 
-  var data = d3.range(6e3).map(function() {
+  var data = d3.range(1e3).map(function() {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
