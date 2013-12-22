@@ -23,6 +23,7 @@ pathgl.fragment = [ "precision mediump float;"
 
 pathgl.vertex = [ "precision mediump float;"
                 , "attribute vec3 attr;"
+                , "attribute vec3 testvert;"
                 , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"

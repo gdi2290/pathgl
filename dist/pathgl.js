@@ -24,6 +24,7 @@ pathgl.fragment = [ "precision mediump float;"
 
 pathgl.vertex = [ "precision mediump float;"
                 , "attribute vec3 attr;"
+                , "attribute vec3 testvert;"
                 , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"
@@ -126,6 +127,10 @@ function createProgram(vs, fs) {
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   each(pathgl.shaderParameters, bindUniform)
+
+  program.testvert = gl.getAttribLocation(program, "testvert")
+  //gl.enableVertexAttribArray(program.testvert)
+
   program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 
@@ -134,11 +139,10 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  var loc = program[key] || (program[key] = gl.getUniformLocation(program, key)), method = 'set' + key
-  program[method] = function (data) {
+  var loc = gl.getUniformLocation(program, key)
+  ;(program['set' + key] = function (data) {
     gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
-  }
-  program[method](val)
+  })(val)
 }
 
 function initContext(canvas) {
@@ -237,10 +241,20 @@ obj  = {
 //flat scene
 //tree
 //-> buffers
+
+//12 fill
+//12 stroke
+
+//9999.99, 9999.99
+//9999.99, 9999.99
+//12 w, h
+//12 x, y
+//12 rx ,ry
 var proto = {
   circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
-, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
+, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+
 , image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
 
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
@@ -520,6 +534,7 @@ function toBuffer (array) {
 ;var circleVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
+, 'attribute vec4 testvert;'
 , 'uniform vec2 resolution;'
 , 'varying vec3 rgb;'
 , 'vec3 parse_color(float f) {'
@@ -567,7 +582,7 @@ function drawCircles() {
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-  var c, buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4))
+  var c, buffer = (vbo = new Float32Array(models.length * 4))
 
   program.setstroke([0,0,0,0])
 
@@ -580,12 +595,26 @@ function drawCircles() {
     buffer[j++] = packRgb(c.fill)
   }
 
+
+  var buffer2 = new Float32Array(models.length * 4)
+  for(var i = 0; i < models.length;) {
+    var j = i * 4
+    c = models[i++]
+    buffer2[j++] = c.cy
+    buffer2[j++] = c.cx
+    buffer2[j++] = Math.random() * 51
+    buffer2[j++] = packRgb(c.fill)
+  }
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, vbo, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
 	gl.enableVertexAttribArray(0);
   gl.drawArrays(gl.POINTS, 0, models.length)
-};pathgl.shaderParameters = {
+}
+
+//vbo && vbo.length != models.length ? vbo :
+;pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
 , time: [0]
@@ -610,6 +639,7 @@ pathgl.fragment = [ "precision mediump float;"
 
 pathgl.vertex = [ "precision mediump float;"
                 , "attribute vec3 attr;"
+                , "attribute vec3 testvert;"
                 , "uniform vec2 translate;"
                 , "uniform vec2 resolution;"
                 , "uniform vec2 rotation;"

@@ -1,6 +1,7 @@
 var circleVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
+, 'attribute vec4 testvert;'
 , 'uniform vec2 resolution;'
 , 'varying vec3 rgb;'
 , 'vec3 parse_color(float f) {'
@@ -48,7 +49,7 @@ function drawCircles() {
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-  var c, buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4))
+  var c, buffer = (vbo = new Float32Array(models.length * 4))
 
   program.setstroke([0,0,0,0])
 
@@ -61,9 +62,22 @@ function drawCircles() {
     buffer[j++] = packRgb(c.fill)
   }
 
+
+  var buffer2 = new Float32Array(models.length * 4)
+  for(var i = 0; i < models.length;) {
+    var j = i * 4
+    c = models[i++]
+    buffer2[j++] = c.cy
+    buffer2[j++] = c.cx
+    buffer2[j++] = Math.random() * 51
+    buffer2[j++] = packRgb(c.fill)
+  }
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, vbo, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
 	gl.enableVertexAttribArray(0);
   gl.drawArrays(gl.POINTS, 0, models.length)
 }
+
+//vbo && vbo.length != models.length ? vbo :

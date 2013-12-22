@@ -63,6 +63,10 @@ function createProgram(vs, fs) {
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   each(pathgl.shaderParameters, bindUniform)
+
+  program.testvert = gl.getAttribLocation(program, "testvert")
+  //gl.enableVertexAttribArray(program.testvert)
+
   program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 
@@ -71,11 +75,10 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  var loc = program[key] || (program[key] = gl.getUniformLocation(program, key)), method = 'set' + key
-  program[method] = function (data) {
+  var loc = gl.getUniformLocation(program, key)
+  ;(program['set' + key] = function (data) {
     gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
-  }
-  program[method](val)
+  })(val)
 }
 
 function initContext(canvas) {

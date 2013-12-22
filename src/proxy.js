@@ -27,10 +27,20 @@ obj  = {
 //flat scene
 //tree
 //-> buffers
+
+//12 fill
+//12 stroke
+
+//9999.99, 9999.99
+//9999.99, 9999.99
+//12 w, h
+//12 x, y
+//12 rx ,ry
 var proto = {
   circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
-, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
+, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+
 , image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
 
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
