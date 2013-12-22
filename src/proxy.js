@@ -1,14 +1,46 @@
+var k = {
+  points:[]
+, lineStrokes: []
+, lineFills: []
+}
+
+obj  = {
+  schema: ['cx', 'cy', 'r', 'rgba']
+, index: 1
+
+, buffer: []
+, getIndex: function (n) {
+    var i = this.schema.indexOf(n)
+    return ~i && this.index + i
+  }
+, setAttribute: function (n, v) {
+    this.getIndex(n)
+    this.buffer[n] = v
+  }
+
+, getAttribute: function (n) {
+    return this.buffer[this.index + this.schema.indexOf(n)]
+  }
+}
+
+//2
+//flat scene
+//tree
+//-> buffers
 var proto = {
-  circle: { r: noop, cx: noop, cy: noop, render: renderCircles }
-, ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse }
+  circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
+, ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
+, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
+, image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
+
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: points } //lines
 , polyline: { points: points } //lines
-, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
-, image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
-, text: { x: noop, y: noop, dx: noop, dy: noop } //...
+
 , g: { appendChild: noop } //fake
+
+, text: { x: noop, y: noop, dx: noop, dy: noop } //umm
 }
 
 var allCircles = new Float32Array(1e6)

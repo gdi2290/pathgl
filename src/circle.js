@@ -48,9 +48,10 @@ function drawCircles() {
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-  var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4)), c
+  var c, buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4))
 
   program.setstroke([0,0,0,0])
+
   for(var i = 0; i < models.length;) {
     var j = i * 4
     c = models[i++]
@@ -59,6 +60,7 @@ function drawCircles() {
     buffer[j++] = c.r
     buffer[j++] = packRgb(c.fill)
   }
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, vbo, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)

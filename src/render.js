@@ -1,7 +1,6 @@
 //render points
 //render lines
 //render linefills
-
 function drawLoop(elapsed) {
   each(programs, function (program, key) {
     gl.useProgram(program)
@@ -23,7 +22,7 @@ function drawLoop(elapsed) {
   gl.colorMask(false, false, false, true);
   gl.clearColor(0,0,0,1);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  
+
   return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 

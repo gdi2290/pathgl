@@ -208,17 +208,49 @@ function closePath(next) {
 function lineTo(x, y) {
   this.push(x, y, 0)
 }
-;var proto = {
-  circle: { r: noop, cx: noop, cy: noop, render: renderCircles }
-, ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse }
+;var k = {
+  points:[]
+, lineStrokes: []
+, lineFills: []
+}
+
+obj  = {
+  schema: ['cx', 'cy', 'r', 'rgba']
+, index: 1
+
+, buffer: []
+, getIndex: function (n) {
+    var i = this.schema.indexOf(n)
+    return ~i && this.index + i
+  }
+, setAttribute: function (n, v) {
+    this.getIndex(n)
+    this.buffer[n] = v
+  }
+
+, getAttribute: function (n) {
+    return this.buffer[this.index + this.schema.indexOf(n)]
+  }
+}
+
+//2
+//flat scene
+//tree
+//-> buffers
+var proto = {
+  circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
+, ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
+, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
+, image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
+
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: points } //lines
 , polyline: { points: points } //lines
-, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner } //point
-, image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
-, text: { x: noop, y: noop, dx: noop, dy: noop } //...
+
 , g: { appendChild: noop } //fake
+
+, text: { x: noop, y: noop, dx: noop, dy: noop } //umm
 }
 
 var allCircles = new Float32Array(1e6)
@@ -398,7 +430,6 @@ function event (type, listener) {
 };//render points
 //render lines
 //render linefills
-
 function drawLoop(elapsed) {
   each(programs, function (program, key) {
     gl.useProgram(program)
@@ -420,7 +451,7 @@ function drawLoop(elapsed) {
   gl.colorMask(false, false, false, true);
   gl.clearColor(0,0,0,1);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  
+
   return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
@@ -536,9 +567,10 @@ function drawCircles() {
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-  var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4)), c
+  var c, buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4))
 
   program.setstroke([0,0,0,0])
+
   for(var i = 0; i < models.length;) {
     var j = i * 4
     c = models[i++]
@@ -547,6 +579,7 @@ function drawCircles() {
     buffer[j++] = c.r
     buffer[j++] = packRgb(c.fill)
   }
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, vbo, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
