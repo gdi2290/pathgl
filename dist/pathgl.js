@@ -468,8 +468,11 @@ function drawLoop(elapsed) {
   // gl.enable(gl.CULL_FACE);
   // //gl.enable(gl.DEPTH_TEST);
 
-  canvas.__scene__.forEach(function (node) { node.render() })
-  drawCircles(elapsed)
+  //canvas.__scene__.forEach(function (node) { node.render() })
+  drawPoints(elapsed)
+  //drawStrokes(elapsed)
+  //drawPolygons(elapsed)
+
   gl.colorMask(false, false, false, true);
   gl.clearColor(0,0,0,1);
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -581,9 +584,7 @@ function packRgb(fill) {
             (packCache[fill] = d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-function drawCircles(elapsed) {
-
-
+function drawPoints(elapsed) {
   if (! gl.circlesToRender) return
   gl.circlesToRender = false
   var models = canvas.__scene__
@@ -628,7 +629,7 @@ function drawCircles(elapsed) {
 }
 
 //vbo && vbo.length != models.length ? vbo :
-;pathgl.shaderParameters = {
+;;;pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
 , time: [0]

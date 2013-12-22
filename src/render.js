@@ -25,8 +25,11 @@ function drawLoop(elapsed) {
   // gl.enable(gl.CULL_FACE);
   // //gl.enable(gl.DEPTH_TEST);
 
-  canvas.__scene__.forEach(function (node) { node.render() })
-  drawCircles(elapsed)
+  //canvas.__scene__.forEach(function (node) { node.render() })
+  drawPoints(elapsed)
+  //drawStrokes(elapsed)
+  //drawPolygons(elapsed)
+
   gl.colorMask(false, false, false, true);
   gl.clearColor(0,0,0,1);
   gl.clear(gl.COLOR_BUFFER_BIT);
