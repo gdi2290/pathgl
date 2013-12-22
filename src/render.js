@@ -14,8 +14,8 @@ function drawLoop(elapsed) {
   gl.clearDepth(1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
-  gl.enable(gl.CULL_FACE);
-  //gl.enable(gl.DEPTH_TEST);
+  // gl.enable(gl.CULL_FACE);
+  // //gl.enable(gl.DEPTH_TEST);
 
   canvas.__scene__.forEach(function (node) { node.render() })
   drawCircles()
