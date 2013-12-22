@@ -402,11 +402,25 @@ function event (type, listener) {
 function drawLoop(elapsed) {
   each(programs, function (program, key) {
     gl.useProgram(program)
-    program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
-    program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
+    program.settime(pathgl.time = elapsed / 1000)
+    program.setmouse(pathgl.mouse)
   })
-    canvas.__scene__.forEach(function (node) { node.render() })
+
+  gl.colorMask(true, true, true, true);
+  gl.depthMask(true);
+  gl.clearColor(1,1,1,0);
+  gl.clearDepth(1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+  gl.enable(gl.CULL_FACE);
+  //gl.enable(gl.DEPTH_TEST);
+
+  canvas.__scene__.forEach(function (node) { node.render() })
   drawCircles()
+  gl.colorMask(false, false, false, true);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  console.log(123)
   return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
@@ -476,9 +490,6 @@ function toBuffer (array) {
   'precision mediump float;'
 , 'attribute vec4 attr;'
 , 'uniform vec2 resolution;'
-, 'uniform float stroke;'
-
-, 'varying vec3 vstroke;'
 , 'varying vec3 rgb;'
 , 'vec3 parse_color(float f) {'
 , '    vec3 color;'
@@ -492,8 +503,7 @@ function toBuffer (array) {
 , '    vec2 normalize = attr.xy / resolution;'
 , '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
 , '    gl_Position = vec4(clipSpace, 1, 1);'
-, '    gl_PointSize = attr.z * 5.;'
-, '    vstroke = parse_color(stroke);'
+, '    gl_PointSize = attr.z * 2.;'
 , '    rgb = parse_color(attr.w);'
 , '}'
 ].join('\n')
@@ -501,16 +511,16 @@ function toBuffer (array) {
 var circleFragment = [
   'precision mediump float;'
 , 'varying vec3 rgb;'
-, 'varying vec3 vstroke;'
+, 'uniform vec4 vstroke;'
+, 'uniform float opacity;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    if (dist > 0.42) gl_FragColor = vec4(vstroke, 1.);'
-, '    else gl_FragColor = vec4(rgb, 1.0);'
+, '    gl_FragColor = dist > 0.5 ? vstroke : vec4(rgb, opacity);'
 , '}'
 ].join('\n')
 
-var vbo
+var vbo = canvas.vbo
 var packCache = {}
 function packRgb(fill) {
   return + (packCache[fill] ||
@@ -527,7 +537,8 @@ function drawCircles() {
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
   var buffer = vbo && vbo.length != models.length ? vbo : (vbo = new Float32Array(models.length * 4)), c
-  //program.setstroke(packRgb('pink'))
+
+  program.setstroke([0,0,0,0])
   for(var i = 0; i < models.length;) {
     var j = i * 4
     c = models[i++]

@@ -5,11 +5,25 @@
 function drawLoop(elapsed) {
   each(programs, function (program, key) {
     gl.useProgram(program)
-    program.time && gl.uniform1f(program.time, pathgl.time = elapsed / 1000)
-    program.mouse && gl.uniform2fv(program.mouse, pathgl.mouse)
+    program.settime(pathgl.time = elapsed / 1000)
+    program.setmouse(pathgl.mouse)
   })
-    canvas.__scene__.forEach(function (node) { node.render() })
+
+  gl.colorMask(true, true, true, true);
+  gl.depthMask(true);
+  gl.clearColor(1,1,1,0);
+  gl.clearDepth(1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+  gl.enable(gl.CULL_FACE);
+  //gl.enable(gl.DEPTH_TEST);
+
+  canvas.__scene__.forEach(function (node) { node.render() })
   drawCircles()
+  gl.colorMask(false, false, false, true);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  console.log(123)
   return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
