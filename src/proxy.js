@@ -24,7 +24,20 @@ obj  = {
 }
 
 var proto = {
-  circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
+  circle: { r: function (v) {
+              this.buffer[this.index + 2] = v
+            }
+          , cx: function (v) {
+              this.buffer[this.index] = v
+            }
+          , cy: function (v) {
+              this.buffer[this.index + 1] = v
+            }
+          , fill: function (v) {
+              this.buffer[this.index + 3] = packRgb(v)
+            }
+          , render: renderCircles
+          } //points
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
@@ -165,13 +178,16 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var self = Object.create(types[el.tagName.toLowerCase()].prototype)
-  canvas.__scene__.push(self)
+  var child = Object.create(types[el.tagName.toLowerCase()].prototype)
+  canvas.__scene__.push(child)
 
-  self.attr = Object.create(attrDefaults)
-  self.tagName = el.tagName
-  self.parentNode = self.parentElement = this
-  return self
+  child.attr = Object.create(attrDefaults)
+  child.tagName = el.tagName
+  child.parentNode = child.parentElement = this
+  child.index = (circleBuffer.size * 4)
+  circleBuffer.size += 1
+  child.buffer = circleBuffer
+  return child
 }
 
 function querySelector(query) {

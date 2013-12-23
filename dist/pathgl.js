@@ -238,7 +238,20 @@ obj  = {
 }
 
 var proto = {
-  circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
+  circle: { r: function (v) {
+              this.buffer[this.index + 2] = v
+            }
+          , cx: function (v) {
+              this.buffer[this.index] = v
+            }
+          , cy: function (v) {
+              this.buffer[this.index + 1] = v
+            }
+          , fill: function (v) {
+              this.buffer[this.index + 3] = packRgb(v)
+            }
+          , render: renderCircles
+          } //points
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
@@ -379,13 +392,16 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var self = Object.create(types[el.tagName.toLowerCase()].prototype)
-  canvas.__scene__.push(self)
+  var child = Object.create(types[el.tagName.toLowerCase()].prototype)
+  canvas.__scene__.push(child)
 
-  self.attr = Object.create(attrDefaults)
-  self.tagName = el.tagName
-  self.parentNode = self.parentElement = this
-  return self
+  child.attr = Object.create(attrDefaults)
+  child.tagName = el.tagName
+  child.parentNode = child.parentElement = this
+  child.index = (circleBuffer.size * 4)
+  circleBuffer.size += 1
+  child.buffer = circleBuffer
+  return child
 }
 
 function querySelector(query) {
@@ -542,7 +558,7 @@ function toBuffer (array) {
 , '    color.b = mod(f, 1e3);'
 , '    color.g = mod(f / 1e3, 1e3);'
 , '    color.r = mod(f / 1e6, 1e3);'
-, '    return(color - 100.) / 255.;'
+, '    return (color - 100.) / 255.;'
 , '}'
 
 , 'void main() {'
@@ -568,36 +584,21 @@ var circleFragment = [
 
 var packCache = {}
 function packRgb(fill) {
-  return + (packCache[fill] ||
-            (packCache[fill] = d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
+  return (packCache[fill] ||
+          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
 var circleBuffer = new Float32Array(1e5)
-var buff
+circleBuffer.size = 0
+window.cb = circleBuffer
 function drawPoints(elapsed) {
-  var models = canvas.__scene__
-                   .filter(function (d) { return d instanceof types['circle'] })
-                   .map(function (d) { return d.attr  })
-
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+  //program.setstroke([0,0,0,0])
 
-  var c, buffer = circleBuffer
-
-  program.setstroke([0,0,0,0])
-
-  for(var i = 0; i < models.length;) {
-    var j = i * 4
-    c = models[i++]
-    buffer[j++] = c.cx
-    buffer[j++] = c.cy
-    buffer[j++] = c.r
-    buffer[j++] = packRgb(c.fill)
-  }
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
-  gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.STATIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.POINTS, 0, models.length)
+  gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
 }
 ;function drawStrokes(){};function drawPolygons() {
 
