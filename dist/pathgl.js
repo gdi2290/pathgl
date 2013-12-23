@@ -464,8 +464,7 @@ function drawLoop(elapsed) {
   drawStrokes(elapsed)
   drawPolygons(elapsed)
   afterRender()
-
-  return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  return stopRendering && ! beforeRender()
 }
 
 function beforeRender() {
@@ -479,10 +478,9 @@ function beforeRender() {
 }
 function afterRender() {
   gl.colorMask(false, false, false, true);
-  gl.clearColor(0,0,0,1);
+  gl.clearColor(1,1,1,1);
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
-
 
 function addToBuffer(datum) {
   return extend(datum.path = [], { coords: [], id: datum.id })
