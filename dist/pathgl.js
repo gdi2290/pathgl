@@ -237,19 +237,6 @@ obj  = {
   }
 }
 
-//2
-//flat scene
-//tree
-//-> buffers
-
-//12 fill
-//12 stroke
-
-//9999.99, 9999.99
-//9999.99, 9999.99
-//12 w, h
-//12 x, y
-//12 rx ,ry
 var proto = {
   circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
@@ -579,13 +566,14 @@ var circleFragment = [
 , '}'
 ].join('\n')
 
-var circleBuffer = new Float32Array(1e5)
 var packCache = {}
 function packRgb(fill) {
   return + (packCache[fill] ||
             (packCache[fill] = d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
+var circleBuffer = new Float32Array(1e5)
+var buff
 function drawPoints(elapsed) {
   var models = canvas.__scene__
                    .filter(function (d) { return d instanceof types['circle'] })
@@ -606,28 +594,11 @@ function drawPoints(elapsed) {
     buffer[j++] = packRgb(c.fill)
   }
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
   gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  //gl.enableVertexAttribArray(0);
   gl.drawArrays(gl.POINTS, 0, models.length)
-  // var buffer2 = new Float32Array(models.length * 4)
-  // for(var i = 0; i < models.length;) {
-  //   var j = i * 4
-  //   c = models[i++]
-  //   buffer2[j++] = c.cy
-  //   buffer2[j++] = c.cx
-  //   buffer2[j++] = Math.random() * 51
-  //   buffer2[j++] = packRgb(c.fill)
-  // }
-
-	// gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  // gl.bufferData(gl.ARRAY_BUFFER, buffer2, gl.DYNAMIC_DRAW)
-  // gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  // gl.drawArrays(gl.POINTS, 0, models.length)
 }
-
-//vbo && vbo.length != models.length ? vbo :
 ;function drawStrokes(){};function drawPolygons() {
 
 

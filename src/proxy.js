@@ -23,19 +23,6 @@ obj  = {
   }
 }
 
-//2
-//flat scene
-//tree
-//-> buffers
-
-//12 fill
-//12 stroke
-
-//9999.99, 9999.99
-//9999.99, 9999.99
-//12 w, h
-//12 x, y
-//12 rx ,ry
 var proto = {
   circle: { r: noop, cx: noop, cy: noop, render: renderCircles } //points
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
