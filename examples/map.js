@@ -1,5 +1,5 @@
 examples.map = function (selector) {
-  selector = 'svg'
+
   d3.json('/examples/world-50m.json', draw_world)
   d3.csv('/examples/hist.csv', draw_history)
 
@@ -54,10 +54,10 @@ examples.map = function (selector) {
           , 'font-family': 'Helvetica'
           })
 
-    window.num = {}
+    var num = {}
 
     hist.forEach(function (d) {
-      window.num[d.year] = (window.num[d.year] || 0) + 1
+      num[d.year] = (num[d.year] || 0) + 1
     })
 
     var x = d3.scale.linear()
@@ -76,7 +76,7 @@ examples.map = function (selector) {
     var area = d3.svg.area()
                .x(function (d) { return x(+d.year) })
                .y0(y.range()[0])
-               .y1(function (d) { return y(window.num[+d.year]) })
+               .y1(function (d) { return y(num[+d.year]) })
 
     slider
     .append('path').datum(hist)

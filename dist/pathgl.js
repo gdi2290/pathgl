@@ -459,7 +459,7 @@ function drawLoop(elapsed) {
   })
 
   beforeRender()
-  canvas.__scene__.forEach(function (node) { })
+  canvas.__scene__.forEach(function (node) { node.render() })
   drawPoints(elapsed)
   drawStrokes(elapsed)
   drawPolygons(elapsed)
@@ -579,7 +579,7 @@ var circleFragment = [
 , '}'
 ].join('\n')
 
-var vbo = canvas.vbo
+var circleBuffer = new Float32Array(1e5)
 var packCache = {}
 function packRgb(fill) {
   return + (packCache[fill] ||
@@ -593,7 +593,7 @@ function drawPoints(elapsed) {
 
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
 
-  var c, buffer = (vbo = new Float32Array(models.length * 4))
+  var c, buffer = circleBuffer
 
   program.setstroke([0,0,0,0])
 
@@ -607,7 +607,7 @@ function drawPoints(elapsed) {
   }
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, vbo, gl.DYNAMIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   //gl.enableVertexAttribArray(0);
   gl.drawArrays(gl.POINTS, 0, models.length)

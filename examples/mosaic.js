@@ -3,7 +3,7 @@ examples.mosaic = function (selector){
           .attr(size)
           .call(pathgl)
 
-  c.selectAll('rect').data(d3.range(5000))
+  c.selectAll('rect').data(d3.range(100))
   .enter().append('rect')
   .attr('stroke', 'blue')
   .attr('fill', 'pink')

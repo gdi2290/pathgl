@@ -16,7 +16,7 @@ function drawLoop(elapsed) {
   })
 
   beforeRender()
-  canvas.__scene__.forEach(function (node) { })
+  canvas.__scene__.forEach(function (node) { node.render() })
   drawPoints(elapsed)
   drawStrokes(elapsed)
   drawPolygons(elapsed)

@@ -28,7 +28,7 @@ examples.video_voronoi = function (selector) {
     .attr("d", polygon)
     .attr('stroke', 'pink')
     .attr('stroke-width', function () { return Math.random() * 15 })
-    .attr('fill', '#water')
+    .attr('fill', 'blue')
 
     path
     .filter(function (d) { return this.attr.d !=  polygon(d) })
