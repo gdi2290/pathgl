@@ -3,14 +3,7 @@ body {
     background: ;
     color: #333;
     font: .8em "freight-sans-pro", sans-serif;
-}
-
-body {
     padding: 15px;
-}
-
-.shader {
-    display:none;
 }
 
 .sidebar {
@@ -18,7 +11,7 @@ body {
     left: 0;
     top: 0;
     width: 200px;
-    border-right: 2px solid #444;
+    border-right: 1px dotted #444;
     color: #222831;
     border-bottom: 2px solid #444;
     height: 100%;
@@ -65,4 +58,8 @@ ul {
 
 canvas {
     pointer-events: none;
+}
+
+.CodeMirror-lines {
+    margin-top: -339px;
 }

@@ -85,7 +85,6 @@ function mousemoved() {
 }
 
 function override(canvas) {
-  var scene = []
   return extend(canvas, {
     appendChild: appendChild
   , querySelectorAll: querySelectorAll
@@ -94,9 +93,8 @@ function override(canvas) {
   , insertBefore: insertBefore
 
   , gl: gl
-  , __scene__: scene
+  , __scene__: []
   , __pos__: []
-  , __id__: 0
   , __program__: void 0
   })
 }
@@ -578,7 +576,7 @@ var circleFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > 0.5 ? vstroke : vec4(rgb, opacity);'
+, '    gl_FragColor = dist > .45 ? vstroke : vec4(rgb, opacity);'
 , '}'
 ].join('\n')
 
@@ -588,15 +586,14 @@ function packRgb(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-var circleBuffer = new Float32Array(1e5)
+var circleBuffer = new Float32Array(1e6)
 circleBuffer.size = 0
-window.cb = circleBuffer
 function drawPoints(elapsed) {
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
-  //program.setstroke([0,0,0,0])
+  program.setstroke([1,0,0,1])
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.STATIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
 }

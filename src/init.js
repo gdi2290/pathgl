@@ -21,7 +21,6 @@ function mousemoved() {
 }
 
 function override(canvas) {
-  var scene = []
   return extend(canvas, {
     appendChild: appendChild
   , querySelectorAll: querySelectorAll
@@ -30,9 +29,8 @@ function override(canvas) {
   , insertBefore: insertBefore
 
   , gl: gl
-  , __scene__: scene
+  , __scene__: []
   , __pos__: []
-  , __id__: 0
   , __program__: void 0
   })
 }
