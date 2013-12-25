@@ -21,7 +21,7 @@ function drawLoop(elapsed) {
   drawStrokes(elapsed)
   drawPolygons(elapsed)
   afterRender()
-  return stopRendering && ! beforeRender()
+  return stopRendering
 }
 
 function beforeRender() {

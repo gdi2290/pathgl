@@ -465,7 +465,7 @@ function drawLoop(elapsed) {
   drawStrokes(elapsed)
   drawPolygons(elapsed)
   afterRender()
-  return stopRendering && ! beforeRender()
+  return stopRendering
 }
 
 function beforeRender() {
@@ -595,8 +595,7 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
-}
-;function drawStrokes(){};function drawPolygons() {
+};function drawStrokes(){};function drawPolygons() {
 
 
 };pathgl.shaderParameters = {
