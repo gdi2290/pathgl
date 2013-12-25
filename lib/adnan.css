@@ -14,6 +14,7 @@ body {
     color: #222831;
     border-bottom: 2px solid #333;
     height: 100%;
+    overflow-y: scroll;
 }
 
 .sidebar div, li {
@@ -30,7 +31,6 @@ body {
     height: 100%;
     width: 100%;
 }
-
 a {
     padding: 9px 12px;
     color: #333;
@@ -128,3 +128,25 @@ canvas {
     background: #ccc -ms-linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); 
     background: #ccc linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); 
 }
+
+
+h3 {
+    margin: 5px 0px;
+}
+
+label, input {
+    cursor: pointer;
+}
+
+label {
+    display: block;
+    padding: 3px 12px;
+}
+
+#webgl {
+    margin-left: 8px;
+}
+#svg {
+    margin-left: 23px;
+}
+
