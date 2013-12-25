@@ -60,6 +60,7 @@ ul {
 canvas {
     pointer-events: none;
 }
+
 .CodeMirror {
     margin: 50px 50px;
     border: 1px dotted #333;
