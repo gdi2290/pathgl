@@ -558,7 +558,6 @@ function toBuffer (array) {
 , '    color.r = mod(f / 1e6, 1e3);'
 , '    return (color - 100.) / 255.;'
 , '}'
-
 , 'void main() {'
 , '    vec2 normalize = attr.xy / resolution;'
 , '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
@@ -576,7 +575,7 @@ var circleFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .45 ? vstroke : vec4(rgb, opacity);'
+, '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
 , '}'
 ].join('\n')
 
