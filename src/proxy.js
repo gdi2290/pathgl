@@ -23,18 +23,34 @@ obj  = {
   }
 }
 
+d3.scale.linear()
+.domain([0, canvas.width])
+.range([-1, 1])
+
+d3.scale.linear()
+.domain([0, canvas.height])
+.range([1, -1])
+
+var x  = function (x) {
+  return 2 * (x / canvas.width) - 1
+}
+
+var y = function (y) {
+  return 1 - ((y / canvas.height) * 2)
+}
+
 var proto = {
   circle: { r: function (v) {
               this.buffer[this.index + 2] = v
             }
           , cx: function (v) {
-              this.buffer[this.index] = 2 * (v / canvas.width) - 1
+              this.buffer[this.index] = x(v)
             }
           , cy: function (v) {
-              this.buffer[this.index + 1] = 1 - ((v / canvas.height) * 2)
+              this.buffer[this.index + 1] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index + 3] = packRgb(v)
+              this.buffer[this.index + 3] = this.index
             }
           , render: renderCircles
           }

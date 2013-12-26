@@ -235,18 +235,34 @@ obj  = {
   }
 }
 
+d3.scale.linear()
+.domain([0, canvas.width])
+.range([-1, 1])
+
+d3.scale.linear()
+.domain([0, canvas.height])
+.range([1, -1])
+
+var x  = function (x) {
+  return 2 * (x / canvas.width) - 1
+}
+
+var y = function (y) {
+  return 1 - ((y / canvas.height) * 2)
+}
+
 var proto = {
   circle: { r: function (v) {
               this.buffer[this.index + 2] = v
             }
           , cx: function (v) {
-              this.buffer[this.index] = 2 * (v / canvas.width) - 1
+              this.buffer[this.index] = x(v)
             }
           , cy: function (v) {
-              this.buffer[this.index + 1] = 1 - ((v / canvas.height) * 2)
+              this.buffer[this.index + 1] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index + 3] = packRgb(v)
+              this.buffer[this.index + 3] = this.index
             }
           , render: renderCircles
           }
@@ -554,9 +570,9 @@ function toBuffer (array) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1, 1);'
+, '    gl_Position = vec4(attr.xy, 1., 1.);'
 , '    gl_PointSize = attr.z * 2.;'
-, '    rgb = parse_color(attr.w);'
+, '    rgb = vec3(.5-attr.x, .5-attr.y, .7-(attr.y/attr.z));'
 , '}'
 ].join('\n')
 
