@@ -445,36 +445,32 @@ function event (type, listener) {
 };//render points
 //render lines
 //render linefills
-var time1 = Date.now()
-var frames = {}
-pathgl.frameCounter = frames
 function drawLoop(elapsed) {
-  var dt = elapsed - time1
-  frames[dt] = (frames[dt] || (frames[dt] = 0)) + 1
-  time1 = elapsed
-
-  each(programs, function (program, key) {
-    gl.useProgram(program)
-    program.settime(pathgl.time = elapsed / 1000)
-    program.setmouse(pathgl.mouse)
-  })
-
-  beforeRender()
-  canvas.__scene__.forEach(function (node) { node.render() })
+  beforeRender(elapsed)
   drawPoints(elapsed)
   drawStrokes(elapsed)
   drawPolygons(elapsed)
-  afterRender()
+  afterRender(elapsed)
   return stopRendering
 }
 
-function beforeRender() {
+var time1 = Date.now()
+var frames = {}
+pathgl.frameCounter = frames
+function countFrames(elapsed) {
+  var dt = elapsed - time1
+  frames[dt] = (frames[dt] || (frames[dt] = 0)) + 1
+  time1 = elapsed
+}
+
+function beforeRender(elapsed) {
+  countFrames(elapsed)
   gl.colorMask(true, true, true, true);
   gl.depthMask(true);
   gl.clearColor(1,1,1,0);
   gl.clearDepth(1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-  // gl.enable(gl.CULL_FACE);
+  gl.enable(gl.CULL_FACE);
   //gl.enable(gl.DEPTH_TEST);
 }
 function afterRender() {
