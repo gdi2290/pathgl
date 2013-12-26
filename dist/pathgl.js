@@ -447,9 +447,11 @@ function event (type, listener) {
 //render linefills
 function drawLoop(elapsed) {
   beforeRender(elapsed)
+
   drawPoints(elapsed)
   drawStrokes(elapsed)
   drawPolygons(elapsed)
+
   afterRender(elapsed)
   return stopRendering
 }
