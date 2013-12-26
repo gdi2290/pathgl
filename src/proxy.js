@@ -37,7 +37,7 @@ var proto = {
               this.buffer[this.index + 3] = packRgb(v)
             }
           , render: renderCircles
-          } //points
+          }
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 

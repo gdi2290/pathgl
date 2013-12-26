@@ -3,16 +3,11 @@ examples.mosaic = function (selector){
           .attr(size)
           .call(pathgl)
 
-  c.selectAll('rect').data(d3.range(100))
-  .enter().append('rect')
-  .attr('stroke', 'blue')
-  .attr('fill', 'pink')
-  //.attr('stroke', '#water')
-  //.attr('fill', '#rgb')
-  .attr('width', 30)
-  .attr('height', 30)
+  c.append('circle')
   .attr({
-    x: function (d) { return d * 10 }
-  , y: function (d) { return d * 10 }
+    r: 100
+  , cx: 90
+  , cy: 100
+  , fill: 'pink'
   })
 }

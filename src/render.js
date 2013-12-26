@@ -1,6 +1,3 @@
-//render points
-//render lines
-//render linefills
 function drawLoop(elapsed) {
   beforeRender(elapsed)
 
@@ -13,8 +10,10 @@ function drawLoop(elapsed) {
 }
 
 var time1 = Date.now()
-var frames = {}
+  , frames = {}
+
 pathgl.frameCounter = frames
+
 function countFrames(elapsed) {
   var dt = elapsed - time1
   frames[dt] = (frames[dt] || (frames[dt] = 0)) + 1
@@ -86,7 +85,6 @@ function setDrawColor (c) {
                1.0)
 }
 
-//subData
 function buildBuffer(points) {
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)

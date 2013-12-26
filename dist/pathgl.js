@@ -249,7 +249,7 @@ var proto = {
               this.buffer[this.index + 3] = packRgb(v)
             }
           , render: renderCircles
-          } //points
+          }
 , ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
@@ -442,10 +442,7 @@ function event (type, listener) {
     e[type] = []
   }
   e[type].push(this.id)
-};//render points
-//render lines
-//render linefills
-function drawLoop(elapsed) {
+};function drawLoop(elapsed) {
   beforeRender(elapsed)
 
   drawPoints(elapsed)
@@ -457,8 +454,10 @@ function drawLoop(elapsed) {
 }
 
 var time1 = Date.now()
-var frames = {}
+  , frames = {}
+
 pathgl.frameCounter = frames
+
 function countFrames(elapsed) {
   var dt = elapsed - time1
   frames[dt] = (frames[dt] || (frames[dt] = 0)) + 1
@@ -530,7 +529,6 @@ function setDrawColor (c) {
                1.0)
 }
 
-//subData
 function buildBuffer(points) {
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
@@ -558,7 +556,7 @@ function toBuffer (array) {
 , '}'
 , 'void main() {'
 , '    vec2 normalize = attr.xy / resolution;'
-, '    vec2 clipSpace = (normalize * 2.0) - 1.0;'
+, '    vec2 clipSpace = (normalize * 2.0) - vec2(1., 0);'
 , '    gl_Position = vec4(clipSpace, 1, 1);'
 , '    gl_PointSize = attr.z * 2.;'
 , '    rgb = parse_color(attr.w);'
@@ -585,12 +583,18 @@ function packRgb(fill) {
 
 var circleBuffer = new Float32Array(1e6)
 circleBuffer.size = 0
+var buff
 function drawPoints(elapsed) {
   if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
   program.setstroke([1,0,0,1])
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
+  if(! buff) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
+    gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
+  } else {
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, circleBuffer)
+  }
+  
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
 };function drawStrokes(){};function drawPolygons() {
