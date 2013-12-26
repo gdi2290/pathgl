@@ -459,10 +459,10 @@ function drawLoop(elapsed) {
   })
 
   beforeRender()
-  //canvas.__scene__.forEach(function (node) { node.render() })
+  canvas.__scene__.forEach(function (node) { })
   drawPoints(elapsed)
-  //drawStrokes(elapsed)
-  //drawPolygons(elapsed)
+  drawStrokes(elapsed)
+  drawPolygons(elapsed)
   afterRender()
 
   return stopRendering && ! gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -630,7 +630,10 @@ function drawPoints(elapsed) {
 }
 
 //vbo && vbo.length != models.length ? vbo :
-;;;pathgl.shaderParameters = {
+;function drawStrokes(){};function drawPolygons() {
+
+
+};pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
 , time: [0]

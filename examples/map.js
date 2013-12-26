@@ -1,45 +1,152 @@
 examples.map = function (selector) {
-  var projection = d3.geo.albersUsa().scale(1070)
-    , path = d3.geo.path().projection(projection)
-    , svg = d3.select(selector).attr(size).call(pathgl)
-    , centered
+  selector = 'svg'
+  d3.json('/examples/world-50m.json', draw_world)
+  d3.csv('/examples/hist.csv', draw_history)
 
-  d3.json("examples/us.json", renderMap)
+  var proj = d3.geo.equirectangular().scale(275).translate([550, 400])
+    , path = d3.geo.path().projection(proj)
+    , grat = d3.geo.graticule()
 
-  function renderMap(err, data) {
-    svg.selectAll("path")
-    .data(topojson.feature(data, data.objects.states).features)
-    .enter().append("path")
-    .on("click", clicked)
-    .attr('d', path)
-    .attr('stroke', 'red')
-    .transition().duration(0).delay(function (d, i) { return i * 15 })
-    .attrTween('fill', function () { return random_shader } )
+  function mouseover(d) {
+    d3.select('.title').text(d.title + ' ' + d.year + ', '  + d.event);
   }
 
-  function clicked(d) {
-    var x, y, k
+  function draw_world(err, world) {
+    var g = d3.select(selector)
+            .attr('class', 'main')
+            .style('margin', '0px auto')
+            .attr('width', window.innerWidth)
+            .attr('height', window.innerHeight * .9).call(pathgl)
 
-    if (d && centered !== d) {
-      var centroid = path.centroid(d)
-      x = centroid[0]
-      y = centroid[1]
-      k = 4
-      centered = d
-    } else {
-      x = size.width / 2
-      y = size.height / 2
-      k = 1
-      centered = null
+    g.append('path')
+    .attr('class', 'graticule noclick')
+    .attr('d', path)
+    .attr('fill', 'none')
+    .attr('stroke', '#fff')
+    .attr('stroke-width', '.5')
+
+    g.selectAll("path")
+    .data(topojson.feature(world, world.objects.countries).features)
+    .enter().append("path")
+    .attr({ class: 'world'
+          , d: path
+          , fill: '#d7c7ad'
+          , 'fill-opacity': .5
+          , stroke: '#766951'
+          })
+  };
+
+  function draw_history(err, hist) {
+    var dates, m, to
+      , from = -500
+
+    d3.select('.main')
+    .append('text')
+    .attr({ fill: 'white'
+          , stroke: '#333'
+          , text: 0
+          , class:'year'
+          , y: innerHeight * 0.9
+          , x: 350
+          , 'text-anchor':'end'
+          , text: 0
+          , 'font-size': '100px'
+          , 'font-family': 'Helvetica'
+          })
+
+    window.num = {}
+
+    hist.forEach(function (d) {
+      window.num[d.year] = (window.num[d.year] || 0) + 1
+    })
+
+    var x = d3.scale.linear()
+            .domain([-500, 2030])
+            .range([0, innerWidth])
+
+    var y = d3.scale.pow().exponent(.7)
+            .domain([0, d3.max(d3.values(num))])
+            .range([innerHeight * .99, innerHeight * .8])
+
+    var slider =
+      d3.select(selector)
+      .style('height', y.range()[0]  + 'px')
+      .attr('class', 'slider')
+
+    var area = d3.svg.area()
+               .x(function (d) { return x(+d.year) })
+               .y0(y.range()[0])
+               .y1(function (d) { return y(window.num[+d.year]) })
+
+    slider
+    .append('path').datum(hist)
+    .attr('class', 'slider')
+    .attr('fill', 'indianred')
+    .attr('d', area)
+
+    slider
+    .on('click', function () { from = ~~ x.invert(+d3.mouse(this)[0]) })
+    .on('mousemove', function () {
+      d3.select('line').attr('stroke-width', 2)
+      .attr('transform','translate('+d3.mouse(this)[0]+',0)')
+    })
+    .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
+
+    slider.append('line')
+    .attr('stroke', 'pink')
+    .attr('y1', y.range()[0])
+    .attr('y2', y.range()[1])
+
+    d3.select('body').insert('p', '*')
+    .attr('class', 'title')
+    .style({ color: 'white'
+           , position: 'absolute'
+           , top: 475 + 'px'
+           , left: 150 + 'px'
+           , width: "35%"
+           , 'font-size': '10px'
+           , 'text-anchor': 'end'
+           })
+
+    hist = hist.sort(function(a, b) { return a.year - b.year })
+
+    dates = hist.map(function(d) { return d.location = proj(d.location.split(' ').map(parseFloat).reverse()) || d })
+            .filter(function(d) { return d < 2010 })
+
+    function forward() {
+      document.title = from = from > 2010 ? -500 : from + 1
+
+      d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
+      d3.select('.year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
+
+      var e = d3.select(selector)
+              .selectAll('.nil')
+              .data(hist.filter(function(d) { return from === +d.year }))
+
+      e.enter()
+      .append('circle')
+      .on('mouseover', mouseover)
+      .attr({ class:'point'
+            , fill: function(){ return d3.hsl(Math.random()*360, 1, 0.5) }
+            , stroke: function(d){ return d.fill }
+            , cx: function(d){ return d.location[0] }
+            , cy: function(d){ return d.location[1] }
+            , r: 0
+            , opacity : 0.85
+            , 'stroke-opacity': 0.5
+            })
+      .transition()
+      .ease('cubic')
+      .duration(2500)
+      .attr('opacity', 0)
+      .attr('r', 15)
+      .remove()
     }
 
-    svg.selectAll("path")
-    .classed("active", centered && function(d) { return d === centered; })
-
-    svg.transition().duration(750)
-    .style("stroke-width", 1.5 / k + "px")
-    .attr("transform",
-          "translate(" + size.width / 2 + "," + size.height / 2 +
-          ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+    window.int = setInterval(forward, 50)
   }
+
+  function extend(target, source) { for(var i in source) target[i] = source[i] }
+  function rand_num(n) { return ~~ (Math.random() * n) }
+  function rand_color() { return 'RGB(' + [255, 255, 255].map(rand_num).toString() + ')' }
 }
