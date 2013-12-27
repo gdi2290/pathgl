@@ -325,6 +325,8 @@ var baseProto = extend(Object.create(null), {
     this[name] && this[name](value)
   }
 
+, style: {setProperty: noop}
+
 , removeAttribute: function (name) {
     delete this.attr[name]
   }
