@@ -28,10 +28,10 @@ var proto = {
               this.buffer[this.index + 2] = v
             }
           , cx: function (v) {
-              this.buffer[this.index] = v
+              this.buffer[this.index] = 2 * (v / canvas.width) - 1
             }
           , cy: function (v) {
-              this.buffer[this.index + 1] = v
+              this.buffer[this.index + 1] = 1 - ((v / canvas.height) * 2)
             }
           , fill: function (v) {
               this.buffer[this.index + 3] = packRgb(v)

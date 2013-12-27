@@ -240,10 +240,10 @@ var proto = {
               this.buffer[this.index + 2] = v
             }
           , cx: function (v) {
-              this.buffer[this.index] = v
+              this.buffer[this.index] = 2 * (v / canvas.width) - 1
             }
           , cy: function (v) {
-              this.buffer[this.index + 1] = v
+              this.buffer[this.index + 1] = 1 - ((v / canvas.height) * 2)
             }
           , fill: function (v) {
               this.buffer[this.index + 3] = packRgb(v)
@@ -545,7 +545,6 @@ function toBuffer (array) {
   'precision mediump float;'
 , 'attribute vec4 attr;'
 , 'attribute vec4 testvert;'
-, 'uniform vec2 resolution;'
 , 'varying vec3 rgb;'
 , 'vec3 parse_color(float f) {'
 , '    vec3 color;'
@@ -555,9 +554,7 @@ function toBuffer (array) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    vec2 normalize = attr.xy / resolution;'
-, '    vec2 clipSpace = (normalize * 2.0) - vec2(1., 0);'
-, '    gl_Position = vec4(clipSpace, 1, 1);'
+, '    gl_Position = vec4(attr.xy, 1, 1);'
 , '    gl_PointSize = attr.z * 2.;'
 , '    rgb = parse_color(attr.w);'
 , '}'
@@ -594,7 +591,7 @@ function drawPoints(elapsed) {
   } else {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, circleBuffer)
   }
-  
+
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
 };function drawStrokes(){};function drawPolygons() {
