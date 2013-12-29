@@ -41,7 +41,7 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-var circleBuffer = new Float32Array(20e4)
+var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
 function drawPoints(elapsed) {

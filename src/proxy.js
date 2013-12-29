@@ -184,7 +184,7 @@ function appendChild(el) {
   child.attr = Object.create(attrDefaults)
   child.tagName = el.tagName
   child.parentNode = child.parentElement = this
-  child.index = (circleBuffer.size * 4)
+  child.index = circleBuffer.length - (circleBuffer.size * 4)
   circleBuffer.size += 1
   child.buffer = circleBuffer
   return child
