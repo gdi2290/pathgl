@@ -169,24 +169,6 @@ function buildPath () {
   parse.call(this, this.attr.d)
   this.buffer = toBuffer(this.path.coords)
 }
-function points () {}
-function buildEllipse() {
-  return;
-  var a = []
-  for (var i = 0; i < 361; i+=18)
-    a.push(50 + r * Math.cos(i * Math.PI / 180),
-           50 + r * Math.sin(i * Math.PI / 180),
-           0)
-  return a
-}
-
-function rectPoints(w, h) {
-  return [0,0,0,
-          0,h,0,
-          w,h,0,
-          w,0,0,
-         ]
-}
 
 function insertBefore(node, next) {
   var scene = canvas.__scene__
