@@ -396,7 +396,7 @@ function appendChild(el) {
   child.attr = Object.create(attrDefaults)
   child.tagName = el.tagName
   child.parentNode = child.parentElement = this
-  child.index = (circleBuffer.size * 4)
+  child.index = circleBuffer.length - (circleBuffer.size * 4)
   circleBuffer.size += 1
   child.buffer = circleBuffer
   return child
@@ -474,7 +474,6 @@ function beforeRender(elapsed) {
   gl.enable(gl.CULL_FACE)
 
   //gl.enable(gl.DEPTH_TEST)
-  //gl.depthMask(true)
   gl.disable(gl.BLEND)
 }
 
@@ -584,7 +583,7 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-var circleBuffer = new Float32Array(20e4)
+var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
