@@ -472,10 +472,12 @@ function beforeRender(elapsed) {
   gl.clearDepth(1)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
   gl.enable(gl.CULL_FACE)
-  gl.enable(gl.DEPTH_TEST)
-  gl.depthMask(true)
+
+  //gl.enable(gl.DEPTH_TEST)
+  //gl.depthMask(true)
   gl.disable(gl.BLEND)
 }
+
 function afterRender() {
   gl.colorMask(false, false, false, true)
   gl.clearColor(1,1,1,1)
@@ -558,9 +560,9 @@ function buildBuffer(points) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy * attr.w, attr.w / 2., attr.w);'
+, '    gl_Position = vec4(attr.xy, 1., 1.);'
 , '    gl_PointSize = attr.z * 2.;'
-, '    rgb = vec3(.5-attr.x, .5-attr.y, .7-(attr.y/attr.z));'
+, '    rgb = unpack_color(attr.w);'
 , '}'
 ].join('\n')
 
@@ -574,7 +576,6 @@ var circleFragment = [
 , '    if (dist > 0.5) discard;'
 , '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
 , '}'
-//, 'gl_FragCoord.xy'
 ].join('\n')
 
 var packCache = {}
@@ -583,7 +584,7 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-var circleBuffer = new Float32Array(4e4)
+var circleBuffer = new Float32Array(20e4)
 circleBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
@@ -672,7 +673,7 @@ function flatten(input) {
 }
 
 function isId(str) {
-  return str[0] == '#' && isNaN(parseInt(str.slice(1), 16))
+  return !! document.querySelector(str)
 }
 
 function each(obj, fn) {

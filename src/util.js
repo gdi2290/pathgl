@@ -17,7 +17,7 @@ function flatten(input) {
 }
 
 function isId(str) {
-  return str[0] == '#' && isNaN(parseInt(str.slice(1), 16))
+  return !! document.querySelector(str)
 }
 
 function each(obj, fn) {

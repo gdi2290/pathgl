@@ -36,6 +36,7 @@ ul {
     height: 100%;
     width: 100%;
 }
+
 a {
     padding: 9px 17px;
     color: #333;
@@ -64,6 +65,7 @@ canvas {
     margin: 50px 50px;
     border: 1px dotted #333;
     width: 75%;
+    height: 600px !important;
     opacity: .75;
 }
 
@@ -145,6 +147,7 @@ label {
 #webgl {
     margin-left: 8px;
 }
+
 #svg {
     margin-left: 23px;
 }
@@ -153,8 +156,8 @@ label {
     background: deeppink;
 }
 
-
 .blurb {
-    padding-left: 50px;
-    margin-top: 650px;
+    position: absolute;
+    left: 50px;
+    top: 650px;
 }
