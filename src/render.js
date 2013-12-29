@@ -95,7 +95,3 @@ function buildBuffer(points) {
   buffer.numItems = points.length / buffer.itemSize
   return buffer
 }
-
-function toBuffer (array) {
-  return buildBuffer(flatten(array))
-}

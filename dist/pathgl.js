@@ -539,10 +539,6 @@ function buildBuffer(points) {
   buffer.numItems = points.length / buffer.itemSize
   return buffer
 }
-
-function toBuffer (array) {
-  return buildBuffer(flatten(array))
-}
 ;var circleVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
