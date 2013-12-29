@@ -210,13 +210,87 @@ function closePath(next) {
 function lineTo(x, y) {
   this.push(x, y, 0)
 }
-;var k = {
-  points:[]
-, lineStrokes: []
-, lineFills: []
+;var circleVertex = [
+  'precision mediump float;'
+, 'attribute vec4 attr;'
+, 'varying vec3 rgb;'
+, 'vec3 unpack_color(float f) {'
+, '    vec3 color;'
+, '    color.b = mod(f, 1e3);'
+, '    color.g = mod(f / 1e3, 1e3);'
+, '    color.r = mod(f / 1e6, 1e3);'
+, '    return (color - 100.) / 255.;'
+, '}'
+, 'vec3 unpack_pos(float f) {'
+, '    vec3 color;'
+, '    color.b = mod(f, 1e3);'
+, '    color.g = mod(f / 1e3, 1e3);'
+, '    color.r = mod(f / 1e6, 1e3);'
+, '    return (color - 100.) / 255.;'
+, '}'
+, 'void main() {'
+, '    gl_Position = vec4(attr.xy, 1., 1.);'
+, '    gl_PointSize = attr.z * 2.;'
+, '    rgb = unpack_color(attr.w);'
+, '}'
+].join('\n')
+
+var circleFragment = [
+  'precision mediump float;'
+, 'varying vec3 rgb;'
+, 'uniform vec4 vstroke;'
+, 'uniform float opacity;'
+, 'void main() {'
+, '    float dist = distance(gl_PointCoord, vec2(0.5));'
+, '    if (dist > 0.5) discard;'
+, '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
+, '}'
+].join('\n')
+
+var packCache = {}
+function packColor(fill) {
+  return (packCache[fill] ||
+          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-obj  = {
+var circleBuffer = new Float32Array(4e4)
+circleBuffer.size = 0
+var buff
+function drawPoints(elapsed) {
+  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+  program.setstroke([1,0,0,1])
+
+  if(! buff) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
+    gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
+  } else {
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, circleBuffer)
+  }
+
+  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
+  gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
+};var lineBuffer = new Float32Array(4e4)
+lineBuffer.size = 0
+window.lb = lineBuffer
+
+function drawLines(){
+var lb
+  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+  program.setstroke([1,0,0,1])
+
+  if(! lb) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, lb = gl.createBuffer())
+    gl.bufferData(gl.ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
+  } else {
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, lineBuffer)
+  }
+
+  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
+  gl.drawArrays(gl.POINTS, 0, lineBuffer.size)
+};function drawPolygons() {
+
+
+};obj  = {
   schema: ['cx', 'cy', 'r', 'rgba']
 , index: 1
 
@@ -265,13 +339,18 @@ var proto = {
               this.buffer[this.index + 3] = packColor(v)
             }
           , render: renderCircles
+          , buffer: circleBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
+, line: { x1: function (v) { this.buffer[this.index] = x(v) }
+        , y1: function (v) { this.buffer[this.index] = y(v) }
+        , x2: function (v) { this.buffer[this.index] = x(v) }
+        , y2: function (v) { this.buffer[this.index] = y(v) }
+        , render: noop , buffer: lineBuffer }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
@@ -391,14 +470,14 @@ function insertBefore(node, next) {
 
 function appendChild(el) {
   var child = Object.create(types[el.tagName.toLowerCase()].prototype)
+    , buffer = child.buffer
   canvas.__scene__.push(child)
 
   child.attr = Object.create(attrDefaults)
   child.tagName = el.tagName
   child.parentNode = child.parentElement = this
-  child.index = circleBuffer.length - (circleBuffer.size * 4)
-  circleBuffer.size += 1
-  child.buffer = circleBuffer
+  child.index = buffer.length - (buffer.size * 4)
+  buffer.size += 1
   return child
 }
 
@@ -446,7 +525,7 @@ function event (type, listener) {
   beforeRender(elapsed)
 
   drawPoints(elapsed)
-  drawStrokes(elapsed)
+  drawLines(elapsed)
   drawPolygons(elapsed)
 
   afterRender(elapsed)
@@ -467,14 +546,14 @@ function countFrames(elapsed) {
 function beforeRender(elapsed) {
   countFrames(elapsed)
   gl.colorMask(true, true, true, true)
-  gl.depthMask(true)
   gl.clearColor(1,1,1,0)
-  gl.clearDepth(1)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 
+  //gl.depthMask(true)
+  //gl.clearDepth(1)
   //gl.enable(gl.DEPTH_TEST)
-  gl.disable(gl.BLEND)
 }
 
 function afterRender() {
@@ -540,69 +619,7 @@ function buildBuffer(points) {
   buffer.numItems = points.length / buffer.itemSize
   return buffer
 }
-;var circleVertex = [
-  'precision mediump float;'
-, 'attribute vec4 attr;'
-, 'varying vec3 rgb;'
-, 'vec3 unpack_color(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
-, '}'
-, 'vec3 unpack_pos(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
-, '}'
-, 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1., 1.);'
-, '    gl_PointSize = attr.z * 2.;'
-, '    rgb = unpack_color(attr.w);'
-, '}'
-].join('\n')
-
-var circleFragment = [
-  'precision mediump float;'
-, 'varying vec3 rgb;'
-, 'uniform vec4 vstroke;'
-, 'uniform float opacity;'
-, 'void main() {'
-, '    float dist = distance(gl_PointCoord, vec2(0.5));'
-, '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
-, '}'
-].join('\n')
-
-var packCache = {}
-function packColor(fill) {
-  return (packCache[fill] ||
-          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
-}
-
-var circleBuffer = new Float32Array(4e4)
-circleBuffer.size = 0
-var buff
-function drawPoints(elapsed) {
-  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
-  program.setstroke([1,0,0,1])
-
-  if(! buff) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
-    gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
-  } else {
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, circleBuffer)
-  }
-
-  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
-};function drawStrokes(){};function drawPolygons() {
-
-
-};pathgl.shaderParameters = {
+;pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
 , translate: [0, 0]
 , time: [0]
@@ -672,7 +689,8 @@ function flatten(input) {
 }
 
 function isId(str) {
-  return !! document.querySelector(str)
+  //add in custom scene query selector
+  return false
 }
 
 function each(obj, fn) {

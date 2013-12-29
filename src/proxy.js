@@ -1,9 +1,3 @@
-var k = {
-  points:[]
-, lineStrokes: []
-, lineFills: []
-}
-
 obj  = {
   schema: ['cx', 'cy', 'r', 'rgba']
 , index: 1
@@ -53,13 +47,18 @@ var proto = {
               this.buffer[this.index + 3] = packColor(v)
             }
           , render: renderCircles
+          , buffer: circleBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
+, line: { x1: function (v) { this.buffer[this.index] = x(v) }
+        , y1: function (v) { this.buffer[this.index] = y(v) }
+        , x2: function (v) { this.buffer[this.index] = x(v) }
+        , y2: function (v) { this.buffer[this.index] = y(v) }
+        , render: noop , buffer: lineBuffer }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
@@ -179,14 +178,14 @@ function insertBefore(node, next) {
 
 function appendChild(el) {
   var child = Object.create(types[el.tagName.toLowerCase()].prototype)
+    , buffer = child.buffer
   canvas.__scene__.push(child)
 
   child.attr = Object.create(attrDefaults)
   child.tagName = el.tagName
   child.parentNode = child.parentElement = this
-  child.index = circleBuffer.length - (circleBuffer.size * 4)
-  circleBuffer.size += 1
-  child.buffer = circleBuffer
+  child.index = buffer.length - (buffer.size * 4)
+  buffer.size += 1
   return child
 }
 

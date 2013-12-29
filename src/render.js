@@ -2,7 +2,7 @@ function drawLoop(elapsed) {
   beforeRender(elapsed)
 
   drawPoints(elapsed)
-  drawStrokes(elapsed)
+  drawLines(elapsed)
   drawPolygons(elapsed)
 
   afterRender(elapsed)
@@ -23,14 +23,14 @@ function countFrames(elapsed) {
 function beforeRender(elapsed) {
   countFrames(elapsed)
   gl.colorMask(true, true, true, true)
-  gl.depthMask(true)
   gl.clearColor(1,1,1,0)
-  gl.clearDepth(1)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 
+  //gl.depthMask(true)
+  //gl.clearDepth(1)
   //gl.enable(gl.DEPTH_TEST)
-  gl.disable(gl.BLEND)
 }
 
 function afterRender() {

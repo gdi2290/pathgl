@@ -17,7 +17,8 @@ function flatten(input) {
 }
 
 function isId(str) {
-  return !! document.querySelector(str)
+  //add in custom scene query selector
+  return false
 }
 
 function each(obj, fn) {
