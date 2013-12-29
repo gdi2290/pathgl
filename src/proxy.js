@@ -54,15 +54,15 @@ var proto = {
             }
           , render: renderCircles
           }
-, ellipse: { cx: buildEllipse, cy: buildEllipse, rx: buildEllipse, ry: buildEllipse } //points
+, ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
-, image: { 'xlink:href': noop, height: rectPoints, width: rectPoints, x: noop, y: noop } //point
+, image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
 , line: { x1: buildLine, y1: buildLine, x2: buildLine, y2: buildLine } //line
 , path: { d: buildPath, pathLength: buildPath } //lines
-, polygon: { points: points } //lines
-, polyline: { points: points } //lines
+, polygon: { points: noop } //lines
+, polyline: { points: noop } //lines
 
 , g: { appendChild: noop } //fake
 
