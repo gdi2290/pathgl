@@ -50,7 +50,7 @@ var proto = {
               this.buffer[this.index + 1] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index + 3] = this.index
+              this.buffer[this.index + 3] = packColor(v)
             }
           , render: renderCircles
           }

@@ -22,18 +22,20 @@ function countFrames(elapsed) {
 
 function beforeRender(elapsed) {
   countFrames(elapsed)
-  gl.colorMask(true, true, true, true);
-  gl.depthMask(true);
-  gl.clearColor(1,1,1,0);
-  gl.clearDepth(1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-  gl.enable(gl.CULL_FACE);
-  //gl.enable(gl.DEPTH_TEST);
+  gl.colorMask(true, true, true, true)
+  gl.depthMask(true)
+  gl.clearColor(1,1,1,0)
+  gl.clearDepth(1)
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.enable(gl.CULL_FACE)
+  gl.enable(gl.DEPTH_TEST)
+  gl.depthMask(true)
+  gl.disable(gl.BLEND)
 }
 function afterRender() {
-  gl.colorMask(false, false, false, true);
-  gl.clearColor(1,1,1,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.colorMask(false, false, false, true)
+  gl.clearColor(1,1,1,1)
+  gl.clear(gl.COLOR_BUFFER_BIT)
 }
 
 function addToBuffer(datum) {

@@ -262,7 +262,7 @@ var proto = {
               this.buffer[this.index + 1] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index + 3] = this.index
+              this.buffer[this.index + 3] = packColor(v)
             }
           , render: renderCircles
           }
@@ -466,18 +466,20 @@ function countFrames(elapsed) {
 
 function beforeRender(elapsed) {
   countFrames(elapsed)
-  gl.colorMask(true, true, true, true);
-  gl.depthMask(true);
-  gl.clearColor(1,1,1,0);
-  gl.clearDepth(1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-  gl.enable(gl.CULL_FACE);
-  //gl.enable(gl.DEPTH_TEST);
+  gl.colorMask(true, true, true, true)
+  gl.depthMask(true)
+  gl.clearColor(1,1,1,0)
+  gl.clearDepth(1)
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.enable(gl.CULL_FACE)
+  gl.enable(gl.DEPTH_TEST)
+  gl.depthMask(true)
+  gl.disable(gl.BLEND)
 }
 function afterRender() {
-  gl.colorMask(false, false, false, true);
-  gl.clearColor(1,1,1,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.colorMask(false, false, false, true)
+  gl.clearColor(1,1,1,1)
+  gl.clear(gl.COLOR_BUFFER_BIT)
 }
 
 function addToBuffer(datum) {
@@ -544,9 +546,15 @@ function toBuffer (array) {
 ;var circleVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
-, 'attribute vec4 testvert;'
 , 'varying vec3 rgb;'
-, 'vec3 parse_color(float f) {'
+, 'vec3 unpack_color(float f) {'
+, '    vec3 color;'
+, '    color.b = mod(f, 1e3);'
+, '    color.g = mod(f / 1e3, 1e3);'
+, '    color.r = mod(f / 1e6, 1e3);'
+, '    return (color - 100.) / 255.;'
+, '}'
+, 'vec3 unpack_pos(float f) {'
 , '    vec3 color;'
 , '    color.b = mod(f, 1e3);'
 , '    color.g = mod(f / 1e3, 1e3);'
@@ -554,7 +562,7 @@ function toBuffer (array) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1., 1.);'
+, '    gl_Position = vec4(attr.xy * attr.w, attr.w / 2., attr.w);'
 , '    gl_PointSize = attr.z * 2.;'
 , '    rgb = vec3(.5-attr.x, .5-attr.y, .7-(attr.y/attr.z));'
 , '}'
@@ -570,15 +578,16 @@ var circleFragment = [
 , '    if (dist > 0.5) discard;'
 , '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
 , '}'
+//, 'gl_FragCoord.xy'
 ].join('\n')
 
 var packCache = {}
-function packRgb(fill) {
+function packColor(fill) {
   return (packCache[fill] ||
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-var circleBuffer = new Float32Array(1e6)
+var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
 function drawPoints(elapsed) {

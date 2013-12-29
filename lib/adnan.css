@@ -152,3 +152,9 @@ label {
 .running {
     background: deeppink;
 }
+
+
+.blurb {
+    padding-left: 50px;
+    margin-top: 650px;
+}
