@@ -256,7 +256,6 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-
 var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
@@ -272,7 +271,7 @@ function drawPoints(elapsed) {
   }
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
+  gl.drawArrays(gl.POINTS, circleBuffer.size, circleBuffer.length / 4 - circleBuffer.size)
 };var lineVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
@@ -386,10 +385,10 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { this.buffer[this.index] = x(v) }
-        , y1: function (v) { this.buffer[this.index] = y(v) }
-        , x2: function (v) { this.buffer[this.index] = x(v) }
-        , y2: function (v) { this.buffer[this.index] = y(v) }
+, line: { x1: function (v) { this.buffer[this.index - 1] = x(v) }
+        , y1: function (v) { this.buffer[this.index - 2] = y(v) }
+        , x2: function (v) { this.buffer[this.index - 3] = x(v) }
+        , y2: function (v) { this.buffer[this.index - 4] = y(v) }
         , render: noop , buffer: lineBuffer }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines

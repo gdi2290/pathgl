@@ -41,7 +41,6 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-
 var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
@@ -57,5 +56,5 @@ function drawPoints(elapsed) {
   }
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
+  gl.drawArrays(gl.POINTS, circleBuffer.size, circleBuffer.length / 4 - circleBuffer.size)
 }
