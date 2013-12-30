@@ -35,7 +35,7 @@ var lineBuffer = new Float32Array(1e4)
 lineBuffer.size = 0
 window.lb = lineBuffer
 var lb
-function drawLines(){
+function drawLines(){return
   if (program.name !== 'line') gl.useProgram(program = programs.line)
 
   if (! lb) {

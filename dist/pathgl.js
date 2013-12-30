@@ -260,7 +260,6 @@ var pointBuffer = new Float32Array(4e4)
 pointBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
-  if(! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
   program.setstroke([1,0,0,1])
 
@@ -310,7 +309,7 @@ var lineBuffer = new Float32Array(1e4)
 lineBuffer.size = 0
 window.lb = lineBuffer
 var lb
-function drawLines(){
+function drawLines(){return
   if (program.name !== 'line') gl.useProgram(program = programs.line)
 
   if (! lb) {
@@ -362,6 +361,7 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
+              if (Math.random() > .999) console.log(123)
               this.buffer[this.index - 2] = v
             }
           , cx: function (v) {
@@ -526,7 +526,10 @@ function querySelectorAll(query) {
 
 function removeChild(el) {
   var i = this.__scene__.indexOf(el)
+
   this.__scene__.splice(i, 1)
+
+  delete el.index
 }
 
 var attrDefaults = {

@@ -45,7 +45,6 @@ var pointBuffer = new Float32Array(4e4)
 pointBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
-  if(! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
   program.setstroke([1,0,0,1])
 

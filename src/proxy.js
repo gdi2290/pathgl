@@ -35,6 +35,7 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
+              if (Math.random() > .999) console.log(123)
               this.buffer[this.index - 2] = v
             }
           , cx: function (v) {
@@ -199,7 +200,10 @@ function querySelectorAll(query) {
 
 function removeChild(el) {
   var i = this.__scene__.indexOf(el)
+
   this.__scene__.splice(i, 1)
+
+  delete el.index
 }
 
 var attrDefaults = {
