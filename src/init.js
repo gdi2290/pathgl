@@ -11,7 +11,8 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
-  extend(programs.circle = createProgram(circleVertex, circleFragment), {name : 'circle'})
+  ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
+  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
@@ -52,8 +53,14 @@ function initShader(_, name) {
 function createProgram(vs, fs) {
   program = gl.createProgram()
 
-  gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vs))
-  gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fs))
+  vs = compileShader(gl.VERTEX_SHADER, vs)
+  fs = compileShader(gl.FRAGMENT_SHADER, fs)
+
+  gl.attachShader(program, vs)
+  gl.attachShader(program, fs)
+
+  gl.deleteShader(vs)
+  gl.deleteShader(fs)
 
   gl.linkProgram(program)
   gl.useProgram(program)
@@ -65,10 +72,6 @@ function createProgram(vs, fs) {
   program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 
-  program.testvert = gl.getAttribLocation(program, "testvert")
-  //gl.enableVertexAttribArray(program.testvert)
-
-  program.name = name
   return program
 }
 

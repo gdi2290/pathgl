@@ -1,4 +1,4 @@
-var circleVertex = [
+var pointVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
 , 'varying vec3 rgb;'
@@ -23,7 +23,7 @@ var circleVertex = [
 , '}'
 ].join('\n')
 
-var circleFragment = [
+var pointFragment = [
   'precision mediump float;'
 , 'varying vec3 rgb;'
 , 'uniform vec4 vstroke;'
@@ -41,11 +41,12 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
+
 var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
-  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+  if (program.name !== 'point') gl.useProgram(prog = programs.point)
   program.setstroke([1,0,0,1])
 
   if(! buff) {

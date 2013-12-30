@@ -75,7 +75,8 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
-  extend(programs.circle = createProgram(circleVertex, circleFragment), {name : 'circle'})
+  ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
+  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
@@ -116,8 +117,14 @@ function initShader(_, name) {
 function createProgram(vs, fs) {
   program = gl.createProgram()
 
-  gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vs))
-  gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fs))
+  vs = compileShader(gl.VERTEX_SHADER, vs)
+  fs = compileShader(gl.FRAGMENT_SHADER, fs)
+
+  gl.attachShader(program, vs)
+  gl.attachShader(program, fs)
+
+  gl.deleteShader(vs)
+  gl.deleteShader(fs)
 
   gl.linkProgram(program)
   gl.useProgram(program)
@@ -129,10 +136,6 @@ function createProgram(vs, fs) {
   program.vertexPosition = gl.getAttribLocation(program, "attr")
   gl.enableVertexAttribArray(program.vertexPosition)
 
-  program.testvert = gl.getAttribLocation(program, "testvert")
-  //gl.enableVertexAttribArray(program.testvert)
-
-  program.name = name
   return program
 }
 
@@ -210,7 +213,7 @@ function closePath(next) {
 function lineTo(x, y) {
   this.push(x, y, 0)
 }
-;var circleVertex = [
+;var pointVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
 , 'varying vec3 rgb;'
@@ -235,7 +238,7 @@ function lineTo(x, y) {
 , '}'
 ].join('\n')
 
-var circleFragment = [
+var pointFragment = [
   'precision mediump float;'
 , 'varying vec3 rgb;'
 , 'uniform vec4 vstroke;'
@@ -253,11 +256,12 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
+
 var circleBuffer = new Float32Array(4e4)
 circleBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
-  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+  if (program.name !== 'point') gl.useProgram(prog = programs.point)
   program.setstroke([1,0,0,1])
 
   if(! buff) {
@@ -269,16 +273,52 @@ function drawPoints(elapsed) {
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.POINTS, 0, circleBuffer.size)
-};var lineBuffer = new Float32Array(4e4)
+};var lineVertex = [
+  'precision mediump float;'
+, 'attribute vec4 attr;'
+, 'varying vec3 rgb;'
+, 'vec3 unpack_color(float f) {'
+, '    vec3 color;'
+, '    color.b = mod(f, 1e3);'
+, '    color.g = mod(f / 1e3, 1e3);'
+, '    color.r = mod(f / 1e6, 1e3);'
+, '    return (color - 100.) / 255.;'
+, '}'
+, 'vec3 unpack_pos(float f) {'
+, '    vec3 color;'
+, '    color.b = mod(f, 1e3);'
+, '    color.g = mod(f / 1e3, 1e3);'
+, '    color.r = mod(f / 1e6, 1e3);'
+, '    return (color - 100.) / 255.;'
+, '}'
+, 'void main() {'
+, '    gl_Position = vec4(attr.xy, 1., 1.);'
+, '    gl_PointSize = attr.z * 2.;'
+, '    rgb = unpack_color(attr.w);'
+, '}'
+].join('\n')
+
+var lineFragment = [
+  'precision mediump float;'
+, 'varying vec3 rgb;'
+, 'uniform vec4 vstroke;'
+, 'uniform float opacity;'
+, 'void main() {'
+, '    float dist = distance(gl_PointCoord, vec2(0.5));'
+, '    if (dist > 0.5) discard;'
+, '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
+, '}'
+].join('\n')
+
+var lineBuffer = new Float32Array(4e4)
 lineBuffer.size = 0
 window.lb = lineBuffer
-
-function drawLines(){
 var lb
-  if (program.name !== 'circle') gl.useProgram(prog = programs.circle)
+function drawLines(){
+  if (program.name !== 'line') gl.useProgram(program = programs.line)
   program.setstroke([1,0,0,1])
 
-  if(! lb) {
+  if (! lb) {
     gl.bindBuffer(gl.ARRAY_BUFFER, lb = gl.createBuffer())
     gl.bufferData(gl.ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   } else {
@@ -286,7 +326,7 @@ var lb
   }
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.POINTS, 0, lineBuffer.size)
+  gl.drawArrays(gl.LINES, 0, lineBuffer.size)
 };function drawPolygons() {
 
 
