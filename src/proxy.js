@@ -204,7 +204,13 @@ function removeChild(el) {
   this.__scene__.splice(i, 1)
 
   delete el.index
+
+  el.r(0)
+
+  //el.buffer.size -= 1
 }
+
+//keep stack of items so we can move indices
 
 var attrDefaults = {
   rotation: [0, 1]
