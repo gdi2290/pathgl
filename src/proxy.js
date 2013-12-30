@@ -35,29 +35,29 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
-              this.buffer[this.index + 2] = v
+              this.buffer[this.index - 2] = v
             }
           , cx: function (v) {
-              this.buffer[this.index] = x(v)
+              this.buffer[this.index - 4] = x(v)
             }
           , cy: function (v) {
-              this.buffer[this.index + 1] = y(v)
+              this.buffer[this.index - 3] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index + 3] = packColor(v)
+              this.buffer[this.index - 1] = packColor(v)
             }
           , render: renderCircles
-          , buffer: circleBuffer
+          , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { this.buffer[this.index - 1] = x(v) }
-        , y1: function (v) { this.buffer[this.index - 2] = y(v) }
-        , x2: function (v) { this.buffer[this.index - 3] = x(v) }
-        , y2: function (v) { this.buffer[this.index - 4] = y(v) }
+, line: { x1: function (v) { this.buffer[this.index - 4] = x(v) }
+        , y1: function (v) { this.buffer[this.index - 3] = y(v) }
+        , x2: function (v) { this.buffer[this.index - 2] = x(v) }
+        , y2: function (v) { this.buffer[this.index - 1] = y(v) }
         , render: noop , buffer: lineBuffer }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines

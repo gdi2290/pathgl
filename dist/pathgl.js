@@ -256,25 +256,26 @@ function packColor(fill) {
           (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
 }
 
-var circleBuffer = new Float32Array(4e4)
-circleBuffer.size = 0
+var pointBuffer = new Float32Array(4e4)
+pointBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
-  if (program.name !== 'point') gl.useProgram(prog = programs.point)
+  if(! pointBuffer.size) return
+  if (program.name !== 'point') gl.useProgram(program = programs.point)
   program.setstroke([1,0,0,1])
 
   if(! buff) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
-    gl.bufferData(gl.ARRAY_BUFFER, circleBuffer, gl.DYNAMIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   } else {
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, circleBuffer)
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, pointBuffer)
   }
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.POINTS, circleBuffer.size, circleBuffer.length / 4 - circleBuffer.size)
+  gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.size, pointBuffer.size)
 };var lineVertex = [
   'precision mediump float;'
-, 'attribute vec4 attr;'
+, 'attribute vec2 attr;'
 , 'varying vec3 rgb;'
 , 'vec3 unpack_color(float f) {'
 , '    vec3 color;'
@@ -292,30 +293,25 @@ function drawPoints(elapsed) {
 , '}'
 , 'void main() {'
 , '    gl_Position = vec4(attr.xy, 1., 1.);'
-, '    gl_PointSize = attr.z * 2.;'
-, '    rgb = unpack_color(attr.w);'
+, '    rgb = vec3(.5, .5, 1.);'
 , '}'
 ].join('\n')
 
 var lineFragment = [
   'precision mediump float;'
 , 'varying vec3 rgb;'
-, 'uniform vec4 vstroke;'
 , 'uniform float opacity;'
 , 'void main() {'
-, '    float dist = distance(gl_PointCoord, vec2(0.5));'
-, '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
+, '    gl_FragColor = vec4(rgb, 1.);'
 , '}'
 ].join('\n')
 
-var lineBuffer = new Float32Array(4e4)
+var lineBuffer = new Float32Array(1e4)
 lineBuffer.size = 0
 window.lb = lineBuffer
 var lb
 function drawLines(){
   if (program.name !== 'line') gl.useProgram(program = programs.line)
-  program.setstroke([1,0,0,1])
 
   if (! lb) {
     gl.bindBuffer(gl.ARRAY_BUFFER, lb = gl.createBuffer())
@@ -324,8 +320,8 @@ function drawLines(){
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, lineBuffer)
   }
 
-  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
-  gl.drawArrays(gl.LINES, 0, lineBuffer.size)
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+  gl.drawArrays(gl.LINES, (lineBuffer.length - (lineBuffer.size * 4)) / 2, lineBuffer.size * 2)
 };function drawPolygons() {
 
 
@@ -366,29 +362,29 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
-              this.buffer[this.index + 2] = v
+              this.buffer[this.index - 2] = v
             }
           , cx: function (v) {
-              this.buffer[this.index] = x(v)
+              this.buffer[this.index - 4] = x(v)
             }
           , cy: function (v) {
-              this.buffer[this.index + 1] = y(v)
+              this.buffer[this.index - 3] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index + 3] = packColor(v)
+              this.buffer[this.index - 1] = packColor(v)
             }
           , render: renderCircles
-          , buffer: circleBuffer
+          , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { this.buffer[this.index - 1] = x(v) }
-        , y1: function (v) { this.buffer[this.index - 2] = y(v) }
-        , x2: function (v) { this.buffer[this.index - 3] = x(v) }
-        , y2: function (v) { this.buffer[this.index - 4] = y(v) }
+, line: { x1: function (v) { this.buffer[this.index - 4] = x(v) }
+        , y1: function (v) { this.buffer[this.index - 3] = y(v) }
+        , x2: function (v) { this.buffer[this.index - 2] = x(v) }
+        , y2: function (v) { this.buffer[this.index - 1] = y(v) }
         , render: noop , buffer: lineBuffer }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
