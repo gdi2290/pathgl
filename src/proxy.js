@@ -38,9 +38,9 @@ function packColor(fill, opacity) {
   if (c_packCache[fill])  return c_packCache[fill]
   var c = 0
   fill = d3.rgb(fill)
-  c += fill.r * 1e6
+  c += fill.b * 1e6
   c += fill.g * 1e3
-  c += fill.b
+  c += fill.r
   c += opacity
   c_packCache[fill] = c
   return c

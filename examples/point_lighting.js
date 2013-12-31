@@ -25,6 +25,7 @@ examples.point_lighting = function (selector) {
                .attr("cx", 10)
                .attr("cy", 10)
                .attr("r", 50)
+               .attr('fill', 'green')
                .attr('stroke', 'blue')
 
   d3.timer(function() {
