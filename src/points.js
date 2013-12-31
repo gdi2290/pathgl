@@ -1,7 +1,7 @@
 var pointVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
-
+, "uniform vec2 resolution;"
 , 'varying vec4 stroke;'
 , 'varying vec4 fill;'
 
@@ -14,16 +14,17 @@ var pointVertex = [
 , '               ,mod(f, 1.));'
 , '}'
 , 'vec3 unpack_pos(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
+, '    return vec3( 2. * ((mod(f / 1e12, 1e4) - 1000.) / 1e4 / resolution.x - 1.)'
+, '               , 1. - (2. * (mod(f / 1e8 , 1e4) - 1000.) / 1e4 / resolution.y)'
+, '               , (mod(f       , 1e4) - 1000.) / resolution.y'
+, '              );'
 , '}'
 , 'void main() {'
-, '    gl_Position.xy = vec2(attr.xy);'
-, '    gl_PointSize = attr.z * 2.;'
-, '    fill = unpack_color(attr.w);'
+, '    vec3 pos = unpack_pos(attr.x);'
+, '    gl_Position.xy = vec2(0., 0.);'
+, '    gl_PointSize = 50. * 2.;'
+
+, '    fill = vec4(1., 1., abs(pos.y), 1.0);'
 , '    stroke = unpack_color(attr.w);'
 , '}'
 ].join('\n')

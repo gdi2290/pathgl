@@ -219,29 +219,30 @@ function lineTo(x, y) {
 ;var pointVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
-
+, "uniform vec2 resolution;"
 , 'varying vec4 stroke;'
 , 'varying vec4 fill;'
 
 , 'const float c_precision = 128.0;'
 , 'const float c_precisionp1 = c_precision + 1.0;'
 , 'vec4 unpack_color(float f) {'
-, '    return vec4( (mod(f, 1e3) - 100.) / 255.'
-, '               , (mod(f / 1e3, 1e3) -  100.) / 255.'
-, '               , (mod(f / 1e6, 1e3) - 100.) / 255.'
-, '               , mod(f, 1.));'
+, '    return vec4(mod(f, 1e3) / 255.'
+, '               ,mod(f / 1e3, 1e3) / 255.'
+, '               ,mod(f / 1e6, 1e3) / 255.'
+, '               ,mod(f, 1.));'
 , '}'
 , 'vec3 unpack_pos(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
+, '    return vec3( 2. * ((mod(f / 1e12, 1e4) - 1000.) / 1e4 / resolution.x - 1.)'
+, '               , 1. - (2. * (mod(f / 1e8 , 1e4) - 1000.) / 1e4 / resolution.y)'
+, '               , (mod(f       , 1e4) - 1000.) / resolution.y'
+, '              );'
 , '}'
 , 'void main() {'
-, '    gl_Position.xy = vec2(attr.xy);'
-, '    gl_PointSize = attr.z * 2.;'
-, '    fill = unpack_color(attr.w);'
+, '    vec3 pos = unpack_pos(attr.x);'
+, '    gl_Position.xy = vec2(0., 0.);'
+, '    gl_PointSize = 50. * 2.;'
+
+, '    fill = vec4(1., 1., abs(pos.y), 1.0);'
 , '    stroke = unpack_color(attr.w);'
 , '}'
 ].join('\n')
@@ -364,24 +365,43 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
-var packCache = {}
+var c_packCache = {}
 function packColor(fill, opacity) {
-  return (packCache[fill] ||
-          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).reverse().join(''))) + opacity
+  if (packCache[fill])  return packCache[fill]
+  var c = 0
+  fill = d3.rgb(fill)
+  c += fill.r * 1e6
+  c += fill.g * 1e3
+  c += fill.b
+  c += opacity
+  packCache[fill] = c
+  return c
+}
+
+function packPosition (x, y, z) {
+  window.x = ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
+  return ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
 }
 
 var proto = {
   circle: { r: function (v) {
-              this.buffer[this.index - 2] = v
+              var a = this.attr
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
             }
           , cx: function (v) {
-              this.buffer[this.index - 4] = x(v)
+              var a = this.attr
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
             }
           , cy: function (v) {
-              this.buffer[this.index - 3] = y(v)
+              var a = this.attr
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
             }
           , fill: function (v) {
               this.buffer[this.index - 1] = packColor(v, .1)
+            }
+
+          , stroke: function (v) {
+
             }
           , buffer: pointBuffer
           }

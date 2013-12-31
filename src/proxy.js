@@ -33,7 +33,7 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
-var packCache = {}
+var c_packCache = {}
 function packColor(fill, opacity) {
   if (packCache[fill])  return packCache[fill]
   var c = 0
@@ -46,18 +46,30 @@ function packColor(fill, opacity) {
   return c
 }
 
+function packPosition (x, y, z) {
+  window.x = ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
+  return ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
+}
+
 var proto = {
   circle: { r: function (v) {
-              this.buffer[this.index - 2] = v
+              var a = this.attr
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
             }
           , cx: function (v) {
-              this.buffer[this.index - 4] = x(v)
+              var a = this.attr
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
             }
           , cy: function (v) {
-              this.buffer[this.index - 3] = y(v)
+              var a = this.attr
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
             }
           , fill: function (v) {
               this.buffer[this.index - 1] = packColor(v, .1)
+            }
+
+          , stroke: function (v) {
+
             }
           , buffer: pointBuffer
           }
