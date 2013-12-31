@@ -27,8 +27,7 @@ function beforeRender(elapsed) {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
-
-  //gl.depthMask(true)
+  gl.depthMask(false)
   //gl.clearDepth(1)
   //gl.enable(gl.DEPTH_TEST)
 }

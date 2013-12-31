@@ -17,7 +17,7 @@ var pointVertex = [
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1., 1.);'
+, '    gl_Position.xy = vec2(attr.xy);'
 , '    gl_PointSize = attr.z * 2.;'
 , '    rgb = unpack_color(attr.w);'
 , '}'
@@ -45,6 +45,7 @@ var pointBuffer = new Float32Array(4e4)
 pointBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
+  if (! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
   program.setstroke([1,0,0,1])
 
@@ -56,5 +57,6 @@ function drawPoints(elapsed) {
   }
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
+
   gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.size, pointBuffer.size)
 }

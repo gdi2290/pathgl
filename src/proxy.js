@@ -33,9 +33,22 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
+function packPosition() {
+
+}
+
+function unpackPosition () {
+
+
+}
+
+
+function unpackColor( ) {
+
+}
+
 var proto = {
   circle: { r: function (v) {
-              if (Math.random() > .999) console.log(123)
               this.buffer[this.index - 2] = v
             }
           , cx: function (v) {
@@ -47,7 +60,6 @@ var proto = {
           , fill: function (v) {
               this.buffer[this.index - 1] = packColor(v)
             }
-          , render: renderCircles
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -59,7 +71,8 @@ var proto = {
         , y1: function (v) { this.buffer[this.index - 3] = y(v) }
         , x2: function (v) { this.buffer[this.index - 2] = x(v) }
         , y2: function (v) { this.buffer[this.index - 1] = y(v) }
-        , render: noop , buffer: lineBuffer }
+        , buffer: lineBuffer
+        }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
@@ -70,10 +83,6 @@ var proto = {
 }
 
 var allCircles = new Float32Array(1e6)
-
-function renderCircles() {
-  gl.circlesToRender = true
-}
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: noop
@@ -113,7 +122,7 @@ var baseProto = extend(Object.create(null), {
     this[name] && this[name](value)
   }
 
-, style: {setProperty: noop}
+, style: { setProperty: noop }
 
 , removeAttribute: function (name) {
     delete this.attr[name]

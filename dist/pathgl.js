@@ -147,7 +147,7 @@ function bindUniform(val, key) {
 }
 
 function initContext(canvas) {
-  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+  var gl = canvas.getContext('webgl', { antialias: false }) || canvas.getContext('experimental-webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 }
 ;  var methods = { m: moveTo
@@ -232,7 +232,7 @@ function lineTo(x, y) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1., 1.);'
+, '    gl_Position.xy = vec2(attr.xy);'
 , '    gl_PointSize = attr.z * 2.;'
 , '    rgb = unpack_color(attr.w);'
 , '}'
@@ -260,6 +260,7 @@ var pointBuffer = new Float32Array(4e4)
 pointBuffer.size = 0
 var buff
 function drawPoints(elapsed) {
+  if (! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
   program.setstroke([1,0,0,1])
 
@@ -271,6 +272,7 @@ function drawPoints(elapsed) {
   }
 
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
+
   gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.size, pointBuffer.size)
 };var lineVertex = [
   'precision mediump float;'
@@ -309,7 +311,8 @@ var lineBuffer = new Float32Array(1e4)
 lineBuffer.size = 0
 window.lb = lineBuffer
 var lb
-function drawLines(){return
+function drawLines(){
+  if (! lineBuffer.size) return
   if (program.name !== 'line') gl.useProgram(program = programs.line)
 
   if (! lb) {
@@ -321,7 +324,8 @@ function drawLines(){return
 
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
   gl.drawArrays(gl.LINES, (lineBuffer.length - (lineBuffer.size * 4)) / 2, lineBuffer.size * 2)
-};function drawPolygons() {
+}
+;function drawPolygons() {
 
 
 };obj  = {
@@ -359,9 +363,22 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
+function packPosition() {
+
+}
+
+function unpackPosition () {
+
+
+}
+
+
+function unpackColor( ) {
+
+}
+
 var proto = {
   circle: { r: function (v) {
-              if (Math.random() > .999) console.log(123)
               this.buffer[this.index - 2] = v
             }
           , cx: function (v) {
@@ -373,7 +390,6 @@ var proto = {
           , fill: function (v) {
               this.buffer[this.index - 1] = packColor(v)
             }
-          , render: renderCircles
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -385,7 +401,8 @@ var proto = {
         , y1: function (v) { this.buffer[this.index - 3] = y(v) }
         , x2: function (v) { this.buffer[this.index - 2] = x(v) }
         , y2: function (v) { this.buffer[this.index - 1] = y(v) }
-        , render: noop , buffer: lineBuffer }
+        , buffer: lineBuffer
+        }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
@@ -396,10 +413,6 @@ var proto = {
 }
 
 var allCircles = new Float32Array(1e6)
-
-function renderCircles() {
-  gl.circlesToRender = true
-}
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: noop
@@ -439,7 +452,7 @@ var baseProto = extend(Object.create(null), {
     this[name] && this[name](value)
   }
 
-, style: {setProperty: noop}
+, style: { setProperty: noop }
 
 , removeAttribute: function (name) {
     delete this.attr[name]
@@ -594,8 +607,7 @@ function beforeRender(elapsed) {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
-
-  //gl.depthMask(true)
+  gl.depthMask(false)
   //gl.clearDepth(1)
   //gl.enable(gl.DEPTH_TEST)
 }
