@@ -65,8 +65,6 @@ function pathgl(canvas) {
 ;var stopRendering = false
 
 pathgl.stop = function () { stopRendering = true }
-var front, back
-
 function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
@@ -76,8 +74,6 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
-  front = createTarget(canvas.width, canvas.height)
-  back = createTarget(canvas.width, canvas.height)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
@@ -218,7 +214,7 @@ function lineTo(x, y) {
 }
 ;var pointVertex = [
   'precision mediump float;'
-, 'attribute vec4 attr;'
+, 'attribute highp vec4 attr;'
 , "uniform vec2 resolution;"
 , 'varying vec4 stroke;'
 , 'varying vec4 fill;'
@@ -226,21 +222,21 @@ function lineTo(x, y) {
 , 'const float c_precision = 128.0;'
 , 'const float c_precisionp1 = c_precision + 1.0;'
 , 'vec4 unpack_color(float f) {'
-, '    return vec4( mod(f, 1e3) / 255.'
-, '               , mod(f / 1e3, 1e3) / 255.'
-, '               , mod(f / 1e6, 1e3) / 255.'
-, '               , mod(f, 1.));'
+, '    return vec4( floor(mod(f / 1e6, 1e3)) / 256.'
+, '               , floor(mod(f / 1e9, 1e3)) / 256.'
+, '               , floor(mod(f / 1e12, 1e3)) / 256.'
+, '               , floor(mod(f / 1e3, 1e3)) / 256);'
 , '}'
 , 'vec3 unpack_pos(float f) {'
-, '    return vec3( mod(f / 1e12, 1e3) / resolution.x * 2. - 1.'
-, '               , 1. - (mod(f / 1e8, 1e3) / resolution.y * 2.)'
-, '               , mod(f, 10.) * 10.'
+, '    return vec3( mod(f / 1e6, 1e3) / resolution.x * 2. - 1.'
+, '               , 1. - (mod(f / 1e3, 1e3) / resolution.y * 2.)'
+, '               , fract(f)'
 , '              );'
 , '}'
 , 'void main() {'
 , '    vec3 pos = unpack_pos(attr.x);'
 , '    gl_Position.xy = pos.xy;'
-, '    gl_PointSize = pos.z;'
+, '    gl_PointSize = 5000.;'
 
 , '    fill = unpack_color(attr.y);'
 , '    stroke = unpack_color(attr.z);'
@@ -254,7 +250,7 @@ var pointFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .45 ? stroke : fill;'
+, '    gl_FragColor = dist > .45 ? stroke : vec4(fill.www, 1.);'
 , '}'
 ].join('\n')
 
@@ -367,23 +363,23 @@ var y = function (y) {
 
 var c_packCache = {}
 function packColor(fill, opacity) {
-  if (c_packCache[fill])  return c_packCache[fill]
+//  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
+  fill = 'pink'
   var c = 0
   fill = d3.rgb(fill)
-  c += fill.b * 1e6
-  c += fill.g * 1e3
-  c += fill.r
-  c += opacity
-  c_packCache[fill] = c
+  c += fill.b * 1e12
+  c += fill.g * 1e9
+  c += fill.r * 1e6
+  c += ~~ (256e3)
+  window.cp = c_packCache[fill] = c
   return c
 }
 
 function packPosition (x, y, z) {
   var p = 0
-  p += ~~(x) * 1e12
-  p += ~~(y) * 1e8
-  p += 100
-  window.p  =p
+  p += ~~(x) * 1e6
+  p += ~~(y) * 1e3
+  p += z
   return p
 }
 
@@ -401,11 +397,16 @@ var proto = {
               this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , fill: function (v) {
-              this.buffer[this.index - 3] = packColor(v, .1)
+              this.buffer[this.index - 3] = packColor(this.attr.fill, this.attr.opacity)
             }
 
           , stroke: function (v) {
-              this.buffer[this.index - 2] = packColor(v, .1)
+              this.buffer[this.index - 2] = packColor(this.attr.fill, this.attr.opacity)
+            }
+
+          , opacity: function (v) {
+              this.stroke()
+              this.fill()
             }
           , buffer: pointBuffer
           }
@@ -622,7 +623,11 @@ function beforeRender(elapsed) {
   gl.colorMask(true, true, true, true)
   gl.clearColor(1,1,1,0)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
-  gl.disable(gl.BLEND)
+  //gl.disable(gl.BLEND)
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
   gl.enable(gl.CULL_FACE)
   gl.depthMask(false)
   gl.clearDepth(1)

@@ -1,8 +1,6 @@
 var stopRendering = false
 
 pathgl.stop = function () { stopRendering = true }
-var front, back
-
 function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
@@ -12,8 +10,6 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
-  front = createTarget(canvas.width, canvas.height)
-  back = createTarget(canvas.width, canvas.height)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null

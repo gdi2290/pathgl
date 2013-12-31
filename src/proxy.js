@@ -35,23 +35,23 @@ var y = function (y) {
 
 var c_packCache = {}
 function packColor(fill, opacity) {
-  if (c_packCache[fill])  return c_packCache[fill]
+//  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
+  fill = 'pink'
   var c = 0
   fill = d3.rgb(fill)
-  c += fill.b * 1e6
-  c += fill.g * 1e3
-  c += fill.r
-  c += opacity
-  c_packCache[fill] = c
+  c += fill.b * 1e12
+  c += fill.g * 1e9
+  c += fill.r * 1e6
+  c += ~~ (256e3)
+  window.cp = c_packCache[fill] = c
   return c
 }
 
 function packPosition (x, y, z) {
   var p = 0
-  p += ~~(x) * 1e12
-  p += ~~(y) * 1e8
-  p += 100
-  window.p  =p
+  p += ~~(x) * 1e6
+  p += ~~(y) * 1e3
+  p += z
   return p
 }
 
@@ -69,11 +69,16 @@ var proto = {
               this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , fill: function (v) {
-              this.buffer[this.index - 3] = packColor(v, .1)
+              this.buffer[this.index - 3] = packColor(this.attr.fill, this.attr.opacity)
             }
 
           , stroke: function (v) {
-              this.buffer[this.index - 2] = packColor(v, .1)
+              this.buffer[this.index - 2] = packColor(this.attr.fill, this.attr.opacity)
+            }
+
+          , opacity: function (v) {
+              this.stroke()
+              this.fill()
             }
           , buffer: pointBuffer
           }
