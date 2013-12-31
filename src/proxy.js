@@ -1,22 +1,3 @@
-obj  = {
-  schema: ['cx', 'cy', 'r', 'rgba']
-, index: 1
-
-, buffer: []
-, getIndex: function (n) {
-    var i = this.schema.indexOf(n)
-    return ~i && this.index + i
-  }
-, setAttribute: function (n, v) {
-    this.getIndex(n)
-    this.buffer[n] = v
-  }
-
-, getAttribute: function (n) {
-    return this.buffer[this.index + this.schema.indexOf(n)]
-  }
-}
-
 d3.scale.linear()
 .domain([0, canvas.width])
 .range([-1, 1])
@@ -54,6 +35,13 @@ function packPosition (x, y, z) {
   p += z
   return p
 }
+
+//packing cons
+//
+
+//pros
+
+//
 
 var proto = {
   circle: { r: function (v) {
