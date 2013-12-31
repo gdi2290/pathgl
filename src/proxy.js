@@ -35,8 +35,15 @@ var y = function (y) {
 
 var packCache = {}
 function packColor(fill, opacity) {
-  return (packCache[fill] ||
-          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).reverse().join(''))) + opacity
+  if (packCache[fill])  return packCache[fill]
+  var c = 0
+  fill = d3.rgb(fill)
+  c += fill.r * 1e6
+  c += fill.g * 1e3
+  c += fill.b
+  c += opacity
+  packCache[fill] = c
+  return c
 }
 
 var proto = {
