@@ -33,18 +33,10 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
-function packPosition() {
-
-}
-
-function unpackPosition () {
-
-
-}
-
-
-function unpackColor( ) {
-
+var packCache = {}
+function packColor(fill, opacity) {
+  return (packCache[fill] ||
+          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).reverse().join(''))) + opacity
 }
 
 var proto = {
@@ -58,7 +50,7 @@ var proto = {
               this.buffer[this.index - 3] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index - 1] = packColor(v)
+              this.buffer[this.index - 1] = packColor(v, .1)
             }
           , buffer: pointBuffer
           }
@@ -232,7 +224,7 @@ var attrDefaults = {
 , cy: 0
 , x: 0
 , y: 0
-, opacity: 1
+, opacity: .999
 }
 
 var e = {}

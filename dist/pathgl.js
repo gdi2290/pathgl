@@ -219,17 +219,17 @@ function lineTo(x, y) {
 ;var pointVertex = [
   'precision mediump float;'
 , 'attribute vec4 attr;'
-, 'varying vec3 rgb;'
-, 'uniform vec4 stroke;'
-, 'uniform float opacity;'
-, 'varying vec4 v_stroke;'
-, 'varying float v_opacity;'
-, 'vec3 unpack_color(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
+
+, 'varying vec4 stroke;'
+, 'varying vec4 fill;'
+
+, 'const float c_precision = 128.0;'
+, 'const float c_precisionp1 = c_precision + 1.0;'
+, 'vec4 unpack_color(float f) {'
+, '    return vec4( (mod(f, 1e3) - 100.) / 255.'
+, '               , (mod(f / 1e3, 1e3) -  100.) / 255.'
+, '               , (mod(f / 1e6, 1e3) - 100.) / 255.'
+, '               , mod(f, 1.));'
 , '}'
 , 'vec3 unpack_pos(float f) {'
 , '    vec3 color;'
@@ -239,31 +239,23 @@ function lineTo(x, y) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
-, '    v_opacity = opacity;'
-, '    v_stroke = stroke;'
 , '    gl_Position.xy = vec2(attr.xy);'
 , '    gl_PointSize = attr.z * 2.;'
-, '    rgb = unpack_color(attr.w);'
+, '    fill = unpack_color(attr.w);'
+, '    stroke = unpack_color(attr.w);'
 , '}'
 ].join('\n')
 
 var pointFragment = [
   'precision mediump float;'
-, 'varying vec3 rgb;'
-, 'varying vec4 v_stroke;'
-, 'varying float v_opacity;'
+, 'varying vec4 stroke;'
+, 'varying vec4 fill;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .40 ? v_stroke : vec4(rgb, v_opacity);'
+, '    gl_FragColor = dist > .40 ? stroke : fill;'
 , '}'
 ].join('\n')
-
-var packCache = {}
-function packColor(fill) {
-  return (packCache[fill] ||
-          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).join('')))
-}
 
 var pointBuffer = new Float32Array(4e4)
 pointBuffer.size = 0
@@ -372,18 +364,10 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
-function packPosition() {
-
-}
-
-function unpackPosition () {
-
-
-}
-
-
-function unpackColor( ) {
-
+var packCache = {}
+function packColor(fill, opacity) {
+  return (packCache[fill] ||
+          (packCache[fill] = + d3.values(d3.rgb(fill)).slice(0, 3).map(function (d){ return d + 100 }).reverse().join(''))) + opacity
 }
 
 var proto = {
@@ -397,7 +381,7 @@ var proto = {
               this.buffer[this.index - 3] = y(v)
             }
           , fill: function (v) {
-              this.buffer[this.index - 1] = packColor(v)
+              this.buffer[this.index - 1] = packColor(v, .1)
             }
           , buffer: pointBuffer
           }
@@ -571,7 +555,7 @@ var attrDefaults = {
 , cy: 0
 , x: 0
 , y: 0
-, opacity: 1
+, opacity: .999
 }
 
 var e = {}
