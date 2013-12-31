@@ -260,7 +260,6 @@ var buff
 function drawPoints(elapsed) {
   if (! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
-  //program.setstroke([1,0,0,1])
 
   if(! buff) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
@@ -499,7 +498,19 @@ var types = [
 , function g() {}
 , function use() {}
 ].reduce(function (a, type) {
-              a[type.name] = type
+              a[type.name] = function (el) {
+                var child = new type()
+                  , buffer = child.buffer
+
+                canvas.__scene__.push(child)
+
+                child.attr = Object.create(attrDefaults)
+                child.tagName = el.tagName
+                child.parentNode = child.parentElement = this
+                child.index = buffer.length - (buffer.size * 4)
+                buffer.size += 1
+                return child
+              }
               type.prototype = extend(Object.create(baseProto), proto[type.name])
               return a
             }, {})
@@ -535,16 +546,7 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var child = new types[el.tagName.toLowerCase()]
-    , buffer = child.buffer
-  canvas.__scene__.push(child)
-
-  child.attr = Object.create(attrDefaults)
-  child.tagName = el.tagName
-  child.parentNode = child.parentElement = this
-  child.index = buffer.length - (buffer.size * 4)
-  buffer.size += 1
-  return child
+  return types[el.tagName.toLowerCase()](el)
 }
 
 function querySelector(query) {

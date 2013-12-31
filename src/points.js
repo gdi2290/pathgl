@@ -46,7 +46,6 @@ var buff
 function drawPoints(elapsed) {
   if (! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
-  //program.setstroke([1,0,0,1])
 
   if(! buff) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
