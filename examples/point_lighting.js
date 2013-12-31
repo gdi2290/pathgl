@@ -1,5 +1,5 @@
 examples.point_lighting = function (selector) {
-  var data = d3.range(1e1).map(function() {
+  var data = d3.range(1e2).map(function() {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
@@ -18,13 +18,14 @@ examples.point_lighting = function (selector) {
             .attr('height', height).attr('width', width)
             .call(pathgl)
 
-  var circle = svg.selectAll("circle")
+  circle = svg.selectAll("circle")
                .data(data)
                .enter().append("circle")
-               .attr('fill', function () { return "hsl(" + Math.random() * 360 + ",100%,50%)" })
+               .attr('fill', function () { return "hsl(" + Math.random() * 360 + ", 100%, 50%)" })
                .attr("cx", 10)
                .attr("cy", 10)
                .attr("r", 50)
+               .attr("opacity", .5)
 
   d3.timer(function() {
     data.forEach(function(d) {

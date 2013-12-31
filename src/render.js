@@ -25,10 +25,10 @@ function beforeRender(elapsed) {
   gl.colorMask(true, true, true, true)
   gl.clearColor(1,1,1,0)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
-  //gl.disable(gl.BLEND)
 
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  // gl.disable(gl.BLEND)
+  // gl.enable(gl.BLEND);
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
   gl.enable(gl.CULL_FACE)
   gl.depthMask(false)

@@ -17,31 +17,34 @@ var y = function (y) {
 var c_packCache = {}
 function packColor(fill, opacity) {
 //  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
-  fill = 'pink'
+  //fill = 'pink'
   var c = 0
   fill = d3.rgb(fill)
   c += fill.b * 1e12
   c += fill.g * 1e9
   c += fill.r * 1e6
-  c += ~~ (256e3)
+  c += ~~ (opacity * 256e3)
+  c += 1
   window.cp = c_packCache[fill] = c
   return c
 }
 
 function packPosition (x, y, z) {
   var p = 0
-  p += ~~(x) * 1e6
-  p += ~~(y) * 1e3
-  p += z
+  p += ~~(x) * 1e9
+  p += ~~(y) * 1e6
+  p += z * 1e3
   return p
 }
 
-//packing cons
-//
+//packing pros
+//cool
+//might result in speedup if app is memory bandwith bound
 
-//pros
-
-//
+//index buffer pros
+//needed for concave shape tesselation
+//needed for shared colors
+//kewl algorithms leewl
 
 var proto = {
   circle: { r: function (v) {
