@@ -226,23 +226,23 @@ function lineTo(x, y) {
 , 'const float c_precision = 128.0;'
 , 'const float c_precisionp1 = c_precision + 1.0;'
 , 'vec4 unpack_color(float f) {'
-, '    return vec4(mod(f, 1e3) / 255.'
-, '               ,mod(f / 1e3, 1e3) / 255.'
-, '               ,mod(f / 1e6, 1e3) / 255.'
-, '               ,mod(f, 1.));'
+, '    return vec4( mod(f, 1e3) / 255.'
+, '               , mod(f / 1e3, 1e3) / 255.'
+, '               , mod(f / 1e6, 1e3) / 255.'
+, '               , mod(f, 1.));'
 , '}'
 , 'vec3 unpack_pos(float f) {'
-, '    return vec3( 2. * ((mod(f / 1e12, 1e4) - 1000.) / 1e4 / resolution.x - 1.)'
-, '               , 1. - (2. * (mod(f / 1e8 , 1e4) - 1000.) / 1e4 / resolution.y)'
-, '               , (mod(f       , 1e4) - 1000.) / resolution.y'
+, '    return vec3( mod(f / 1e12, 1e3) / resolution.x * 2. - 1.'
+, '               , 1. - (mod(f / 1e8, 1e3) / resolution.y * 2.)'
+, '               , 10.'
 , '              );'
 , '}'
 , 'void main() {'
 , '    vec3 pos = unpack_pos(attr.x);'
-, '    gl_Position.xy = vec2(0., 0.);'
-, '    gl_PointSize = 50. * 2.;'
+, '    gl_Position.xy = pos.xy;'
+, '    gl_PointSize = pos.z;'
 
-, '    fill = vec4(1., 1., abs(pos.y), 1.0);'
+, '    fill = unpack_color(attr.w);'
 , '    stroke = unpack_color(attr.w);'
 , '}'
 ].join('\n')
@@ -367,34 +367,37 @@ var y = function (y) {
 
 var c_packCache = {}
 function packColor(fill, opacity) {
-  if (packCache[fill])  return packCache[fill]
+  if (c_packCache[fill])  return c_packCache[fill]
   var c = 0
   fill = d3.rgb(fill)
   c += fill.r * 1e6
   c += fill.g * 1e3
   c += fill.b
   c += opacity
-  packCache[fill] = c
+  c_packCache[fill] = c
   return c
 }
 
 function packPosition (x, y, z) {
-  window.x = ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
-  return ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
+  var p = 0
+  p += ~~(x) * 1e12
+  p += ~~(y) * 1e8
+  p += ~~z
+  return p
 }
 
 var proto = {
   circle: { r: function (v) {
               var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , cx: function (v) {
               var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , cy: function (v) {
               var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , fill: function (v) {
               this.buffer[this.index - 1] = packColor(v, .1)
@@ -417,8 +420,8 @@ var proto = {
         , buffer: lineBuffer
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
-, polygon: { points: noop } //lines
-, polyline: { points: noop } //lines
+                                                  , polygon: { points: noop } //lines
+                                                                                , polyline: { points: noop } //lines
 
 , g: { appendChild: noop } //fake
 
@@ -614,7 +617,7 @@ function countFrames(elapsed) {
 }
 
 function beforeRender(elapsed) {
-  countFrames(elapsed)
+  // countFrames(elapsed)
   gl.colorMask(true, true, true, true)
   gl.clearColor(1,1,1,0)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)

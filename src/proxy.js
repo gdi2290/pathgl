@@ -35,34 +35,37 @@ var y = function (y) {
 
 var c_packCache = {}
 function packColor(fill, opacity) {
-  if (packCache[fill])  return packCache[fill]
+  if (c_packCache[fill])  return c_packCache[fill]
   var c = 0
   fill = d3.rgb(fill)
   c += fill.r * 1e6
   c += fill.g * 1e3
   c += fill.b
   c += opacity
-  packCache[fill] = c
+  c_packCache[fill] = c
   return c
 }
 
 function packPosition (x, y, z) {
-  window.x = ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
-  return ((~~x) * 1e12 + 1000) + ((~~y) * 1e8 + 1000) + (~~ z)
+  var p = 0
+  p += ~~(x) * 1e12
+  p += ~~(y) * 1e8
+  p += ~~z
+  return p
 }
 
 var proto = {
   circle: { r: function (v) {
               var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , cx: function (v) {
               var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , cy: function (v) {
               var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cx, a.r)
+              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , fill: function (v) {
               this.buffer[this.index - 1] = packColor(v, .1)
@@ -85,8 +88,8 @@ var proto = {
         , buffer: lineBuffer
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
-, polygon: { points: noop } //lines
-, polyline: { points: noop } //lines
+                                                  , polygon: { points: noop } //lines
+                                                                                , polyline: { points: noop } //lines
 
 , g: { appendChild: noop } //fake
 

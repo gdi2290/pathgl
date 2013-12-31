@@ -1,5 +1,5 @@
 examples.point_lighting = function (selector) {
-  var data = d3.range(1).map(function() {
+  var data = d3.range(1e4).map(function() {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
@@ -24,7 +24,7 @@ examples.point_lighting = function (selector) {
                .attr('fill', function () { return "hsl(" + Math.random() * 360 + ",100%,50%)" })
                .attr("cx", 10)
                .attr("cy", 10)
-               .attr("r", 5)
+               //.attr("r", 500)
 
   d3.timer(function() {
     data.forEach(function(d) {
