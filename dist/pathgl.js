@@ -234,7 +234,7 @@ function lineTo(x, y) {
 , 'vec3 unpack_pos(float f) {'
 , '    return vec3( mod(f / 1e12, 1e3) / resolution.x * 2. - 1.'
 , '               , 1. - (mod(f / 1e8, 1e3) / resolution.y * 2.)'
-, '               , 10.'
+, '               , mod(f, 10.) * 10.'
 , '              );'
 , '}'
 , 'void main() {'
@@ -242,8 +242,8 @@ function lineTo(x, y) {
 , '    gl_Position.xy = pos.xy;'
 , '    gl_PointSize = pos.z;'
 
-, '    fill = unpack_color(attr.w);'
-, '    stroke = unpack_color(attr.w);'
+, '    fill = unpack_color(attr.y);'
+, '    stroke = unpack_color(attr.z);'
 , '}'
 ].join('\n')
 
@@ -254,7 +254,7 @@ var pointFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .40 ? stroke : fill;'
+, '    gl_FragColor = dist > .45 ? stroke : fill;'
 , '}'
 ].join('\n')
 
@@ -382,7 +382,8 @@ function packPosition (x, y, z) {
   var p = 0
   p += ~~(x) * 1e12
   p += ~~(y) * 1e8
-  p += ~~z
+  p += 100
+  window.p  =p
   return p
 }
 
@@ -400,11 +401,11 @@ var proto = {
               this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
             }
           , fill: function (v) {
-              this.buffer[this.index - 1] = packColor(v, .1)
+              this.buffer[this.index - 3] = packColor(v, .1)
             }
 
           , stroke: function (v) {
-
+              this.buffer[this.index - 2] = packColor(v, .1)
             }
           , buffer: pointBuffer
           }
