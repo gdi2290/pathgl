@@ -1,55 +1,4 @@
 ! function() {
-pathgl.shaderParameters = {
-  rgb: [0, 0, 0, 0]
-, translate: [0, 0]
-, time: [0]
-, rotation: [0, 1]
-, opacity: [1]
-, resolution: [0, 0]
-, scale: [1, 1]
-, stroke: [0]
-, mouse: pathgl.mouse = [0, 0]
-}
-
-pathgl.fragment = [ "precision mediump float;"
-                  , "uniform vec4 rgb;"
-                  , "uniform float time;"
-                  , "uniform float opacity;"
-                  , "uniform vec2 resolution;"
-
-                  , "void main(void) {"
-                  , "  gl_FragColor = vec4(rgb.xyz, opacity);"
-                  , "}"
-                  ].join('\n')
-
-pathgl.vertex = [ "precision mediump float;"
-                , "attribute vec3 attr;"
-                , "attribute vec3 testvert;"
-                , "uniform vec2 translate;"
-                , "uniform vec2 resolution;"
-                , "uniform vec2 rotation;"
-                , "uniform vec2 scale;"
-
-                , "void main(void) {"
-
-                , "vec3 pos = attr;"
-                , "pos.y = resolution.y - pos.y;"
-
-                , "vec3 scaled_position = pos * vec3(scale, 1.0);"
-
-                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
-                + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
-
-                , "vec2 position = vec2(rotated_position.x + translate.x, rotated_position.y - translate.y);"
-
-                , "vec2 zeroToOne = position / resolution;"
-                , "vec2 zeroToTwo = zeroToOne * 2.0;"
-                , "vec2 clipSpace = zeroToTwo - 1.0;"
-
-                , "gl_Position = vec4(clipSpace, 1, 1);"
-
-                , "}"
-                ].join('\n')
 ;this.pathgl = pathgl
 
 pathgl.stop = d3.functor()
@@ -64,18 +13,30 @@ function pathgl(canvas) {
   if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas')
 ;var stopRendering = false
 
+pathgl.shaderParameters = {
+  rgb: [0, 0, 0, 0]
+, translate: [0, 0]
+, time: [0]
+, rotation: [0, 1]
+, opacity: [1]
+, resolution: [0, 0]
+, scale: [1, 1]
+, stroke: [0]
+, mouse: pathgl.mouse = [0, 0]
+}
+
+
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
-  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
+  //;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
@@ -132,8 +93,11 @@ function createProgram(vs, fs) {
 
   each(pathgl.shaderParameters, bindUniform)
 
-  program.vertexPosition = gl.getAttribLocation(program, "attr")
+  program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vertexPosition)
+
+  program.vColor = gl.getAttribLocation(program, "color")
+  gl.enableVertexAttribArray(program.vColor)
 
   return program
 }
@@ -214,24 +178,19 @@ function lineTo(x, y) {
 }
 ;var pointVertex = [
   'precision mediump float;'
+
 , 'attribute vec4 pos;'
-, 'attribute int color;'
+, 'attribute vec4 color;'
+
 , 'varying vec4 stroke;'
 , 'varying vec4 fill;'
 
-, 'const float c_precision = 128.0;'
-, 'const float c_precisionp1 = c_precision + 1.0;'
-, 'vec3 unpack_color(float f) {'
-, '    return vec3( floor(mod(f / 1e6, 1e3)) / 256.'
-, '               , floor(mod(f / 1e9, 1e3)) / 256.'
-, '               , floor(mod(f / 1e12, 1e3)) / 256.);'
-, '}'
 , 'void main() {'
 , '    gl_Position.xy = pos.xy;'
 , '    gl_PointSize = pos.z;'
 
-, '    fill = unpack_color(color);'
-, '    stroke = unpack_color(color);'
+, '    fill = color;'
+, '    stroke = color;'
 , '}'
 ].join('\n')
 
@@ -246,21 +205,21 @@ var pointFragment = [
 , '}'
 ].join('\n')
 
-pointBuffer.size = 0
+var pointBuffer = new Uint32Array(1e3)
+var colorBuffer = new Float32Array(1e3)
+var pointPosBuffer = new Float32Array(1e3)
+pointBuffer.count = 0
 window.pb = pointBuffer
 var buff
 
-var colorBuffer = new Uint32Array(1e3)
-var pointBuffer = new Uint32Array(1e3)
-var pointPosBuffer = new Float32Array(1e3)
+
 //gl.drawElements(gl.POINTS, 60, gl.UNSIGNED_SHORT, 0)
 
 function drawPoints(elapsed) {
-  if (! pointBuffer.size) return
+  if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
 
   if(! buff) {
-
   } else {
     //gl.bufferSubData(gl.ARRAY_BUFFER, 0, pointBuffer)
   }
@@ -273,7 +232,7 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-  gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.size, pointBuffer.size)
+  gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.count, pointBuffer.count)
 }
 ;var lineVertex = [
   'precision mediump float;'
@@ -347,8 +306,7 @@ var y = function (y) {
 
 var c_packCache = {}
 function packColor(fill, opacity) {
-//  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
-  //fill = 'pink'
+  //  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
   var c = 0
   fill = d3.rgb(fill)
   c += fill.b * 1e12
@@ -356,7 +314,6 @@ function packColor(fill, opacity) {
   c += fill.r * 1e6
   c += ~~ (opacity * 256e3)
   c += 1
-  window.cp = c_packCache[fill] = c
   return c
 }
 
@@ -368,40 +325,29 @@ function packPosition (x, y, z) {
   return p
 }
 
-//packing pros
-//cool
-//might result in speedup if app is memory bandwith bound
-
-//index buffer pros
-//needed for concave shape tesselation
-//needed for shared colors
-//kewl algorithms leewl
-
 var proto = {
   circle: { r: function (v) {
-              var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
+              pointPosBuffer[this.count + 2] = v
             }
           , cx: function (v) {
-              var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
+              pointPosBuffer[this.count + 1] = y(v)
+
             }
           , cy: function (v) {
-              var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
+              pointPosBuffer[this.count + 0] = x(v)
             }
           , fill: function (v) {
-              this.buffer[this.index - 3] = packColor(this.attr.fill, this.attr.opacity)
+              var fill = d3.rgb(v)
+              colorBuffer[this.count + 0] = fill.r
+              colorBuffer[this.count + 1] = fill.g
+              colorBuffer[this.count + 2] = fill.b
+              colorBuffer[this.count + 3] = this.attr.opacity
             }
 
           , stroke: function (v) {
-              this.buffer[this.index - 2] = packColor(this.attr.fill, this.attr.opacity)
+              colorBuffer[this.count]
             }
 
-          , opacity: function (v) {
-              this.stroke()
-              this.fill()
-            }
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -499,11 +445,16 @@ var types = [
 
                 canvas.__scene__.push(child)
 
+                var numArrays = 2
+
                 child.attr = Object.create(attrDefaults)
                 child.tagName = el.tagName
                 child.parentNode = child.parentElement = this
-                child.index = buffer.length - (buffer.size * 4)
-                buffer.size += 1
+                child.index = buffer.length - (buffer.count * numArrays)
+                child.count = buffer.count
+                buffer[child.index -1] = buffer.count
+                buffer[child.index -2] = buffer.count
+                buffer.count += 1
                 return child
               }
               type.prototype = extend(Object.create(baseProto), proto[type.name])
@@ -547,8 +498,6 @@ function removeChild(el) {
 
   //el.buffer.size -= 1
 }
-
-//keep stack of items so we can move indices
 
 var attrDefaults = {
   rotation: [0, 1]
@@ -703,58 +652,7 @@ function createTarget( width, height ) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   return target
 }
-;pathgl.shaderParameters = {
-  rgb: [0, 0, 0, 0]
-, translate: [0, 0]
-, time: [0]
-, rotation: [0, 1]
-, opacity: [1]
-, resolution: [0, 0]
-, scale: [1, 1]
-, stroke: [0]
-, mouse: pathgl.mouse = [0, 0]
-}
-
-pathgl.fragment = [ "precision mediump float;"
-                  , "uniform vec4 rgb;"
-                  , "uniform float time;"
-                  , "uniform float opacity;"
-                  , "uniform vec2 resolution;"
-
-                  , "void main(void) {"
-                  , "  gl_FragColor = vec4(rgb.xyz, opacity);"
-                  , "}"
-                  ].join('\n')
-
-pathgl.vertex = [ "precision mediump float;"
-                , "attribute vec3 attr;"
-                , "attribute vec3 testvert;"
-                , "uniform vec2 translate;"
-                , "uniform vec2 resolution;"
-                , "uniform vec2 rotation;"
-                , "uniform vec2 scale;"
-
-                , "void main(void) {"
-
-                , "vec3 pos = attr;"
-                , "pos.y = resolution.y - pos.y;"
-
-                , "vec3 scaled_position = pos * vec3(scale, 1.0);"
-
-                , "vec2 rotated_position = vec2(scaled_position.x * rotation.y + scaled_position.y * rotation.x, "
-                + "scaled_position.y * rotation.y - scaled_position.x * rotation.x);"
-
-                , "vec2 position = vec2(rotated_position.x + translate.x, rotated_position.y - translate.y);"
-
-                , "vec2 zeroToOne = position / resolution;"
-                , "vec2 zeroToTwo = zeroToOne * 2.0;"
-                , "vec2 clipSpace = zeroToTwo - 1.0;"
-
-                , "gl_Position = vec4(clipSpace, 1, 1);"
-
-                , "}"
-                ].join('\n')
-;function noop () {}
+;;function noop () {}
 
 function extend (a, b) {
   if (arguments.length > 2) [].forEach.call(arguments, function (b) { extend(a, b) })

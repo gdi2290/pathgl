@@ -1,17 +1,29 @@
 var stopRendering = false
 
+pathgl.shaderParameters = {
+  rgb: [0, 0, 0, 0]
+, translate: [0, 0]
+, time: [0]
+, rotation: [0, 1]
+, opacity: [1]
+, resolution: [0, 0]
+, scale: [1, 1]
+, stroke: [0]
+, mouse: pathgl.mouse = [0, 0]
+}
+
+
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
   programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  initShader(pathgl.fragment, '_identity')
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
-  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
+  //;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
@@ -68,8 +80,11 @@ function createProgram(vs, fs) {
 
   each(pathgl.shaderParameters, bindUniform)
 
-  program.vertexPosition = gl.getAttribLocation(program, "attr")
+  program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vertexPosition)
+
+  program.vColor = gl.getAttribLocation(program, "color")
+  gl.enableVertexAttribArray(program.vColor)
 
   return program
 }

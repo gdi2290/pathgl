@@ -16,8 +16,7 @@ var y = function (y) {
 
 var c_packCache = {}
 function packColor(fill, opacity) {
-//  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
-  //fill = 'pink'
+  //  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
   var c = 0
   fill = d3.rgb(fill)
   c += fill.b * 1e12
@@ -25,7 +24,6 @@ function packColor(fill, opacity) {
   c += fill.r * 1e6
   c += ~~ (opacity * 256e3)
   c += 1
-  window.cp = c_packCache[fill] = c
   return c
 }
 
@@ -37,40 +35,29 @@ function packPosition (x, y, z) {
   return p
 }
 
-//packing pros
-//cool
-//might result in speedup if app is memory bandwith bound
-
-//index buffer pros
-//needed for concave shape tesselation
-//needed for shared colors
-//kewl algorithms leewl
-
 var proto = {
   circle: { r: function (v) {
-              var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
+              pointPosBuffer[this.count + 2] = v
             }
           , cx: function (v) {
-              var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
+              pointPosBuffer[this.count + 1] = y(v)
+
             }
           , cy: function (v) {
-              var a = this.attr
-              this.buffer[this.index - 4] = packPosition(a.cx, a.cy, a.r)
+              pointPosBuffer[this.count + 0] = x(v)
             }
           , fill: function (v) {
-              this.buffer[this.index - 3] = packColor(this.attr.fill, this.attr.opacity)
+              var fill = d3.rgb(v)
+              colorBuffer[this.count + 0] = fill.r
+              colorBuffer[this.count + 1] = fill.g
+              colorBuffer[this.count + 2] = fill.b
+              colorBuffer[this.count + 3] = this.attr.opacity
             }
 
           , stroke: function (v) {
-              this.buffer[this.index - 2] = packColor(this.attr.fill, this.attr.opacity)
+              colorBuffer[this.count]
             }
 
-          , opacity: function (v) {
-              this.stroke()
-              this.fill()
-            }
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -168,11 +155,16 @@ var types = [
 
                 canvas.__scene__.push(child)
 
+                var numArrays = 2
+
                 child.attr = Object.create(attrDefaults)
                 child.tagName = el.tagName
                 child.parentNode = child.parentElement = this
-                child.index = buffer.length - (buffer.size * 4)
-                buffer.size += 1
+                child.index = buffer.length - (buffer.count * numArrays)
+                child.count = buffer.count
+                buffer[child.index -1] = buffer.count
+                buffer[child.index -2] = buffer.count
+                buffer.count += 1
                 return child
               }
               type.prototype = extend(Object.create(baseProto), proto[type.name])
@@ -216,8 +208,6 @@ function removeChild(el) {
 
   //el.buffer.size -= 1
 }
-
-//keep stack of items so we can move indices
 
 var attrDefaults = {
   rotation: [0, 1]
