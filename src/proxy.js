@@ -207,7 +207,7 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var child = Object.create(types[el.tagName.toLowerCase()].prototype)
+  var child = new types[el.tagName.toLowerCase()]
     , buffer = child.buffer
   canvas.__scene__.push(child)
 

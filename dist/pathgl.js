@@ -225,7 +225,7 @@ function lineTo(x, y) {
 , '    return vec4( floor(mod(f / 1e6, 1e3)) / 256.'
 , '               , floor(mod(f / 1e9, 1e3)) / 256.'
 , '               , floor(mod(f / 1e12, 1e3)) / 256.'
-, '               , floor(mod(f / 1e3, 1e3)) / 256);'
+, '               , floor(mod(f / 1e3, 1e3)) / 256.);'
 , '}'
 , 'vec3 unpack_pos(float f) {'
 , '    return vec3( mod(f / 1e6, 1e3) / resolution.x * 2. - 1.'
@@ -535,7 +535,7 @@ function insertBefore(node, next) {
 }
 
 function appendChild(el) {
-  var child = Object.create(types[el.tagName.toLowerCase()].prototype)
+  var child = new types[el.tagName.toLowerCase()]
     , buffer = child.buffer
   canvas.__scene__.push(child)
 
