@@ -65,6 +65,7 @@ function pathgl(canvas) {
 ;var stopRendering = false
 
 pathgl.stop = function () { stopRendering = true }
+var front, back
 
 function init(c) {
   canvas = c
@@ -75,6 +76,8 @@ function init(c) {
   override(canvas)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
   d3.timer(drawLoop)
+  front = createTarget(canvas.width, canvas.height)
+  back = createTarget(canvas.width, canvas.height)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
@@ -217,6 +220,10 @@ function lineTo(x, y) {
   'precision mediump float;'
 , 'attribute vec4 attr;'
 , 'varying vec3 rgb;'
+, 'uniform vec4 stroke;'
+, 'uniform float opacity;'
+, 'varying vec4 v_stroke;'
+, 'varying float v_opacity;'
 , 'vec3 unpack_color(float f) {'
 , '    vec3 color;'
 , '    color.b = mod(f, 1e3);'
@@ -232,6 +239,8 @@ function lineTo(x, y) {
 , '    return (color - 100.) / 255.;'
 , '}'
 , 'void main() {'
+, '    v_opacity = opacity;'
+, '    v_stroke = stroke;'
 , '    gl_Position.xy = vec2(attr.xy);'
 , '    gl_PointSize = attr.z * 2.;'
 , '    rgb = unpack_color(attr.w);'
@@ -241,12 +250,12 @@ function lineTo(x, y) {
 var pointFragment = [
   'precision mediump float;'
 , 'varying vec3 rgb;'
-, 'uniform vec4 vstroke;'
-, 'uniform float opacity;'
+, 'varying vec4 v_stroke;'
+, 'varying float v_opacity;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .40 ? vstroke : vec4(rgb, opacity);'
+, '    gl_FragColor = dist > .40 ? v_stroke : vec4(rgb, v_opacity);'
 , '}'
 ].join('\n')
 
@@ -262,7 +271,7 @@ var buff
 function drawPoints(elapsed) {
   if (! pointBuffer.size) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
-  program.setstroke([1,0,0,1])
+  //program.setstroke([1,0,0,1])
 
   if(! buff) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buff = gl.createBuffer())
@@ -270,11 +279,11 @@ function drawPoints(elapsed) {
   } else {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, pointBuffer)
   }
-
   gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0)
 
   gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.size, pointBuffer.size)
-};var lineVertex = [
+}
+;var lineVertex = [
   'precision mediump float;'
 , 'attribute vec2 attr;'
 , 'varying vec3 rgb;'
@@ -608,8 +617,8 @@ function beforeRender(elapsed) {
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
   gl.depthMask(false)
-  //gl.clearDepth(1)
-  //gl.enable(gl.DEPTH_TEST)
+  gl.clearDepth(1)
+  gl.enable(gl.DEPTH_TEST)
 }
 
 function afterRender() {

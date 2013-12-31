@@ -28,8 +28,8 @@ function beforeRender(elapsed) {
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
   gl.depthMask(false)
-  //gl.clearDepth(1)
-  //gl.enable(gl.DEPTH_TEST)
+  gl.clearDepth(1)
+  gl.enable(gl.DEPTH_TEST)
 }
 
 function afterRender() {
