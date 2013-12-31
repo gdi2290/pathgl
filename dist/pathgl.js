@@ -410,7 +410,7 @@ var proto = {
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
-, rect: { width: buildRect, height: buildRect, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
@@ -515,22 +515,6 @@ var types = [
               return a
             }, {})
 
-function buildCircle () {
-  var a = [], r = this.attr.r
-  for (var i = 0; i < 361; i+=18)
-    a.push(50 + r * Math.cos(i * Math.PI / 180),
-           50 + r * Math.sin(i * Math.PI / 180),
-           0)
-  this.path = [this.buffer = toBuffer(a)]
-}
-
-function buildRect() {
-  if (! this.attr.width && this.attr.height) return
-  addToBuffer(this)
-  this.path.coords = rectPoints(this.attr.width, this.attr.height)
-  extend(this.path, [buildBuffer(this.path.coords)])
-  this.buffer = buildBuffer(this.path.coords)
-}
 
 function buildLine () {}
 function buildPath () {
