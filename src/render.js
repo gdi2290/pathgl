@@ -5,7 +5,6 @@ function drawLoop(elapsed) {
   drawLines(elapsed)
   drawPolygons(elapsed)
 
-  afterRender(elapsed)
   return stopRendering
 }
 
@@ -22,22 +21,7 @@ function countFrames(elapsed) {
 
 function beforeRender(elapsed) {
   // countFrames(elapsed)
-  gl.colorMask(true, true, true, true)
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
-
-  gl.disable(gl.BLEND)
-  // gl.enable(gl.BLEND);
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-  gl.enable(gl.CULL_FACE)
-  //gl.depthMask(false)
-  gl.clearDepth(1)
-  //gl.enable(gl.DEPTH_TEST)
-}
-
-function afterRender() {
-  //gl.colorMask(false, false, false, true)
-  //gl.clearColor(1,1,1,1)
 }
 
 function addToBuffer(datum) {

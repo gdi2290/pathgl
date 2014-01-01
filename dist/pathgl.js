@@ -34,16 +34,26 @@ function init(c) {
   gl = initContext(canvas)
   override(canvas)
   bindEvents(canvas)
+  flags(canvas)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
+
+function flags ( ){
+  gl.disable(gl.SCISSOR_TEST)
+  gl.colorMask(true, true, true, true)
+  gl.stencilMask(1,1,1,1)
+  gl.disable(gl.BLEND)
+  gl.enable(gl.CULL_FACE)
+}
+
+
 function bindEvents(canvas) {
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
 }
-
 
 function mousemoved() {
   var m = d3.mouse(this)
@@ -234,10 +244,10 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
-  //gl.drawArrays(gl.POINTS, 0, 1e4)
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
+  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+  // gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.POINTS, 0, 1e4)
 }
 
 //cx, cx, r
@@ -522,7 +532,6 @@ function event (type, listener) {
   drawLines(elapsed)
   drawPolygons(elapsed)
 
-  afterRender(elapsed)
   return stopRendering
 }
 
@@ -539,22 +548,7 @@ function countFrames(elapsed) {
 
 function beforeRender(elapsed) {
   // countFrames(elapsed)
-  gl.colorMask(true, true, true, true)
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
-
-  gl.disable(gl.BLEND)
-  // gl.enable(gl.BLEND);
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-  gl.enable(gl.CULL_FACE)
-  //gl.depthMask(false)
-  gl.clearDepth(1)
-  //gl.enable(gl.DEPTH_TEST)
-}
-
-function afterRender() {
-  //gl.colorMask(false, false, false, true)
-  //gl.clearColor(1,1,1,1)
 }
 
 function addToBuffer(datum) {

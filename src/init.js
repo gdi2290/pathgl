@@ -21,16 +21,26 @@ function init(c) {
   gl = initContext(canvas)
   override(canvas)
   bindEvents(canvas)
+  flags(canvas)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
+
+function flags ( ){
+  gl.disable(gl.SCISSOR_TEST)
+  gl.colorMask(true, true, true, true)
+  gl.stencilMask(1,1,1,1)
+  gl.disable(gl.BLEND)
+  gl.enable(gl.CULL_FACE)
+}
+
+
 function bindEvents(canvas) {
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
 }
-
 
 function mousemoved() {
   var m = d3.mouse(this)

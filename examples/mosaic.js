@@ -19,24 +19,24 @@ examples.mosaic = function (selector){
   , fill: 'blue'
   })
 
-c.append('circle')
+  c.append('circle')
   .attr({
     r: 10
   , cx: 900
   , cy: 300
   , fill: 'red'
   })
+
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
+
+  var video = document.createElement('video')
+  video.height = video.width = 300
+  video.autoplay = true
+  video.loop = true
+
+  navigator.getUserMedia({ video: true }, function(stream) {
+    video.src = window.URL.createObjectURL(stream);
+  }, function(error) {})
+
+  //videoTexture = pathgl.Texture(video)
 }
-
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
-
-var video = document.createElement('video')
-video.height = video.width = 300
-video.autoplay = true
-video.loop = true
-
-navigator.getUserMedia({ video: true }, function(stream) {
-  video.src = window.URL.createObjectURL(stream);
-}, function(error) {})
-
-//videoTexture = pathgl.Texture(video)
