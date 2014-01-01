@@ -10,7 +10,7 @@ var pointVertex = [
 
 , 'void main() {'
 , '    gl_Position.xy = pos.xy;'
-, '    gl_PointSize = pos.z * 5.;'
+, '    gl_PointSize = pos.z * 2.;'
 
 , '    v_fill = fill;'
 , '    v_stroke = stroke;'
@@ -28,9 +28,9 @@ var pointFragment = [
 , '}'
 ].join('\n')
 
-var pointBuffer = new Uint32Array(1e3)
-var colorBuffer = new Float32Array(4 * 1e3)
-var pointPosBuffer = new Float32Array(4 * 1e3)
+var pointBuffer = new Uint32Array(4 * 1e4)
+var colorBuffer = new Float32Array(4 * 1e4)
+var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
 window.pb = pointBuffer
 window.pos = pointPosBuffer

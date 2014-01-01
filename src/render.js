@@ -23,8 +23,7 @@ function countFrames(elapsed) {
 function beforeRender(elapsed) {
   // countFrames(elapsed)
   gl.colorMask(true, true, true, true)
-  gl.clearColor(1,1,1,0)
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 
   // gl.disable(gl.BLEND)
   // gl.enable(gl.BLEND);
@@ -37,9 +36,8 @@ function beforeRender(elapsed) {
 }
 
 function afterRender() {
-  gl.colorMask(false, false, false, true)
-  gl.clearColor(1,1,1,1)
-  gl.clear(gl.COLOR_BUFFER_BIT)
+  //gl.colorMask(false, false, false, true)
+  //gl.clearColor(1,1,1,1)
 }
 
 function addToBuffer(datum) {

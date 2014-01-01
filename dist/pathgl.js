@@ -190,7 +190,7 @@ function lineTo(x, y) {
 
 , 'void main() {'
 , '    gl_Position.xy = pos.xy;'
-, '    gl_PointSize = pos.z * 5.;'
+, '    gl_PointSize = pos.z * 2.;'
 
 , '    v_fill = fill;'
 , '    v_stroke = stroke;'
@@ -208,9 +208,9 @@ var pointFragment = [
 , '}'
 ].join('\n')
 
-var pointBuffer = new Uint32Array(1e3)
-var colorBuffer = new Float32Array(4 * 1e3)
-var pointPosBuffer = new Float32Array(4 * 1e3)
+var pointBuffer = new Uint32Array(4 * 1e4)
+var colorBuffer = new Float32Array(4 * 1e4)
+var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
 window.pb = pointBuffer
 window.pos = pointPosBuffer
@@ -547,8 +547,7 @@ function countFrames(elapsed) {
 function beforeRender(elapsed) {
   // countFrames(elapsed)
   gl.colorMask(true, true, true, true)
-  gl.clearColor(1,1,1,0)
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 
   // gl.disable(gl.BLEND)
   // gl.enable(gl.BLEND);
@@ -561,9 +560,8 @@ function beforeRender(elapsed) {
 }
 
 function afterRender() {
-  gl.colorMask(false, false, false, true)
-  gl.clearColor(1,1,1,1)
-  gl.clear(gl.COLOR_BUFFER_BIT)
+  //gl.colorMask(false, false, false, true)
+  //gl.clearColor(1,1,1,1)
 }
 
 function addToBuffer(datum) {
