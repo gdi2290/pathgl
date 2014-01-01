@@ -12,6 +12,7 @@ function pathgl(canvas) {
 
   if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas')
 ;var stopRendering = false
+var colorBuffer = new Float32Array(4 * 1e4)
 
 pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
@@ -35,7 +36,7 @@ function init(c) {
   bindEvents(canvas)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
-  //;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
+  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
@@ -208,24 +209,15 @@ var pointFragment = [
 , '}'
 ].join('\n')
 
-var pointBuffer = new Uint32Array(4 * 1e4)
-var colorBuffer = new Float32Array(4 * 1e4)
+var pointBuffer = new Uint16Array(4 * 1e4)
 var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
-window.pb = pointBuffer
-window.pos = pointPosBuffer
-window.color = colorBuffer
 
 var buff
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
-
-  if(! buff) {
-  } else {
-    //gl.bufferSubData(gl.ARRAY_BUFFER, 0, pointBuffer)
-  }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
@@ -244,46 +236,40 @@ function drawPoints(elapsed) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.POINTS, 1e4, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  //gl.drawArrays(gl.POINTS, 0, 1e4)
 }
+
+//cx, cx, r
+//width, height, x, y
+//opacity, fill opacity, stroke opacity
+//translate 6vec
 ;var lineVertex = [
   'precision mediump float;'
-, 'attribute vec2 attr;'
-, 'varying vec3 rgb;'
-, 'vec3 unpack_color(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
-, '}'
-, 'vec3 unpack_pos(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
-, '}'
+, 'attribute vec2 pos;'
+, 'attribute vec4 stroke;'
+, 'varying vec4 v_stroke;'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1., 1.);'
-, '    rgb = vec3(.5, .5, 1.);'
+, '    gl_Position.xy = pos;'
+, '    v_stroke = stroke;'
 , '}'
 ].join('\n')
 
 var lineFragment = [
   'precision mediump float;'
-, 'varying vec3 rgb;'
-, 'uniform float opacity;'
+, 'varying vec4 v_stroke;'
 , 'void main() {'
-, '    gl_FragColor = vec4(rgb, 1.);'
+, '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
 
-var lineBuffer = new Float32Array(1e4)
+var lineBuffer = new Uint16Array(4 * 1e4)
+var linePosBuffer = new Float32Array(4 * 1e4)
 lineBuffer.size = 0
-window.lb = lineBuffer
+
 var lb
 function drawLines(){
+return
   if (! lineBuffer.size) return
   if (program.name !== 'line') gl.useProgram(program = programs.line)
 

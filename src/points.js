@@ -28,24 +28,15 @@ var pointFragment = [
 , '}'
 ].join('\n')
 
-var pointBuffer = new Uint32Array(4 * 1e4)
-var colorBuffer = new Float32Array(4 * 1e4)
+var pointBuffer = new Uint16Array(4 * 1e4)
 var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
-window.pb = pointBuffer
-window.pos = pointPosBuffer
-window.color = colorBuffer
 
 var buff
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
-
-  if(! buff) {
-  } else {
-    //gl.bufferSubData(gl.ARRAY_BUFFER, 0, pointBuffer)
-  }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
@@ -64,5 +55,11 @@ function drawPoints(elapsed) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.POINTS, 1e4, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  //gl.drawArrays(gl.POINTS, 0, 1e4)
 }
+
+//cx, cx, r
+//width, height, x, y
+//opacity, fill opacity, stroke opacity
+//translate 6vec

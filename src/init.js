@@ -1,4 +1,5 @@
 var stopRendering = false
+var colorBuffer = new Float32Array(4 * 1e4)
 
 pathgl.shaderParameters = {
   rgb: [0, 0, 0, 0]
@@ -22,7 +23,7 @@ function init(c) {
   bindEvents(canvas)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
-  //;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
+  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 

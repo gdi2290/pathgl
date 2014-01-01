@@ -21,11 +21,11 @@ examples.point_lighting = function (selector) {
   circle = svg.selectAll("circle")
                .data(data)
                .enter().append("circle")
-               .attr('fill', function () { return "hsl(" + Math.random() * 360 + ", 100%, 50%)" })
+           .attr('fill', function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" })
                .attr("cx", 10)
                .attr("cy", 10)
                .attr("r", 50)
-               .attr("opacity", .5)
+
 
   d3.timer(function() {
     data.forEach(function(d) {

@@ -1,41 +1,29 @@
 var lineVertex = [
   'precision mediump float;'
-, 'attribute vec2 attr;'
-, 'varying vec3 rgb;'
-, 'vec3 unpack_color(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
-, '}'
-, 'vec3 unpack_pos(float f) {'
-, '    vec3 color;'
-, '    color.b = mod(f, 1e3);'
-, '    color.g = mod(f / 1e3, 1e3);'
-, '    color.r = mod(f / 1e6, 1e3);'
-, '    return (color - 100.) / 255.;'
-, '}'
+, 'attribute vec2 pos;'
+, 'attribute vec4 stroke;'
+, 'varying vec4 v_stroke;'
 , 'void main() {'
-, '    gl_Position = vec4(attr.xy, 1., 1.);'
-, '    rgb = vec3(.5, .5, 1.);'
+, '    gl_Position.xy = pos;'
+, '    v_stroke = stroke;'
 , '}'
 ].join('\n')
 
 var lineFragment = [
   'precision mediump float;'
-, 'varying vec3 rgb;'
-, 'uniform float opacity;'
+, 'varying vec4 v_stroke;'
 , 'void main() {'
-, '    gl_FragColor = vec4(rgb, 1.);'
+, '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
 
-var lineBuffer = new Float32Array(1e4)
+var lineBuffer = new Uint16Array(4 * 1e4)
+var linePosBuffer = new Float32Array(4 * 1e4)
 lineBuffer.size = 0
-window.lb = lineBuffer
+
 var lb
 function drawLines(){
+return
   if (! lineBuffer.size) return
   if (program.name !== 'line') gl.useProgram(program = programs.line)
 
