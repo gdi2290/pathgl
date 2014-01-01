@@ -12,7 +12,6 @@ pathgl.shaderParameters = {
 , mouse: pathgl.mouse = [0, 0]
 }
 
-
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
@@ -20,12 +19,17 @@ function init(c) {
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
   override(canvas)
-  d3.select(canvas).on('mousemove.pathgl', mousemoved)
+  bindEvents(canvas)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   //;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
+
+function bindEvents(canvas) {
+  d3.select(canvas).on('mousemove.pathgl', mousemoved)
+}
+
 
 function mousemoved() {
   var m = d3.mouse(this)
@@ -55,12 +59,6 @@ function compileShader (type, src) {
   return shader
 }
 
-function initShader(_, name) {
-  return program = (programs[name] ?
-                    programs[name] :
-                    programs[name] = createProgram(pathgl.vertex, _))
-}
-
 function createProgram(vs, fs) {
   program = gl.createProgram()
 
@@ -80,11 +78,15 @@ function createProgram(vs, fs) {
 
   each(pathgl.shaderParameters, bindUniform)
 
-  program.vPos = gl.getAttribLocation(program, "pos")
-  gl.enableVertexAttribArray(program.vertexPosition)
 
-  program.vColor = gl.getAttribLocation(program, "color")
-  gl.enableVertexAttribArray(program.vColor)
+  program.vPos = gl.getAttribLocation(program, "pos")
+  gl.enableVertexAttribArray(program.vPos)
+
+  program.vfill = gl.getAttribLocation(program, "fill")
+  gl.enableVertexAttribArray(program.vFill)
+
+  program.vstroke = gl.getAttribLocation(program, "stroke")
+  gl.enableVertexAttribArray(program.vStroke)
 
   return program
 }

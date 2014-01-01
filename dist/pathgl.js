@@ -1,5 +1,5 @@
 ! function() {
-;this.pathgl = pathgl
+this.pathgl = pathgl
 
 pathgl.stop = d3.functor()
 
@@ -25,7 +25,6 @@ pathgl.shaderParameters = {
 , mouse: pathgl.mouse = [0, 0]
 }
 
-
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
@@ -33,12 +32,17 @@ function init(c) {
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
   override(canvas)
-  d3.select(canvas).on('mousemove.pathgl', mousemoved)
+  bindEvents(canvas)
   d3.timer(drawLoop)
   ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
   //;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
+
+function bindEvents(canvas) {
+  d3.select(canvas).on('mousemove.pathgl', mousemoved)
+}
+
 
 function mousemoved() {
   var m = d3.mouse(this)
@@ -68,12 +72,6 @@ function compileShader (type, src) {
   return shader
 }
 
-function initShader(_, name) {
-  return program = (programs[name] ?
-                    programs[name] :
-                    programs[name] = createProgram(pathgl.vertex, _))
-}
-
 function createProgram(vs, fs) {
   program = gl.createProgram()
 
@@ -93,11 +91,15 @@ function createProgram(vs, fs) {
 
   each(pathgl.shaderParameters, bindUniform)
 
-  program.vPos = gl.getAttribLocation(program, "pos")
-  gl.enableVertexAttribArray(program.vertexPosition)
 
-  program.vColor = gl.getAttribLocation(program, "color")
-  gl.enableVertexAttribArray(program.vColor)
+  program.vPos = gl.getAttribLocation(program, "pos")
+  gl.enableVertexAttribArray(program.vPos)
+
+  program.vfill = gl.getAttribLocation(program, "fill")
+  gl.enableVertexAttribArray(program.vFill)
+
+  program.vstroke = gl.getAttribLocation(program, "stroke")
+  gl.enableVertexAttribArray(program.vStroke)
 
   return program
 }
@@ -180,40 +182,43 @@ function lineTo(x, y) {
   'precision mediump float;'
 
 , 'attribute vec4 pos;'
-, 'attribute vec4 color;'
+, 'attribute vec4 fill;'
+, 'attribute vec4 stroke;'
 
-, 'varying vec4 stroke;'
-, 'varying vec4 fill;'
+, 'varying vec4 v_stroke;'
+, 'varying vec4 v_fill;'
 
 , 'void main() {'
 , '    gl_Position.xy = pos.xy;'
-, '    gl_PointSize = pos.z;'
+, '    gl_PointSize = pos.z * 5.;'
 
-, '    fill = color;'
-, '    stroke = color;'
+, '    v_fill = fill;'
+, '    v_stroke = stroke;'
 , '}'
 ].join('\n')
 
 var pointFragment = [
   'precision mediump float;'
-, 'varying vec4 stroke;'
-, 'varying vec4 fill;'
+, 'varying vec4 v_stroke;'
+, 'varying vec4 v_fill;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .45 ? stroke : vec4(fill.xyz, .5);'
+, '    gl_FragColor = dist > .45 ? v_stroke : v_fill;'
 , '}'
 ].join('\n')
 
 var pointBuffer = new Uint32Array(1e3)
-var colorBuffer = new Float32Array(1e3)
-var pointPosBuffer = new Float32Array(1e3)
+var colorBuffer = new Float32Array(4 * 1e3)
+var pointPosBuffer = new Float32Array(4 * 1e3)
 pointBuffer.count = 0
 window.pb = pointBuffer
+window.pos = pointPosBuffer
+window.color = colorBuffer
 var buff
 
 
-//gl.drawElements(gl.POINTS, 60, gl.UNSIGNED_SHORT, 0)
+
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
@@ -225,14 +230,25 @@ function drawPoints(elapsed) {
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vPos, 4, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vStroke)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vStroke, 4, gl.FLOAT, false, 0, 0)
 
-  gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.count, pointBuffer.count)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vFill)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
+
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
+  // gl.bufferData(gl.ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+
+  // gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.POINTS, 0, pointBuffer.count)
 }
 ;var lineVertex = [
   'precision mediump float;'
@@ -304,44 +320,23 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
-var c_packCache = {}
-function packColor(fill, opacity) {
-  //  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
-  var c = 0
-  fill = d3.rgb(fill)
-  c += fill.b * 1e12
-  c += fill.g * 1e9
-  c += fill.r * 1e6
-  c += ~~ (opacity * 256e3)
-  c += 1
-  return c
-}
-
-function packPosition (x, y, z) {
-  var p = 0
-  p += ~~(x) * 1e9
-  p += ~~(y) * 1e6
-  p += z * 1e3
-  return p
-}
-
 var proto = {
   circle: { r: function (v) {
-              pointPosBuffer[this.count + 2] = v
+              pointPosBuffer[this.index + 2] = v
             }
           , cx: function (v) {
-              pointPosBuffer[this.count + 1] = y(v)
+              pointPosBuffer[this.index + 0] = x(v)
 
             }
           , cy: function (v) {
-              pointPosBuffer[this.count + 0] = x(v)
+              pointPosBuffer[this.index + 1] = y(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
-              colorBuffer[this.count + 0] = fill.r
-              colorBuffer[this.count + 1] = fill.g
-              colorBuffer[this.count + 2] = fill.b
-              colorBuffer[this.count + 3] = this.attr.opacity
+              colorBuffer[this.index + 0] = fill.r / 256
+              colorBuffer[this.index + 1] = fill.g / 256
+              colorBuffer[this.index + 2] = fill.b / 256
+              colorBuffer[this.index + 3] = this.attr.opacity
             }
 
           , stroke: function (v) {
@@ -351,7 +346,7 @@ var proto = {
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
-, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+                                                        , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
@@ -362,8 +357,8 @@ var proto = {
         , buffer: lineBuffer
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
-                                                  , polygon: { points: noop } //lines
-                                                                                , polyline: { points: noop } //lines
+, polygon: { points: noop } //lines
+                              , polyline: { points: noop } //lines
 
 , g: { appendChild: noop } //fake
 
@@ -445,16 +440,17 @@ var types = [
 
                 canvas.__scene__.push(child)
 
-                var numArrays = 2
+                var numArrays = 4
 
                 child.attr = Object.create(attrDefaults)
                 child.tagName = el.tagName
                 child.parentNode = child.parentElement = this
-                child.index = buffer.length - (buffer.count * numArrays)
-                child.count = buffer.count
-                buffer[child.index -1] = buffer.count
-                buffer[child.index -2] = buffer.count
+                child.index = (buffer.count * numArrays)
+
+                buffer[child.index] = buffer.count
+                buffer[child.index + 1] = buffer.count
                 buffer.count += 1
+
                 return child
               }
               type.prototype = extend(Object.create(baseProto), proto[type.name])
@@ -652,7 +648,7 @@ function createTarget( width, height ) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   return target
 }
-;;function noop () {}
+;function noop () {}
 
 function extend (a, b) {
   if (arguments.length > 2) [].forEach.call(arguments, function (b) { extend(a, b) })

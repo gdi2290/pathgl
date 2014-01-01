@@ -2,40 +2,43 @@ var pointVertex = [
   'precision mediump float;'
 
 , 'attribute vec4 pos;'
-, 'attribute vec4 color;'
+, 'attribute vec4 fill;'
+, 'attribute vec4 stroke;'
 
-, 'varying vec4 stroke;'
-, 'varying vec4 fill;'
+, 'varying vec4 v_stroke;'
+, 'varying vec4 v_fill;'
 
 , 'void main() {'
 , '    gl_Position.xy = pos.xy;'
-, '    gl_PointSize = pos.z;'
+, '    gl_PointSize = pos.z * 5.;'
 
-, '    fill = color;'
-, '    stroke = color;'
+, '    v_fill = fill;'
+, '    v_stroke = stroke;'
 , '}'
 ].join('\n')
 
 var pointFragment = [
   'precision mediump float;'
-, 'varying vec4 stroke;'
-, 'varying vec4 fill;'
+, 'varying vec4 v_stroke;'
+, 'varying vec4 v_fill;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .45 ? stroke : vec4(fill.xyz, .5);'
+, '    gl_FragColor = dist > .45 ? v_stroke : v_fill;'
 , '}'
 ].join('\n')
 
 var pointBuffer = new Uint32Array(1e3)
-var colorBuffer = new Float32Array(1e3)
-var pointPosBuffer = new Float32Array(1e3)
+var colorBuffer = new Float32Array(4 * 1e3)
+var pointPosBuffer = new Float32Array(4 * 1e3)
 pointBuffer.count = 0
 window.pb = pointBuffer
+window.pos = pointPosBuffer
+window.color = colorBuffer
 var buff
 
 
-//gl.drawElements(gl.POINTS, 60, gl.UNSIGNED_SHORT, 0)
+
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
@@ -47,12 +50,23 @@ function drawPoints(elapsed) {
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vPos, 4, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vStroke)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vStroke, 4, gl.FLOAT, false, 0, 0)
 
-  gl.drawArrays(gl.POINTS, pointBuffer.length / 4 - pointBuffer.count, pointBuffer.count)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vFill)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
+
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
+  // gl.bufferData(gl.ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+
+  // gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.POINTS, 0, pointBuffer.count)
 }

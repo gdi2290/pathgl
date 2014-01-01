@@ -12,8 +12,7 @@ build()
 fs.watch('src', build)
 
 function build(_, file) {
-  var blob = [ 'shader.js'
-             , 'start.js'
+  var blob = [ 'start.js'
              , 'init.js'
              , 'parse.js'
              , 'points.js'
@@ -21,7 +20,6 @@ function build(_, file) {
              , 'polygons.js'
              , 'proxy.js'
              , 'render.js'
-             , 'shader.js'
              , 'util.js'
              , 'end.js'
              ].map(concat).join(';')

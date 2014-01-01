@@ -41,6 +41,6 @@ examples.point_lighting = function (selector) {
     .attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
     //.attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
   })
-
+  
   d3.select('.blurb').text("Compare with http://bl.ocks.org/mbostock/raw/2647924/")
 }

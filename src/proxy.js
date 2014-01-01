@@ -14,44 +14,23 @@ var y = function (y) {
   return 1 - ((y / canvas.height) * 2)
 }
 
-var c_packCache = {}
-function packColor(fill, opacity) {
-  //  if (c_packCache[fill])  return (c_packCache[fill] - c_packCache[fill] + opacity * 256)
-  var c = 0
-  fill = d3.rgb(fill)
-  c += fill.b * 1e12
-  c += fill.g * 1e9
-  c += fill.r * 1e6
-  c += ~~ (opacity * 256e3)
-  c += 1
-  return c
-}
-
-function packPosition (x, y, z) {
-  var p = 0
-  p += ~~(x) * 1e9
-  p += ~~(y) * 1e6
-  p += z * 1e3
-  return p
-}
-
 var proto = {
   circle: { r: function (v) {
-              pointPosBuffer[this.count + 2] = v
+              pointPosBuffer[this.index + 2] = v
             }
           , cx: function (v) {
-              pointPosBuffer[this.count + 1] = y(v)
+              pointPosBuffer[this.index + 0] = x(v)
 
             }
           , cy: function (v) {
-              pointPosBuffer[this.count + 0] = x(v)
+              pointPosBuffer[this.index + 1] = y(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
-              colorBuffer[this.count + 0] = fill.r
-              colorBuffer[this.count + 1] = fill.g
-              colorBuffer[this.count + 2] = fill.b
-              colorBuffer[this.count + 3] = this.attr.opacity
+              colorBuffer[this.index + 0] = fill.r / 256
+              colorBuffer[this.index + 1] = fill.g / 256
+              colorBuffer[this.index + 2] = fill.b / 256
+              colorBuffer[this.index + 3] = this.attr.opacity
             }
 
           , stroke: function (v) {
@@ -61,7 +40,7 @@ var proto = {
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
-, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+                                                        , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
@@ -72,8 +51,8 @@ var proto = {
         , buffer: lineBuffer
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
-                                                  , polygon: { points: noop } //lines
-                                                                                , polyline: { points: noop } //lines
+, polygon: { points: noop } //lines
+                              , polyline: { points: noop } //lines
 
 , g: { appendChild: noop } //fake
 
@@ -155,16 +134,17 @@ var types = [
 
                 canvas.__scene__.push(child)
 
-                var numArrays = 2
+                var numArrays = 4
 
                 child.attr = Object.create(attrDefaults)
                 child.tagName = el.tagName
                 child.parentNode = child.parentElement = this
-                child.index = buffer.length - (buffer.count * numArrays)
-                child.count = buffer.count
-                buffer[child.index -1] = buffer.count
-                buffer[child.index -2] = buffer.count
+                child.index = (buffer.count * numArrays)
+
+                buffer[child.index] = buffer.count
+                buffer[child.index + 1] = buffer.count
                 buffer.count += 1
+
                 return child
               }
               type.prototype = extend(Object.create(baseProto), proto[type.name])
