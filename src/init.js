@@ -28,15 +28,13 @@ function init(c) {
   return gl ? canvas : null
 }
 
-
-function flags ( ){
+function flags () {
   gl.disable(gl.SCISSOR_TEST)
   gl.colorMask(true, true, true, true)
   gl.stencilMask(1,1,1,1)
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 }
-
 
 function bindEvents(canvas) {
   d3.select(canvas).on('mousemove.pathgl', mousemoved)

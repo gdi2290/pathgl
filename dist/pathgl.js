@@ -41,15 +41,13 @@ function init(c) {
   return gl ? canvas : null
 }
 
-
-function flags ( ){
+function flags () {
   gl.disable(gl.SCISSOR_TEST)
   gl.colorMask(true, true, true, true)
   gl.stencilMask(1,1,1,1)
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 }
-
 
 function bindEvents(canvas) {
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
@@ -588,10 +586,7 @@ function twoEach(list, fn, gl) {
   while(i < l) fn.call(gl, list[i++], list[i++])
 }
 
-function flatten(input) {
-  return input.reduce(function (a, b) { return (b && b.map ? [].push.apply(a, b) : a.push(b)) && a },
-                      [])
-}
+function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
 
 function isId(str) {
   //add in custom scene query selector
