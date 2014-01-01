@@ -24,7 +24,7 @@ var pointFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .45 ? v_stroke : v_fill;'
+, '    gl_FragColor = dist > .4 ? v_stroke : v_fill;'
 , '}'
 ].join('\n')
 
@@ -35,10 +35,8 @@ pointBuffer.count = 0
 window.pb = pointBuffer
 window.pos = pointPosBuffer
 window.color = colorBuffer
+
 var buff
-
-
-
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
@@ -64,9 +62,7 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
 
-  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
-  // gl.bufferData(gl.ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
-
-  // gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
-  gl.drawArrays(gl.POINTS, 0, pointBuffer.count)
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+  gl.drawElements(gl.POINTS, 1e4, gl.UNSIGNED_SHORT, 0)
 }

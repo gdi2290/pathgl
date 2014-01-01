@@ -34,13 +34,21 @@ var proto = {
             }
 
           , stroke: function (v) {
-              colorBuffer[this.count]
+              return;
+              var fill = d3.rgb(v)
+              colorBuffer[this.index + 0] = fill.r / 256
+              colorBuffer[this.index + 1] = fill.g / 256
+              colorBuffer[this.index + 2] = fill.b / 256
+              colorBuffer[this.index + 3] = this.attr.opacity
+            },
+            opacity: function () {
+              colorBuffer[this.index + 3] = this.attr.opacity
             }
 
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
-                                                        , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
@@ -143,6 +151,8 @@ var types = [
 
                 buffer[child.index] = buffer.count
                 buffer[child.index + 1] = buffer.count
+                buffer[child.index + 2] = buffer.count
+                //buffer[child.index + 3] = buffer.count
                 buffer.count += 1
 
                 return child
@@ -161,8 +171,9 @@ function buildPath () {
 function insertBefore(node, next) {
   var scene = canvas.__scene__
     , i = scene.indexOf(next)
-  reverseEach(scene.slice(i, scene.push('shit')),
+  reverseEach(scene.slice(i, scene.push(0)),
               function (d, i) { scene[i] = scene[i - 1] })
+  scene[i] = node
 }
 
 function appendChild(el) {

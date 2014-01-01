@@ -25,14 +25,14 @@ function beforeRender(elapsed) {
   gl.colorMask(true, true, true, true)
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 
-  // gl.disable(gl.BLEND)
+  gl.disable(gl.BLEND)
   // gl.enable(gl.BLEND);
   // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
   gl.enable(gl.CULL_FACE)
-  gl.depthMask(false)
+  //gl.depthMask(false)
   gl.clearDepth(1)
-  gl.enable(gl.DEPTH_TEST)
+  //gl.enable(gl.DEPTH_TEST)
 }
 
 function afterRender() {

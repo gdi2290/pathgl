@@ -98,7 +98,7 @@ function createProgram(vs, fs) {
   program.vfill = gl.getAttribLocation(program, "fill")
   gl.enableVertexAttribArray(program.vFill)
 
-  program.vstroke = gl.getAttribLocation(program, "stroke")
+  program.vStroke = gl.getAttribLocation(program, "stroke")
   gl.enableVertexAttribArray(program.vStroke)
 
   return program
@@ -204,7 +204,7 @@ var pointFragment = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .45 ? v_stroke : v_fill;'
+, '    gl_FragColor = dist > .4 ? v_stroke : v_fill;'
 , '}'
 ].join('\n')
 
@@ -215,10 +215,8 @@ pointBuffer.count = 0
 window.pb = pointBuffer
 window.pos = pointPosBuffer
 window.color = colorBuffer
+
 var buff
-
-
-
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
@@ -244,11 +242,9 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
 
-  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
-  // gl.bufferData(gl.ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
-
-  // gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
-  gl.drawArrays(gl.POINTS, 0, pointBuffer.count)
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+  gl.drawElements(gl.POINTS, 1e4, gl.UNSIGNED_SHORT, 0)
 }
 ;var lineVertex = [
   'precision mediump float;'
@@ -340,13 +336,21 @@ var proto = {
             }
 
           , stroke: function (v) {
-              colorBuffer[this.count]
+              return;
+              var fill = d3.rgb(v)
+              colorBuffer[this.index + 0] = fill.r / 256
+              colorBuffer[this.index + 1] = fill.g / 256
+              colorBuffer[this.index + 2] = fill.b / 256
+              colorBuffer[this.index + 3] = this.attr.opacity
+            },
+            opacity: function () {
+              colorBuffer[this.index + 3] = this.attr.opacity
             }
 
           , buffer: pointBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
-                                                        , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
@@ -449,6 +453,8 @@ var types = [
 
                 buffer[child.index] = buffer.count
                 buffer[child.index + 1] = buffer.count
+                buffer[child.index + 2] = buffer.count
+                //buffer[child.index + 3] = buffer.count
                 buffer.count += 1
 
                 return child
@@ -467,8 +473,9 @@ function buildPath () {
 function insertBefore(node, next) {
   var scene = canvas.__scene__
     , i = scene.indexOf(next)
-  reverseEach(scene.slice(i, scene.push('shit')),
+  reverseEach(scene.slice(i, scene.push(0)),
               function (d, i) { scene[i] = scene[i - 1] })
+  scene[i] = node
 }
 
 function appendChild(el) {
@@ -549,14 +556,14 @@ function beforeRender(elapsed) {
   gl.colorMask(true, true, true, true)
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 
-  // gl.disable(gl.BLEND)
+  gl.disable(gl.BLEND)
   // gl.enable(gl.BLEND);
   // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
   gl.enable(gl.CULL_FACE)
-  gl.depthMask(false)
+  //gl.depthMask(false)
   gl.clearDepth(1)
-  gl.enable(gl.DEPTH_TEST)
+  //gl.enable(gl.DEPTH_TEST)
 }
 
 function afterRender() {
