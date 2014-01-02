@@ -304,7 +304,7 @@ return
 
 };function querySelectorAll(selector, r) {
   return selector.replace(/^\s+|\s*([,\s\+\~>]|$)\s*/g, '$1').split(',')
-  .forEach(function (s) { query(s, this).forEach(push.bind(r)) }, this, r = []) || uniq(r)
+  .forEach(function (s) { query(s, this).forEach(push.bind(r)) }, this, r = []) || r
 }
 
 function query(selector, root) {
@@ -350,7 +350,6 @@ function byId(id) { return querySelectorAll('[id="' + id + '"]')[0] }
 function isNode(el) { return el && typeof el === 'object' }
 function previous(n) { while (n = n.previousSibling()) if (n.top) return n }
 function clean(s) { return s.replace(/([.*+?\^=!:${}()|\[\]\/\\])/, '\\$1') }
-function uniq(ar) { return ar.filter(function (d, i) { return ar.indexOf(d) == i }) }
 function matchClass(d) { return ! RegExp('(^|\\s+)' + d.slice(1) + '(\\s+|$)').test(this.className) }
 function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
 function byClassName(name) { return traverse(this, function (doc) { return doc.className == name }, []) }
@@ -672,5 +671,8 @@ function each(obj, fn) {
 
 function hash(str) {
   return str.split("").reduce(function(a,b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)
-};  return init(canvas)
+}
+
+function uniq(ar) { return ar.filter(function (d, i) { return ar.indexOf(d) == i }) }
+;  return init(canvas)
 } }()

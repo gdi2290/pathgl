@@ -25,3 +25,5 @@ function each(obj, fn) {
 function hash(str) {
   return str.split("").reduce(function(a,b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)
 }
+
+function uniq(ar) { return ar.filter(function (d, i) { return ar.indexOf(d) == i }) }
