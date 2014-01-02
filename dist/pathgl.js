@@ -388,6 +388,7 @@ var baseProto = extend(Object.create(null), {
   this.buffer && drawFill(this)
   drawStroke(this)
 }
+, previousSibling: function () { canvas.scene[canvas.__scene__.indexOf() - 1] }
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 
 , fill: function (val) {
