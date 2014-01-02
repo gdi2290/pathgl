@@ -11,8 +11,6 @@ function twoEach(list, fn, gl) {
   while(i < l) fn.call(gl, list[i++], list[i++])
 }
 
-function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
-
 function isId(str) {
   //add in custom scene query selector
   return false
@@ -27,3 +25,7 @@ function hash(str) {
 }
 
 function uniq(ar) { return ar.filter(function (d, i) { return ar.indexOf(d) == i }) }
+
+function push(d) { return this.push(d) }
+
+function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }

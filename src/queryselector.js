@@ -40,14 +40,12 @@ function checkAttr(cmp, actual, val) {
                              }[cmp] || 'adnan^'))
 }
 
-function push(d) { return this.push(d) }
 function chunk(query) { return query.match(chunker) }
 function byId(id) { return querySelectorAll('[id="' + id + '"]')[0] }
 function isNode(el) { return el && typeof el === 'object' }
 function previous(n) { while (n = n.previousSibling()) if (n.top) return n }
 function clean(s) { return s.replace(/([.*+?\^=!:${}()|\[\]\/\\])/, '\\$1') }
 function matchClass(d) { return ! RegExp('(^|\\s+)' + d.slice(1) + '(\\s+|$)').test(this.className) }
-function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
 function byClassName(name) { return traverse(this, function (doc) { return doc.className == name }, []) }
 function byTagName(name) { return traverse(this, function (doc) { return name == '*' || doc.name == name }, []) }
 function traverse(node, fn, val) { return (node.__scene__ || node.children).forEach(function (node) { traverse(node, fn, val), fn(node) && val.push(node) }) || val }
