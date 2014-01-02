@@ -14,6 +14,7 @@ fs.watch('src', build)
 function build(_, file) {
   var blob = [ 'start.js'
              , 'init.js'
+             , 'shaders.js'
              , 'parse.js'
              , 'points.js'
              , 'lines.js'
