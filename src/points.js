@@ -33,11 +33,21 @@ var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
 
 var buff
-
+var points = {
+    pos: {}
+  , fill: {}
+  , stroke: {}
+}
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
 
+  for(var attr in points) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
+    gl.enableVertexAttribArray(points[attr].vLoc)
+    if (points[attr].changed) gl.bufferSubData(gl.ARRAY_BUFFER, points[attr].list, gl.DYNAMIC_DRAW)
+    gl.vertexAttribPointer(points[attr].vLoc, points[attr].length, gl.FLOAT, false, 0, 0)
+  }
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)

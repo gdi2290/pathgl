@@ -70,8 +70,8 @@ var proto = {
 var allCircles = new Float32Array(1e6)
 
 var baseProto = extend(Object.create(null), {
-  querySelectorAll: noop
-, querySelector: noop
+  querySelectorAll: querySelectorAll
+, querySelector: function (s) { return this.querySelectorAll(s)[0] }
 , createElementNS: noop
 , insertBefore: noop
 , ownerDocument: { createElementNS: noop }
