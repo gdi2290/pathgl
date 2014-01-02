@@ -43,4 +43,5 @@ examples.point_lighting = function (selector) {
   })
 
   d3.select('.blurb').text("Compare with http://bl.ocks.org/mbostock/raw/2647924/")
+  c.selectAll('circle')
 }

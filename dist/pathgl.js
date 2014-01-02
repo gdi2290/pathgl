@@ -189,7 +189,6 @@ function lineTo(x, y) {
 }
 ;var pointVertex = [
   'precision mediump float;'
-
 , 'attribute vec4 pos;'
 , 'attribute vec4 fill;'
 , 'attribute vec4 stroke;'
@@ -223,7 +222,11 @@ pointBuffer.count = 0
 
 var buff
 var points = {
-    pos: {}
+    pos: {
+      buffer: 0
+    , vLoc: 0
+    ,
+    }
   , fill: {}
   , stroke: {}
 }
@@ -232,12 +235,12 @@ function drawPoints(elapsed) {
   if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
 
-  for(var attr in points) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
-    gl.enableVertexAttribArray(points[attr].vLoc)
-    if (points[attr].changed) gl.bufferSubData(gl.ARRAY_BUFFER, points[attr].list, gl.DYNAMIC_DRAW)
-    gl.vertexAttribPointer(points[attr].vLoc, points[attr].length, gl.FLOAT, false, 0, 0)
-  }
+  // for(var attr in pointAttr) {
+  //   gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
+  //   gl.enableVertexAttribArray(points[attr].vLoc)
+  //   if (points[attr].changed) gl.bufferSubData(gl.ARRAY_BUFFER, points[attr].list, gl.DYNAMIC_DRAW)
+  //   gl.vertexAttribPointer(points[attr].vLoc, points[attr].length, gl.FLOAT, false, 0, 0)
+  // }
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
@@ -257,11 +260,6 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
 }
-
-//cx, cx, r
-//width, height, x, y
-//opacity, fill opacity, stroke opacity
-//translate 6vec
 ;var lineVertex = [
   'precision mediump float;'
 , 'attribute vec2 pos;'
@@ -306,7 +304,7 @@ return
 
 };function querySelectorAll(selector, r) {
   return selector.replace(/^\s+|\s*([,\s\+\~>]|$)\s*/g, '$1').split(',')
-         .forEach(function (s) { query(s, this).forEach(push.bind(r)) }, this, r = []) || uniq(r)
+  .forEach(function (s) { query(s, this).forEach(push.bind(r)) }, this, r = []) || uniq(r)
 }
 
 function query(selector, root) {
@@ -442,6 +440,7 @@ var allCircles = new Float32Array(1e6)
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
+, children: Object.freeze([])
 , ctr: constructProxy
 , querySelector: function (s) { return this.querySelectorAll(s)[0] }
 , createElementNS: noop

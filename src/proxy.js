@@ -72,6 +72,7 @@ var allCircles = new Float32Array(1e6)
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
+, children: Object.freeze([])
 , ctr: constructProxy
 , querySelector: function (s) { return this.querySelectorAll(s)[0] }
 , createElementNS: noop
