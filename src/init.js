@@ -16,15 +16,13 @@ pathgl.shaderParameters = {
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
-  programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
+  program = createProgram(pointVertex, pointFragment)
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
   d3.timer(drawLoop)
-  ;(programs.point = createProgram(pointVertex, pointFragment)).name = 'point'
-  ;(programs.line = createProgram(lineVertex, lineFragment)).name = 'line'
   return gl ? canvas : null
 }
 
@@ -86,7 +84,6 @@ function createProgram(vs, fs) {
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   each(pathgl.shaderParameters, bindUniform)
-
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)

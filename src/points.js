@@ -44,7 +44,6 @@ var points = {
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
-  if (program.name !== 'point') gl.useProgram(program = programs.point)
 
   // for(var attr in pointAttr) {
   //   gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
