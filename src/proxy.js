@@ -164,14 +164,6 @@ function appendChild(el) {
   return types[el.tagName.toLowerCase()](el)
 }
 
-function querySelector(query) {
-  return this.querySelectorAll(query)[0]
-}
-
-function querySelectorAll(query) {
-  return this.__scene__.filter(function (node) { return node.tagName.toLowerCase() === query })
-}
-
 function removeChild(el) {
   var i = this.__scene__.indexOf(el)
 
