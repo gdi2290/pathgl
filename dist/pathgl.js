@@ -227,6 +227,7 @@ var points = {
   , fill: {}
   , stroke: {}
 }
+
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
@@ -368,9 +369,10 @@ var proto = {
 , polygon: { points: noop } //lines
                               , polyline: { points: noop } //lines
 
-, g: { appendChild: noop } //fake
+, g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] }
+     }
 
-, text: { x: noop, y: noop, dx: noop, dy: noop } //umm
+, text: { x: noop, y: noop, dx: noop, dy: noop }
 }
 
 var allCircles = new Float32Array(1e6)

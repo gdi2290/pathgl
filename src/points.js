@@ -38,6 +38,7 @@ var points = {
   , fill: {}
   , stroke: {}
 }
+
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
   if (program.name !== 'point') gl.useProgram(program = programs.point)
