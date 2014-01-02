@@ -18,7 +18,7 @@ function init(c) {
   canvas = c
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  program = createProgram(pointVertex, pointFragment)
+  program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)

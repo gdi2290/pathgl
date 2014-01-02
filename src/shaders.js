@@ -1,4 +1,4 @@
-pathgl.vertex = [
+pathgl.vertexShader = [
   'precision mediump float;'
 , 'attribute vec4 pos;'
 , 'attribute vec4 fill;'
@@ -16,7 +16,7 @@ pathgl.vertex = [
 , '}'
 ].join('\n')
 
-pathgl.fragment = [
+pathgl.fragmentShader = [
   'precision mediump float;'
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'

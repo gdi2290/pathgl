@@ -3,18 +3,13 @@ var compressor = require('uglify-js')
   , source = './src/'
   , main = 'main.js'
 
-Array.prototype.tap = function (fn) {
-  fn.call(this)
-  return this
-}
-
 build()
 fs.watch('src', build)
 
 function build(_, file) {
   var blob = [ 'start.js'
-             , 'init.js'
              , 'shaders.js'
+             , 'init.js'
              , 'parse.js'
              , 'points.js'
              , 'lines.js'
@@ -24,7 +19,7 @@ function build(_, file) {
              , 'render.js'
              , 'util.js'
              , 'end.js'
-             ].map(concat).join(';')
+             ].map(read).join(';')
     , closed = '! function() {\n' + blob + ' }()'
 
   console.log('rebuilding ' + (file ? file : ''))
@@ -39,18 +34,6 @@ function build(_, file) {
 
 }
 
-function concat (file) {
+function read (file) {
   return '' + fs.readFileSync(source + file)
-}
-
-
-function emacs(file) {
-  return ! /#/.test(file)
-}
-
-function head () {
-  var i = this.indexOf(main)
-  var js = this[i]
-  this[i] = this[0]
-  this[0] = js
 }
