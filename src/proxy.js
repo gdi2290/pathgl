@@ -72,6 +72,7 @@ var allCircles = new Float32Array(1e6)
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
+, ctr: constructProxy
 , querySelector: function (s) { return this.querySelectorAll(s)[0] }
 , createElementNS: noop
 , insertBefore: noop
@@ -137,27 +138,7 @@ var types = [
 , function g() {}
 , function use() {}
 ].reduce(function (a, type) {
-              a[type.name] = function (el) {
-                var child = new type()
-                  , buffer = child.buffer
-
-                canvas.__scene__.push(child)
-
-                var numArrays = 4
-
-                child.attr = Object.create(attrDefaults)
-                child.tagName = el.tagName
-                child.parentNode = child.parentElement = this
-                child.index = (buffer.count * numArrays)
-
-                buffer[child.index] = buffer.count
-                buffer[child.index + 1] = buffer.count
-                buffer[child.index + 2] = buffer.count
-                //buffer[child.index + 3] = buffer.count
-                buffer.count += 1
-
-                return child
-              }
+              a[type.name] =
               type.prototype = extend(Object.create(baseProto), proto[type.name])
               return a
             }, {})
@@ -213,6 +194,25 @@ var attrDefaults = {
 , x: 0
 , y: 0
 , opacity: .999
+}
+
+function constructProxy(el) {
+  var buffer = this.buffer
+
+  canvas.__scene__.push(this)
+
+  var numArrays = 4
+
+  this.attr = Object.create(attrDefaults)
+  this.tagName = el.tagName
+  this.parentNode = this.parentElement = this
+  this.index = (buffer.count * numArrays)
+
+  buffer[this.index] = buffer.count
+  buffer[this.index + 1] = buffer.count
+  buffer[this.index + 2] = buffer.count
+  //buffer[this.index + 3] = buffer.count
+  buffer.count += 1
 }
 
 var e = {}
