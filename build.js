@@ -18,6 +18,7 @@ function build(_, file) {
              , 'points.js'
              , 'lines.js'
              , 'polygons.js'
+             , 'queryselector.js'
              , 'proxy.js'
              , 'render.js'
              , 'util.js'

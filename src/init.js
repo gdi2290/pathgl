@@ -19,7 +19,7 @@ function init(c) {
   programs = canvas.programs = (canvas.programs || {})
   pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
-  override(canvas)
+  monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
   d3.timer(drawLoop)
@@ -45,11 +45,11 @@ function mousemoved() {
   pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
 }
 
-function override(canvas) {
+function monkeyPatch(canvas) {
   return extend(canvas, {
     appendChild: appendChild
   , querySelectorAll: querySelectorAll
-  , querySelector: querySelector
+  , querySelector: function (s) { return this.querySelectorAll(s)[0] }
   , removeChild: removeChild
   , insertBefore: insertBefore
 

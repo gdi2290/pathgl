@@ -51,14 +51,14 @@ function matchClass(d) { return ! RegExp('(^|\\s+)' + d.slice(1) + '(\\s+|$)').t
 function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
 function byClassName(name) { return traverse(this, function (doc) { return doc.className == name }, []) }
 function byTagName(name) { return traverse(this, function (doc) { return name == '*' || doc.name == name }, []) }
-function traverse(node, fn, val) { return (node.children || []).forEach(function (node) { traverse(node, fn, val), fn(node) && val.push(node) }) || val }
+function traverse(node, fn, val) { return (node.__scene__ || node.children).forEach(function (node) { traverse(node, fn, val), fn(node) && val.push(node) }) || val }
 
 var pseudos = {} //todo
 
 var combinators = { ' ': function (d) { return d && d !== __scene__ && d.parent() }
-             , '>': function (d, maybe) { return d && d.parent() == maybe.parent() && d.parent() }
-             , '~': function (d) { return d && d.previousSibling() }
-             , '+': function (d, ct, p1, p2) { return ! d || ((p1 = previous(d)) && (p2 = previous(ct)) && p1 == p2 && p1) }
-             }
+                  , '>': function (d, maybe) { return d && d.parent() == maybe.parent() && d.parent() }
+                  , '~': function (d) { return d && d.previousSibling() }
+                  , '+': function (d, ct, p1, p2) { return ! d || ((p1 = previous(d)) && (p2 = previous(ct)) && p1 == p2 && p1) }
+                  }
 var chunker = //taken from sizle
   /^(\*|\w+)?(?:([\.\#]+[\w\-\.#]+)?)(\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\])?(:([\w\-]+)(\(['"]?([^()]+)['"]?\))?)?/
