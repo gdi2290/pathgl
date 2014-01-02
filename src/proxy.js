@@ -83,6 +83,7 @@ var baseProto = extend(Object.create(null), {
 }
 , previousSibling: function () { canvas.scene[canvas.__scene__.indexOf() - 1] }
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
+, parent: function () { return __scene__ }
 
 , fill: function (val) {
     isId(val) && initShader(d3.select(val).text(), val)
