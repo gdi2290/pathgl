@@ -21,7 +21,7 @@ function pathgl(canvas) {
 , 'varying vec4 v_fill;'
 
 , 'void main() {'
-, '    gl_Position.xy = pos.xy;'
+, '    gl_Position = vec4(pos.xy, 1., 1.);'
 , '    gl_PointSize = pos.z * 2.;'
 
 , '    v_fill = fill;'
@@ -594,6 +594,7 @@ function countFrames(elapsed) {
 function beforeRender(elapsed) {
   // countFrames(elapsed)
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 }
 
 function createTarget( width, height ) {

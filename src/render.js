@@ -22,6 +22,7 @@ function countFrames(elapsed) {
 function beforeRender(elapsed) {
   // countFrames(elapsed)
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 }
 
 function createTarget( width, height ) {
