@@ -65,8 +65,11 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 
-d3.selection.prototype.shader = function (hello) {
-  initProgram(hello)
+d3.selection.prototype.shader = function (attr, name) {
+  var args = {}
+  args[attr] = name
+  initProgram(args)
+  return this
 }
 
 function createProgram(vs, fs) {

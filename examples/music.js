@@ -15,9 +15,6 @@ examples.music = function (selection) {
 
   var node = audio.on('play', initAudio).node()
   node.play()
-  s.on('click', function () {
-    node.currentTime = 65
-  })
 
   var lines = s.selectAll('line').data(d3.range(numLines).map(function () { return {a: 0}}))
               .enter()
@@ -53,13 +50,12 @@ examples.music = function (selection) {
 }
 
 function initAudio() {
-  window.audio = this
   var audioContext = new webkitAudioContext();
   window.analyzer = audioContext.createAnalyser();
-  var source = audioContext.createMediaElementSource(audio);
+  var source = audioContext.createMediaElementSource(this);
   source.connect(analyzer);
   analyzer.connect(audioContext.destination);
-  audio.play();
+  this.play();
 }
 
 function initDnD (arrayBuffer) {
