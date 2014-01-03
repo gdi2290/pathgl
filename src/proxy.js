@@ -60,11 +60,8 @@ var proto = {
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
-                              , polyline: { points: noop } //lines
-
-, g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] }
-     }
-
+, polyline: { points: noop } //lines
+, g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
 
@@ -201,7 +198,7 @@ function constructProxy(type) {
     var numArrays = 4
 
     child.attr = Object.create(attrDefaults)
-    child.tagName = el.tagName
+    child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = child
     child.index = (buffer.count * numArrays)
 

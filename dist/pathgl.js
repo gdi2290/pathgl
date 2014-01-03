@@ -329,9 +329,9 @@ function byId(id) { return querySelectorAll('[id="' + id + '"]')[0] }
 function isNode(el) { return el && typeof el === 'object' }
 function previous(n) { while (n = n.previousSibling()) if (n.top) return n }
 function clean(s) { return s.replace(/([.*+?\^=!:${}()|\[\]\/\\])/, '\\$1') }
-function matchClass(d) { return ! RegExp('(^|\\s+)' + d.slice(1) + '(\\s+|$)').test(this.className) }
-function byClassName(name) { return traverse(this, function (doc) { return doc.className == name }, []) }
-function byTagName(name) { return traverse(this, function (doc) { return name == '*' || doc.name == name }, []) }
+function matchClass(d) { return ! RegExp('(^|\\s+)' + d.slice(1) + '(\\s+|$)').test(this.class) }
+function byClassName(name) { return traverse(this, function (doc) { return doc.class == name }, []) }
+function byTagName(name) { return traverse(this, function (doc) { return name == '*' || doc.tag == name }, []) }
 function traverse(node, fn, val) { return (node.__scene__ || node.children).forEach(function (node) { traverse(node, fn, val), fn(node) && val.push(node) }) || val }
 
 var pseudos = {} //todo
@@ -405,11 +405,8 @@ var proto = {
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
-                              , polyline: { points: noop } //lines
-
-, g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] }
-     }
-
+, polyline: { points: noop } //lines
+, g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
 
@@ -546,7 +543,7 @@ function constructProxy(type) {
     var numArrays = 4
 
     child.attr = Object.create(attrDefaults)
-    child.tagName = el.tagName
+    child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = child
     child.index = (buffer.count * numArrays)
 
