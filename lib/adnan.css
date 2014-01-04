@@ -1,21 +1,26 @@
 body {
-    padding: 15px;
-    color: #333;
+    color: #222831;
     font: .8em "freight-sans-pro", sans-serif;
-    padding: 15px;
+    margin: 0;
+    padding: 0;
 }
 
 .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 200px;
+    position: relative;
     border-right: 1px solid #888;
-    color: #222831;
     border-bottom: 2px solid #333;
-    height: 100%;
     overflow-y: scroll;
     padding-left: 5px;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 200px;
+    }
 }
 
 ul {
@@ -30,7 +35,7 @@ ul {
 }
 
 .right {
-    position: fixed;
+    position: relative;
     left: 205px;
     top: 0px;
     height: 100%;
@@ -51,13 +56,13 @@ a:hover {
 }
 
 .edit, canvas, svg {
-    position: absolute; 
-    top: 5px;
-    left: 5px;
     padding-left: 1px;
+    position: absolute;
+}
+canvas {
 }
 
-canvas {
+svg {
     pointer-events: none;
 }
 
@@ -104,6 +109,8 @@ canvas {
     text-transform: none;
     text-indent: 0px;
     outline: none;
+    left: 0px;
+    top: 0px;
 }
 
 .edit:hover {
@@ -161,5 +168,5 @@ label {
 .blurb {
     position: absolute;
     left: 50px;
-    top: 650px;
+    top: 90%;
 }

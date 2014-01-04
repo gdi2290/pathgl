@@ -22,7 +22,7 @@ function init(c) {
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
-  d3.timer(drawLoop)
+  setInterval(drawLoop, 500)
   return gl ? canvas : null
 }
 

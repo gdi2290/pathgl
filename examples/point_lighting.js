@@ -3,8 +3,8 @@ examples.point_lighting = function (selector) {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
-  var width = innerWidth * .7,
-      height = innerHeight * .9
+  var width = size.width
+      height = size.height
 
   var x = d3.scale.linear()
           .domain([-5, 5])
