@@ -1,30 +1,38 @@
+var analyzer
 examples.music = function (selection) {
-  // var numLines = 1e2
-  // var s = d3.select(selection)
-  //         .attr(size)
-  //         .call(pathgl)
+  var numLines = 1024
+  var s = d3.select(selection)
+          .attr(size)
+          .call(pathgl)
 
-  // var scale = Math.PI * 2 / numLines
+  var scale = Math.PI * 2 / numLines
 
-  // var lines = s.selectAll('line').data(d3.range(numLines))
-  // .enter()
-  // .append('line')
-  // .attr({
-  //   x1: size.width >> 1
-  // , y1: size.height >> 1
-  // , stroke: function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
-  // , x2: function (d) { return Math.cos(d * scale) * 1000 }
-  // , y2: function (d) { return Math.sin(d * scale) * 1000 }
-  // })
+  var midX = size.width / 2
+  var midY = size.height / 2
 
-  // d3.timer(function () {
-  //   lines.attr('stroke', function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" })
-  //   .attr('x2', function (d) { return Math.cos(d * scale) * Math.random() * 1000 })
-  //   .attr('y2', function (d) { return Math.sin(d * scale) * Math.random() * 1000 })
-  // })
+  var lines = s.selectAll('line').data(d3.range(numLines).map(d3.functor(0)))
+  .enter()
+  .append('line')
+  .attr({
+    x1: size.width >> 1
+  , y1: size.height >> 1
+  , stroke: function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
+  , x2: function (d, i) { return Math.cos(i * 2) * innerWidth }
+  , y2: function (d, i) { return Math.sin(i * 2) * innerHeight }
+  })
+
+  d3.timer(function () {
+    if (! analyzer) return
+    var byteFreq = new Uint8Array(analyzer.frequencyBinCount)
+    analyzer.getByteFrequencyData(byteFreq)
+    console.log(byteFreq)
+    lines.data(byteFreq)
+    .attr('stroke', function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" })
+    .attr('x2', function (d, i) { return midX + (Math.cos(i) * d) })
+    .attr('y2', function (d, i) { return midY + (Math.sin(i) * d)})
+  })
   dropAndLoad(document.querySelector('.right'), init, "ArrayBuffer")
 }
-
 
 function init (arrayBuffer) {
 window.audioCtx = new webkitAudioContext()
@@ -45,7 +53,7 @@ window.audioCtx = new webkitAudioContext()
     source.start(0)
     // Initialize a visualizer object
     // Finally, initialize the visualizer.
-    new visualizer(analyser)
+    analyzer = analyser
   })
 }
 
@@ -72,18 +80,4 @@ function dropAndLoad(dropElement, callback, readFormat) {
     }
     reader['readAs'+readFormat](file)
   }
-}
-
-
-function visualizer(analyser) {
-  var last = Date.now()
-  var loop = function() {
-    var dt = Date.now() - last
-    // we get the current byteFreq data from our analyser
-    var byteFreq = new Uint8Array(analyser.frequencyBinCount)
-    analyser.getByteFrequencyData(byteFreq)
-    last = Date.now()
-    requestAnimationFrame(loop)
-  }
-  requestAnimationFrame(loop)
 }
