@@ -1,10 +1,12 @@
 var compressor = require('uglify-js')
   , fs = require('fs')
+  , http = require('http')
   , source = './src/'
   , main = 'main.js'
+  , port = 1234
 
-build()
 fs.watch('src', build)
+build()
 
 function build(_, file) {
   var blob = [ 'start.js'
@@ -24,6 +26,8 @@ function build(_, file) {
 
   console.log('rebuilding ' + (file ? file : ''))
 
+  process.emit('save_file')
+
   try {
     if (! fs.existsSync('dist/')) fs.mkdirSync('dist/')
     fs.writeFileSync('dist/pathgl.js', closed)
@@ -37,3 +41,9 @@ function build(_, file) {
 function read (file) {
   return '' + fs.readFileSync(source + file)
 }
+
+http.createServer(function (req, res) {
+  console.log('connection received')
+  process.on('save_file', res.end.bind(res))
+}).listen(port)
+console.log('watching for file save on port ' + port)
