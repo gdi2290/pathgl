@@ -10,10 +10,12 @@ fs.watch('src', build)
 http.createServer(live_reloader).listen(port)
 console.log('watching for file save on port ' + port)
 
-fs.readdirSync(__dirname).forEach(function (name) {
-  var count = 0
-  fs.watch(name, function (type) {
-    if (type == 'change' && ! (++count % 2)) process.emit('file_save')
+;['src', 'examples', 'lib']
+.filter(function (name) { return fs.statSync(name).isDirectory() })
+.forEach(function (dir) {
+  fs.readdirSync(dir).forEach(function (name) {
+    var count = 0
+    fs.watch(dir + '/' + name, function (type) { (++count % 2) || process.emit('write_file') })
   })
 })
 
@@ -51,5 +53,5 @@ function read (file) {
 
 function live_reloader(req, res) {
   console.log('connection received')
-  process.on('save_file', req.end.bind(req))
+  process.once('write_file', function () { res.end() })
 }
