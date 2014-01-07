@@ -1,7 +1,7 @@
 var pointBuffer = new Uint16Array(4 * 1e4)
 var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
-
+cb = colorBuffer
 var buff
 var points = {
     pos: {
@@ -15,7 +15,6 @@ var points = {
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
-
   // for(var attr in pointAttr) {
   //   gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
   //   gl.enableVertexAttribArray(points[attr].vLoc)
@@ -40,4 +39,5 @@ function drawPoints(elapsed) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  // gl.drawArrays(gl.POINTS, 0, 1e4)
 }

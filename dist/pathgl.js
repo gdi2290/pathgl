@@ -14,29 +14,34 @@ function pathgl(canvas) {
 ;pathgl.vertexShader = [
   'precision mediump float;'
 , 'attribute vec4 pos;'
-, 'attribute vec4 fill;'
-, 'attribute vec4 stroke;'
+//, 'attribute vec4 fill;'
+, 'attribute float stroke;'
 
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'
 
+, 'vec3 unpack_color(float col) {'
+, '    return vec3(mod(col/ 256. / 256., 256.),'
+, '                mod(col/ 256. , 256.),'
+, '                mod(col, 256.)); }'
+
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize = pos.z * 2.;'
+, '    gl_PointSize =  12.;'
 
-, '    v_fill = fill  + stroke;'
-, '    v_stroke = vec4(1,1,1,1);'
+//, '    v_fill = fill;'
+, '    v_stroke = vec4(unpack_color(stroke), 1.0);'
 , '}'
 ].join('\n')
 
 pathgl.fragmentShader = [
   'precision mediump float;'
 , 'varying vec4 v_stroke;'
-, 'varying vec4 v_fill;'
+//, 'varying vec4 v_fill;'
 , 'void main() {'
-, '    float dist = distance(gl_PointCoord, vec2(0.5));'
+//, '    float dist = distance(gl_PointCoord, vec2(0.5));'
 //, '    if (dist > 0.5) discard;'
-, '    gl_FragColor = v_stroke;'
+, '    gl_FragColor = v_stroke + vec4(.0, .0, .0, .9);'
 , '}'
 ].join('\n')
 ;var stopRendering = false
@@ -135,7 +140,7 @@ function bindUniform(val, key) {
 }
 
 function initContext(canvas) {
-  var gl = canvas.getContext('webgl', { antialias: false }) || canvas.getContext('experimental-webgl')
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 };  var methods = { m: moveTo
                 , z: closePath
@@ -203,7 +208,7 @@ function lineTo(x, y) {
 ;var pointBuffer = new Uint16Array(4 * 1e4)
 var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
-
+cb = colorBuffer
 var buff
 var points = {
     pos: {
@@ -217,7 +222,6 @@ var points = {
 
 function drawPoints(elapsed) {
   if (! pointBuffer.count) return
-
   // for(var attr in pointAttr) {
   //   gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
   //   gl.enableVertexAttribArray(points[attr].vLoc)
@@ -242,10 +246,13 @@ function drawPoints(elapsed) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  // gl.drawArrays(gl.POINTS, 0, 1e4)
 }
 ;var lineBuffer = new Uint16Array(4 * 1e4)
 var linePosBuffer = new Float32Array(4 * 1e4)
 lineBuffer.count = 0
+lb = lineBuffer
+lpb = linePosBuffer
 
 function drawLines(){
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
@@ -256,16 +263,17 @@ function drawLines(){
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vStroke)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(program.vStroke, 4, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  gl.enableVertexAttribArray(program.vFill)
-  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
+  // gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  // gl.enableVertexAttribArray(program.vFill)
+  // gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  // gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  //gl.drawElements(gl.LINES, lineBuffer.count * 4, gl.UNSIGNED_SHORT, 2)
+  gl.drawArrays(gl.LINES, 0, lineBuffer.count * 4)
 }
 ;function drawPolygons() {
 
@@ -369,10 +377,7 @@ var proto = {
           , stroke: function (v) {
               return;
               var fill = d3.rgb(v)
-              colorBuffer[this.index + 0] = fill.r / 256
-              colorBuffer[this.index + 1] = fill.g / 256
-              colorBuffer[this.index + 2] = fill.b / 256
-              colorBuffer[this.index + 3] = this.attr.opacity
+              colorBuffer[this.index + 0] = + fill.toString().slice(1)
             },
             opacity: function () {
               colorBuffer[this.index + 3] = this.attr.opacity
@@ -390,6 +395,10 @@ var proto = {
         , x2: function (v) { linePosBuffer[this.index + 2] = x(v) }
         , y2: function (v) { linePosBuffer[this.index + 3] = y(v) }
         , buffer: lineBuffer
+        , stroke: function (v) {
+            var fill = d3.rgb(v)
+            colorBuffer[this.index + 0] = parseInt(fill.toString().slice(1), 16)
+          }
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
@@ -397,8 +406,6 @@ var proto = {
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
-
-var allCircles = new Float32Array(1e6)
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
@@ -412,7 +419,7 @@ var baseProto = extend(Object.create(null), {
   this.buffer && drawFill(this)
   drawStroke(this)
 }
-, previousSibling: function () { canvas.scene[canvas.__scene__.indexOf() - 1] }
+, previousSibling: function () { canvas.scene[canvas.__scene__.indexOf(this) - 1] }
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 , parent: function () { return __scene__ }
 
@@ -500,11 +507,11 @@ function removeChild(el) {
 
   this.__scene__.splice(i, 1)
 
-  delete el.index
+  for(var k = 0; k < 4; k++)
+    el.buffer[el.index + k] = 0
 
-  el.r(0)
-
-  //el.buffer.size -= 1
+  el.buffer.changed = true
+  el.buffer.count -= 1
 }
 
 var attrDefaults = {
@@ -532,7 +539,7 @@ function constructProxy(type) {
 
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
-    child.parentNode = child.parentElement = child
+    child.parentNode = child.parentElement = canvas
     child.index = (buffer.count * numArrays)
 
     buffer[child.index] = buffer.count

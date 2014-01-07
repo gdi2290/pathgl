@@ -36,10 +36,7 @@ var proto = {
           , stroke: function (v) {
               return;
               var fill = d3.rgb(v)
-              colorBuffer[this.index + 0] = fill.r / 256
-              colorBuffer[this.index + 1] = fill.g / 256
-              colorBuffer[this.index + 2] = fill.b / 256
-              colorBuffer[this.index + 3] = this.attr.opacity
+              colorBuffer[this.index + 0] = + fill.toString().slice(1)
             },
             opacity: function () {
               colorBuffer[this.index + 3] = this.attr.opacity
@@ -57,6 +54,10 @@ var proto = {
         , x2: function (v) { linePosBuffer[this.index + 2] = x(v) }
         , y2: function (v) { linePosBuffer[this.index + 3] = y(v) }
         , buffer: lineBuffer
+        , stroke: function (v) {
+            var fill = d3.rgb(v)
+            colorBuffer[this.index + 0] = parseInt(fill.toString().slice(1), 16)
+          }
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
@@ -64,8 +65,6 @@ var proto = {
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
-
-var allCircles = new Float32Array(1e6)
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
@@ -79,7 +78,7 @@ var baseProto = extend(Object.create(null), {
   this.buffer && drawFill(this)
   drawStroke(this)
 }
-, previousSibling: function () { canvas.scene[canvas.__scene__.indexOf() - 1] }
+, previousSibling: function () { canvas.scene[canvas.__scene__.indexOf(this) - 1] }
 , nextSibling: function () { canvas.scene[canvas.__scene__.indexOf()  + 1] }
 , parent: function () { return __scene__ }
 
@@ -167,11 +166,11 @@ function removeChild(el) {
 
   this.__scene__.splice(i, 1)
 
-  delete el.index
+  for(var k = 0; k < 4; k++)
+    el.buffer[el.index + k] = 0
 
-  el.r(0)
-
-  //el.buffer.size -= 1
+  el.buffer.changed = true
+  el.buffer.count -= 1
 }
 
 var attrDefaults = {
@@ -199,7 +198,7 @@ function constructProxy(type) {
 
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
-    child.parentNode = child.parentElement = child
+    child.parentNode = child.parentElement = canvas
     child.index = (buffer.count * numArrays)
 
     buffer[child.index] = buffer.count
