@@ -9,4 +9,5 @@ function pathgl(canvas) {
     canvas instanceof d3.selection ? canvas.node() :
     canvas
 
+  if (! canvas) return console.log('invalid selector')
   if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas')
