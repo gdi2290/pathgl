@@ -21,9 +21,9 @@ function pathgl(canvas) {
 , 'varying vec4 v_fill;'
 
 , 'vec3 unpack_color(float col) {'
-, '    return vec3(mod(col/ 256. / 256., 256.),'
-, '                mod(col/ 256. , 256.),'
-, '                mod(col, 256.)); }'
+, '    return vec3(mod(col / 256. / 256., 256.),'
+, '                mod(col / 256. , 256.),'
+, '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
@@ -272,8 +272,7 @@ function drawLines(){
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  //gl.drawElements(gl.LINES, lineBuffer.count * 4, gl.UNSIGNED_SHORT, 2)
-  gl.drawArrays(gl.LINES, 0, lineBuffer.count * 4)
+  gl.drawElements(gl.LINES, lineBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
 ;function drawPolygons() {
 
@@ -390,14 +389,16 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { linePosBuffer[this.index + 0] = x(v) }
-        , y1: function (v) { linePosBuffer[this.index + 1] = y(v) }
-        , x2: function (v) { linePosBuffer[this.index + 2] = x(v) }
-        , y2: function (v) { linePosBuffer[this.index + 3] = y(v) }
+, line: { x1: function (v) { linePosBuffer[this.indices[0] * 2] = x(v) }
+        , y1: function (v) { linePosBuffer[this.indices[0] * 2 + 1] = y(v) }
+        , x2: function (v) { linePosBuffer[this.indices[1] * 2] = x(v) }
+        , y2: function (v) { linePosBuffer[this.indices[1] * 2  + 1] = y(v) }
         , buffer: lineBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
-            colorBuffer[this.index + 0] = parseInt(fill.toString().slice(1), 16)
+            this.indices.forEach(function (i) {
+              colorBuffer[i+1] = parseInt(fill.toString().slice(1), 16)
+            })
           }
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
@@ -540,13 +541,13 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
-    child.index = (buffer.count * numArrays)
+    var i = child.indices = [buffer.count, 1 + buffer.count]
 
-    buffer[child.index] = buffer.count
-    buffer[child.index + 1] = buffer.count
-    buffer[child.index + 2] = buffer.count
-    buffer[child.index + 3] = buffer.count
-    buffer.count += 1
+    i.forEach(function (i) {
+      buffer[i] = buffer.count + i % 2
+    })
+
+    buffer.count += 2
 
     return child
   }
@@ -646,5 +647,10 @@ function uniq(ar) { return ar.filter(function (d, i) { return ar.indexOf(d) == i
 function push(d) { return this.push(d) }
 
 function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
+
+function clamp (a, x) {
+  a = Math.abs(a)
+  return x < -a ? -a : x > a ? a : x
+}
 ;  return init(canvas)
 } }()

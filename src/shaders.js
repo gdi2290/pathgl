@@ -8,9 +8,9 @@ pathgl.vertexShader = [
 , 'varying vec4 v_fill;'
 
 , 'vec3 unpack_color(float col) {'
-, '    return vec3(mod(col/ 256. / 256., 256.),'
-, '                mod(col/ 256. , 256.),'
-, '                mod(col, 256.)); }'
+, '    return vec3(mod(col / 256. / 256., 256.),'
+, '                mod(col / 256. , 256.),'
+, '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
