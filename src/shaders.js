@@ -15,7 +15,7 @@ pathgl.vertexShader = [
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-//, '    gl_PointSize =  pos.z * 2.;'
+, '    gl_PointSize =  pos.z * 2.;'
 
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
 , '    v_stroke = vec4(unpack_color(stroke), 1.0);'

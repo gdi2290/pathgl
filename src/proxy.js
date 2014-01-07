@@ -53,7 +53,7 @@ var proto = {
         , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {
-              colorBuffer[i+1] = parseInt(fill.toString().slice(1), 16)
+              colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
             })
            }
         }
@@ -197,13 +197,14 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
-    var i = child.indices = [buffer.count, buffer.count + 1]
+    var i = child.indices =
+      type.name == 'line' ? [buffer.count, buffer.count + 1] : [buffer.count * 4]
 
     i.forEach(function (i) {
       buffer[i] = buffer.count + i % 2
     })
 
-    buffer.count += 2
+    buffer.count += type.name == 'line' ? 2 : 1
 
     return child
   }
