@@ -16,30 +16,26 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
-              pointPosBuffer[this.index + 2] = v
+              pointPosBuffer[this.indices[0] + 2] = v
             }
           , cx: function (v) {
-              pointPosBuffer[this.index + 0] = x(v)
+              pointPosBuffer[this.indices[0] + 0] = x(v)
 
             }
           , cy: function (v) {
-              pointPosBuffer[this.index + 1] = y(v)
+              pointPosBuffer[this.indices[0] + 1] = y(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
-              colorBuffer[this.index + 0] = fill.r / 256
-              colorBuffer[this.index + 1] = fill.g / 256
-              colorBuffer[this.index + 2] = fill.b / 256
-              colorBuffer[this.index + 3] = this.attr.opacity
+              colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
             }
 
           , stroke: function (v) {
               return;
               var fill = d3.rgb(v)
-              colorBuffer[this.index + 0] = + fill.toString().slice(1)
+              colorBuffer[this.indices[0] / 4] = + fill.toString().slice(1)
             },
             opacity: function () {
-              colorBuffer[this.index + 3] = this.attr.opacity
             }
 
           , buffer: pointBuffer
@@ -56,9 +52,7 @@ var proto = {
         , buffer: lineBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
-            this.indices.forEach(function (i) {
-              colorBuffer[i+1] = parseInt(fill.toString().slice(1), 16)
-            })
+            colorBuffer[this.indices[0] + 0] = + fill.toString().slice(1)
           }
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
@@ -201,13 +195,13 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
-    var i = child.indices = [buffer.count, 1 + buffer.count]
+    var i = child.indices = [buffer.count * 4]
 
     i.forEach(function (i) {
       buffer[i] = buffer.count + i % 2
     })
 
-    buffer.count += 2
+    buffer.count += 1
 
     return child
   }

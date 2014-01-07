@@ -14,7 +14,7 @@ function pathgl(canvas) {
 ;pathgl.vertexShader = [
   'precision mediump float;'
 , 'attribute vec4 pos;'
-//, 'attribute vec4 fill;'
+, 'attribute float fill;'
 , 'attribute float stroke;'
 
 , 'varying vec4 v_stroke;'
@@ -27,9 +27,9 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  12.;'
+, '    gl_PointSize =  pos.z * 2.;'
 
-//, '    v_fill = fill;'
+, '    v_fill = vec4(unpack_color(fill), 1.0);'
 , '    v_stroke = vec4(unpack_color(stroke), 1.0);'
 , '}'
 ].join('\n')
@@ -37,11 +37,11 @@ function pathgl(canvas) {
 pathgl.fragmentShader = [
   'precision mediump float;'
 , 'varying vec4 v_stroke;'
-//, 'varying vec4 v_fill;'
+, 'varying vec4 v_fill;'
 , 'void main() {'
-//, '    float dist = distance(gl_PointCoord, vec2(0.5));'
-//, '    if (dist > 0.5) discard;'
-, '    gl_FragColor = v_stroke + vec4(.0, .0, .0, .9);'
+, '    float dist = distance(gl_PointCoord, vec2(0.5));'
+, '    if (dist > 0.5) discard;'
+, '    gl_FragColor = v_fill;'
 , '}'
 ].join('\n')
 ;var stopRendering = false
@@ -208,13 +208,14 @@ function lineTo(x, y) {
 ;var pointBuffer = new Uint16Array(4 * 1e4)
 var pointPosBuffer = new Float32Array(4 * 1e4)
 pointBuffer.count = 0
+pb = pointBuffer
+ppb = pointPosBuffer
 cb = colorBuffer
 var buff
 var points = {
     pos: {
       buffer: 0
     , vLoc: 0
-    ,
     }
   , fill: {}
   , stroke: {}
@@ -236,17 +237,16 @@ function drawPoints(elapsed) {
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vStroke)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(program.vStroke, 4, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vFill)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
-  // gl.drawArrays(gl.POINTS, 0, 1e4)
 }
 ;var lineBuffer = new Uint16Array(4 * 1e4)
 var linePosBuffer = new Float32Array(4 * 1e4)
@@ -356,30 +356,26 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
-              pointPosBuffer[this.index + 2] = v
+              pointPosBuffer[this.indices[0] + 2] = v
             }
           , cx: function (v) {
-              pointPosBuffer[this.index + 0] = x(v)
+              pointPosBuffer[this.indices[0] + 0] = x(v)
 
             }
           , cy: function (v) {
-              pointPosBuffer[this.index + 1] = y(v)
+              pointPosBuffer[this.indices[0] + 1] = y(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
-              colorBuffer[this.index + 0] = fill.r / 256
-              colorBuffer[this.index + 1] = fill.g / 256
-              colorBuffer[this.index + 2] = fill.b / 256
-              colorBuffer[this.index + 3] = this.attr.opacity
+              colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
             }
 
           , stroke: function (v) {
               return;
               var fill = d3.rgb(v)
-              colorBuffer[this.index + 0] = + fill.toString().slice(1)
+              colorBuffer[this.indices[0] / 4] = + fill.toString().slice(1)
             },
             opacity: function () {
-              colorBuffer[this.index + 3] = this.attr.opacity
             }
 
           , buffer: pointBuffer
@@ -396,9 +392,7 @@ var proto = {
         , buffer: lineBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
-            this.indices.forEach(function (i) {
-              colorBuffer[i+1] = parseInt(fill.toString().slice(1), 16)
-            })
+            colorBuffer[this.indices[0] + 0] = + fill.toString().slice(1)
           }
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
@@ -541,13 +535,13 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
-    var i = child.indices = [buffer.count, 1 + buffer.count]
+    var i = child.indices = [buffer.count * 4]
 
     i.forEach(function (i) {
       buffer[i] = buffer.count + i % 2
     })
 
-    buffer.count += 2
+    buffer.count += 1
 
     return child
   }
