@@ -28,3 +28,8 @@ function uniq(ar) { return ar.filter(function (d, i) { return ar.indexOf(d) == i
 function push(d) { return this.push(d) }
 
 function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map ? flatten(b) : b) }) }
+
+function clamp (a, x) {
+  a = Math.abs(a)
+  return x < -a ? -a : x > a ? a : x
+}
