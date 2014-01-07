@@ -12,7 +12,6 @@ function twoEach(list, fn, gl) {
 }
 
 function isId(str) {
-  //add in custom scene query selector
   return false
 }
 

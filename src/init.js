@@ -1,22 +1,11 @@
 var stopRendering = false
 var colorBuffer = new Float32Array(4 * 1e4)
 
-pathgl.shaderParameters = {
-  rgb: [0, 0, 0, 0]
-, translate: [0, 0]
-, time: [0]
-, rotation: [0, 1]
-, opacity: [1]
-, resolution: [0, 0]
-, scale: [1, 1]
-, stroke: [0]
-, mouse: pathgl.mouse = [0, 0]
-}
+pathgl.uniforms = { mouse: [0, 0] }
 
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
-  pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
   program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
   monkeyPatch(canvas)
@@ -40,7 +29,7 @@ function bindEvents(canvas) {
 
 function mousemoved() {
   var m = d3.mouse(this)
-  pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
+  pathgl.uniforms.mouse = [m[0] / innerWidth, m[1] / innerHeight]
 }
 
 function monkeyPatch(canvas) {
@@ -83,7 +72,7 @@ function createProgram(vs, fs) {
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  each(pathgl.shaderParameters, bindUniform)
+  each({}, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)

@@ -24,8 +24,8 @@ function pathgl(canvas) {
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
 , '    gl_PointSize = pos.z * 2.;'
 
-, '    v_fill = fill;'
-, '    v_stroke = stroke;'
+, '    v_fill = fill  + stroke;'
+, '    v_stroke = vec4(1,1,1,1);'
 , '}'
 ].join('\n')
 
@@ -35,29 +35,18 @@ pathgl.fragmentShader = [
 , 'varying vec4 v_fill;'
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-, '    if (dist > 0.5) discard;'
-, '    gl_FragColor = dist > .4 ? v_stroke : v_fill;'
+//, '    if (dist > 0.5) discard;'
+, '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
 ;var stopRendering = false
 var colorBuffer = new Float32Array(4 * 1e4)
 
-pathgl.shaderParameters = {
-  rgb: [0, 0, 0, 0]
-, translate: [0, 0]
-, time: [0]
-, rotation: [0, 1]
-, opacity: [1]
-, resolution: [0, 0]
-, scale: [1, 1]
-, stroke: [0]
-, mouse: pathgl.mouse = [0, 0]
-}
+pathgl.uniforms = { mouse: [0, 0] }
 
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
-  pathgl.shaderParameters.resolution = [canvas.width, canvas.height]
   gl = initContext(canvas)
   program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
   monkeyPatch(canvas)
@@ -81,7 +70,7 @@ function bindEvents(canvas) {
 
 function mousemoved() {
   var m = d3.mouse(this)
-  pathgl.mouse = [m[0] / innerWidth, m[1] / innerHeight]
+  pathgl.uniforms.mouse = [m[0] / innerWidth, m[1] / innerHeight]
 }
 
 function monkeyPatch(canvas) {
@@ -124,7 +113,7 @@ function createProgram(vs, fs) {
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  each(pathgl.shaderParameters, bindUniform)
+  each({}, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)
@@ -256,14 +245,13 @@ function drawPoints(elapsed) {
 }
 ;var lineBuffer = new Uint16Array(4 * 1e4)
 var linePosBuffer = new Float32Array(4 * 1e4)
-lineBuffer.size = 0
+lineBuffer.count = 0
 
-var lb
 function drawLines(){
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
-  gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
-  gl.vertexAttribPointer(program.vPos, 4, gl.FLOAT, false, 0, 0)
+  gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(program.vPos, 2, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vStroke)
@@ -276,7 +264,7 @@ function drawLines(){
   gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
 }
 ;function drawPolygons() {
@@ -397,10 +385,10 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { this.buffer[this.index - 4] = x(v) }
-        , y1: function (v) { this.buffer[this.index - 3] = y(v) }
-        , x2: function (v) { this.buffer[this.index - 2] = x(v) }
-        , y2: function (v) { this.buffer[this.index - 1] = y(v) }
+, line: { x1: function (v) { linePosBuffer[this.index + 0] = x(v) }
+        , y1: function (v) { linePosBuffer[this.index + 1] = y(v) }
+        , x2: function (v) { linePosBuffer[this.index + 2] = x(v) }
+        , y2: function (v) { linePosBuffer[this.index + 3] = y(v) }
         , buffer: lineBuffer
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
@@ -550,7 +538,7 @@ function constructProxy(type) {
     buffer[child.index] = buffer.count
     buffer[child.index + 1] = buffer.count
     buffer[child.index + 2] = buffer.count
-    //buffer[child.index + 3] = buffer.count
+    buffer[child.index + 3] = buffer.count
     buffer.count += 1
 
     return child
@@ -635,7 +623,6 @@ function twoEach(list, fn, gl) {
 }
 
 function isId(str) {
-  //add in custom scene query selector
   return false
 }
 

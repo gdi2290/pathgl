@@ -10,6 +10,7 @@ examples.waveform = function (selection) {
   .attr({
     x1: 300
   , y1: 300
+  , stroke: '#333'
   , x2: function (d) { return Math.cos(d * scale) * 1000 }
   , y2: function (d) { return Math.sin(d * scale) * 1000 }
   })

@@ -52,10 +52,10 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { this.buffer[this.index - 4] = x(v) }
-        , y1: function (v) { this.buffer[this.index - 3] = y(v) }
-        , x2: function (v) { this.buffer[this.index - 2] = x(v) }
-        , y2: function (v) { this.buffer[this.index - 1] = y(v) }
+, line: { x1: function (v) { linePosBuffer[this.index + 0] = x(v) }
+        , y1: function (v) { linePosBuffer[this.index + 1] = y(v) }
+        , x2: function (v) { linePosBuffer[this.index + 2] = x(v) }
+        , y2: function (v) { linePosBuffer[this.index + 3] = y(v) }
         , buffer: lineBuffer
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
@@ -205,7 +205,7 @@ function constructProxy(type) {
     buffer[child.index] = buffer.count
     buffer[child.index + 1] = buffer.count
     buffer[child.index + 2] = buffer.count
-    //buffer[child.index + 3] = buffer.count
+    buffer[child.index + 3] = buffer.count
     buffer.count += 1
 
     return child
