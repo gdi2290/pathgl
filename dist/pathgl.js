@@ -231,6 +231,7 @@ function drawPoints(elapsed) {
   //   if (points[attr].changed) gl.bufferSubData(gl.ARRAY_BUFFER, points[attr].list, gl.DYNAMIC_DRAW)
   //   gl.vertexAttribPointer(points[attr].vLoc, points[attr].length, gl.FLOAT, false, 0, 0)
   // }
+
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
@@ -248,7 +249,7 @@ function drawPoints(elapsed) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.POINTS, 4e4, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
 ;var lineBuffer = new Uint16Array(4 * 1e4)
 var linePosBuffer = new Float32Array(4 * 1e4)
@@ -257,6 +258,7 @@ lb = lineBuffer
 lpb = linePosBuffer
 
 function drawLines(){
+
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)

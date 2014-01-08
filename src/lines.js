@@ -5,6 +5,7 @@ lb = lineBuffer
 lpb = linePosBuffer
 
 function drawLines(){
+
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
