@@ -16,7 +16,7 @@ pathgl.vertexShader = [
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * 10.;'//pos.z
+, '    gl_PointSize =  2. * pos.z;'//pos.z
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -36,7 +36,6 @@ pathgl.fragmentShader = [
 , '    gl_FragColor = v_stroke;'//v_stroke
 , '}'
 ].join('\n')
-
 
 //type
 //1 circle

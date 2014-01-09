@@ -7,13 +7,13 @@ function yScale(y) {
 }
 
 function drawLoop(elapsed) {
-  beforeRender(elapsed)
+  beforeRender()
 
   drawPoints(elapsed)
   drawLines(elapsed)
   drawPolygons(elapsed)
 
-  return stopRendering
+  return stopRendering && beforeRender()
 }
 
 var time1 = Date.now()
@@ -27,9 +27,8 @@ function countFrames(elapsed) {
   time1 = elapsed
 }
 
-function beforeRender(elapsed) {
+function beforeRender() {
   // countFrames(elapsed)
-  gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 }
 

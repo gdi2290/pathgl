@@ -32,7 +32,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * 10.;'//pos.z
+, '    gl_PointSize =  2. * pos.z;'//pos.z
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -52,7 +52,6 @@ pathgl.fragmentShader = [
 , '    gl_FragColor = v_stroke;'//v_stroke
 , '}'
 ].join('\n')
-
 
 //type
 //1 circle
@@ -403,9 +402,9 @@ var proto = {
           , posBuffer: pointPosBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
-, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point
+, rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner}
 
-, image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
+, image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 
 , line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = xScale(v) }
         , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = yScale(v) }
@@ -434,16 +433,11 @@ var proto = {
           }
         }
 
-, polygon: { points: noop } //lines
-, polyline: { points: noop } //lines
+, polygon: { points: noop }
+, polyline: { points: noop }
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
-
-_.each(colorBuffer, function (d, i, o) {
-  o[i] = 16761035
-})
-
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
 , children: Object.freeze([])
@@ -627,13 +621,13 @@ function yScale(y) {
 }
 
 function drawLoop(elapsed) {
-  beforeRender(elapsed)
+  beforeRender()
 
   drawPoints(elapsed)
   drawLines(elapsed)
   drawPolygons(elapsed)
 
-  return stopRendering
+  return stopRendering && beforeRender()
 }
 
 var time1 = Date.now()
@@ -647,9 +641,8 @@ function countFrames(elapsed) {
   time1 = elapsed
 }
 
-function beforeRender(elapsed) {
+function beforeRender() {
   // countFrames(elapsed)
-  gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 }
 
