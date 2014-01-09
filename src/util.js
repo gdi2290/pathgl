@@ -33,3 +33,7 @@ function clamp (a, x) {
   a = Math.abs(a)
   return x < -a ? -a : x > a ? a : x
 }
+
+function range(a, b) {
+  return new Array(b - a).join(' ').split(' ').map(function (d, i) { return i + a})
+}
