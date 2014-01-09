@@ -29,5 +29,5 @@ function drawLines(){
   // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   // b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   // gl.drawElements(gl.LINE_STRIP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
-  gl.drawArrays(gl.LINE_STRIP, 0, 1e4 * 2)
+  gl.drawArrays(gl.LINES, 0, 1e4 * 2)
 }

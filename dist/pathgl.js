@@ -158,15 +158,14 @@ function initContext(canvas) {
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 };function parse (str, stroke) {
   var buffer = [], lb = this.buffer, pb = this.posBuffer, indices = this.indices, count = lb.count
-    , l = indices.length
+    , pos = [0, 0]
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var points = segment.slice(1).trim().split(/,| /g), c = segment[0].toLowerCase(), j = 0
 
     while(j < points.length) {
       var x = points[j++], y = points[j++]
-      l += 1
-      c == 'm' ? buffer.push(x, y) :
-        c == 'l' ? buffer.push(x, y) :
+      c == 'm' ? pos = [x, y]:
+        c == 'l' ? buffer.push(pos[0], pos[1], x, y) :
         c == 'z' ? '' :
         console.log('malformed path:' + c)
     }
@@ -260,7 +259,7 @@ function drawLines(){
   // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   // b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   // gl.drawElements(gl.LINE_STRIP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
-  gl.drawArrays(gl.LINE_STRIP, 0, 1e4 * 2)
+  gl.drawArrays(gl.LINES, 0, 1e4 * 2)
 }
 ;function drawPolygons() {
 
