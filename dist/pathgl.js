@@ -32,7 +32,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * pos.z;'//pos.z
+, '    gl_PointSize =  2. * pos.z;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -156,26 +156,28 @@ function bindUniform(val, key) {
 function initContext(canvas) {
   var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
-};  var methods = { m: moveTo
-                , z: closePath
-                , l: lineTo
+};var methods = { m: moveTo
+              , z: closePath
+              , l: lineTo
 
-                , h: horizontalLine
-                , v: verticalLine
-                , c: curveTo
-                , s: shortCurveTo
-                , q: quadraticBezier
-                , t: smoothQuadraticBezier
-                , a: elipticalArc
-                }
+              , h: horizontalLine
+              , v: verticalLine
+              , c: curveTo
+              , s: shortCurveTo
+              , q: quadraticBezier
+              , t: smoothQuadraticBezier
+              , a: elipticalArc
+              }
+
 function parse (str) {
-  var buffer = []
+  var buffer = [], lb = this.buffer, i, pb = this.posBuffer
+
   pos = [0, 0]
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var instruction = methods[segment[0].toLowerCase()]
       , coords = segment.slice(1).trim().split(/,| /g)
 
-    if (! instruction) return
+    if (! instruction) return console.log('malformed path:D')
     if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
 
     if ('function' == typeof instruction)
@@ -184,18 +186,26 @@ function parse (str) {
       console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
   })
 
-  return buffer
+  if (this.indices.length < buffer.length)
+    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
+  else
+    this.indices.length = buffer.length
+
+  lb.count += this.indices.length - buffer.length
+
+  this.indices.forEach(function (d, i) {
+    pb[2 * lb[d] + d % 2] = (i % 2 ? yScale : xScale)(buffer[i])
+  })
 }
 
 var pos
 
 function moveTo(x, y) {
-  pos = [x, y]
+  this.push(x, y)
 }
 
 function lineTo(x, y) {
-  this.push(pos[0], pos[1], x, y)
-  pos = [x, y]
+  this.push(x, y)
 }
 
 var subPathStart
@@ -277,21 +287,18 @@ function drawLines(){
 
   gl.bindBuffer(gl.ARRAY_BUFFER, b2)
   gl.enableVertexAttribArray(program.vStroke)
-  b4._ || gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, b3)
   gl.enableVertexAttribArray(program.vFill)
-  b4._ || gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
-  b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
-
-
-
-  b4._  = true
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
+  // b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
+  // gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.LINE_LOOP, 0, 1e4 * 2)
 }
 ;function drawPolygons() {
 
@@ -419,8 +426,6 @@ var proto = {
             this.indices.forEach(function (i) {
               colorBuffer[i] = + parseInt(fill.toString().slice(1), 16)
             })
-            colorBuffer[this.indices[this.indices.length - 2]] =
-              colorBuffer[this.indices[this.indices.length - 1]] = 16777215
           }
         }
 
@@ -506,19 +511,7 @@ var types = [
             }, {})
 
 function buildPath (d) {
-  var buffer = parse(d), lb = this.buffer, i, pb = this.posBuffer
-
-  if (this.indices.length < buffer.length)
-    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
-  else
-    this.indices.length = buffer.length
-
-  lb.count += this.indices.length - buffer.length
-
-  this.indices.forEach(function (d, i) {
-    pb[2 * lb[d] + d % 2] = (i % 2 ? yScale : xScale)(buffer[i])
-  })
-
+  parse.call(this, d)
   this.stroke(this.attr.stroke)
 }
 

@@ -1,23 +1,25 @@
-  var methods = { m: moveTo
-                , z: closePath
-                , l: lineTo
+var methods = { m: moveTo
+              , z: closePath
+              , l: lineTo
 
-                , h: horizontalLine
-                , v: verticalLine
-                , c: curveTo
-                , s: shortCurveTo
-                , q: quadraticBezier
-                , t: smoothQuadraticBezier
-                , a: elipticalArc
-                }
+              , h: horizontalLine
+              , v: verticalLine
+              , c: curveTo
+              , s: shortCurveTo
+              , q: quadraticBezier
+              , t: smoothQuadraticBezier
+              , a: elipticalArc
+              }
+
 function parse (str) {
-  var buffer = []
+  var buffer = [], lb = this.buffer, i, pb = this.posBuffer
+
   pos = [0, 0]
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var instruction = methods[segment[0].toLowerCase()]
       , coords = segment.slice(1).trim().split(/,| /g)
 
-    if (! instruction) return
+    if (! instruction) return console.log('malformed path:D')
     if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
 
     if ('function' == typeof instruction)
@@ -26,18 +28,26 @@ function parse (str) {
       console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
   })
 
-  return buffer
+  if (this.indices.length < buffer.length)
+    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
+  else
+    this.indices.length = buffer.length
+
+  lb.count += this.indices.length - buffer.length
+
+  this.indices.forEach(function (d, i) {
+    pb[2 * lb[d] + d % 2] = (i % 2 ? yScale : xScale)(buffer[i])
+  })
 }
 
 var pos
 
 function moveTo(x, y) {
-  pos = [x, y]
+  this.push(x, y)
 }
 
 function lineTo(x, y) {
-  this.push(pos[0], pos[1], x, y)
-  pos = [x, y]
+  this.push(x, y)
 }
 
 var subPathStart

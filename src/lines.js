@@ -18,19 +18,16 @@ function drawLines(){
 
   gl.bindBuffer(gl.ARRAY_BUFFER, b2)
   gl.enableVertexAttribArray(program.vStroke)
-  b4._ || gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, b3)
   gl.enableVertexAttribArray(program.vFill)
-  b4._ || gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
-  b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
-
-
-
-  b4._  = true
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
+  // b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
+  // gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.LINE_LOOP, 0, 1e4 * 2)
 }

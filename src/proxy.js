@@ -60,8 +60,6 @@ var proto = {
             this.indices.forEach(function (i) {
               colorBuffer[i] = + parseInt(fill.toString().slice(1), 16)
             })
-            colorBuffer[this.indices[this.indices.length - 2]] =
-              colorBuffer[this.indices[this.indices.length - 1]] = 16777215
           }
         }
 
@@ -147,19 +145,7 @@ var types = [
             }, {})
 
 function buildPath (d) {
-  var buffer = parse(d), lb = this.buffer, i, pb = this.posBuffer
-
-  if (this.indices.length < buffer.length)
-    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
-  else
-    this.indices.length = buffer.length
-
-  lb.count += this.indices.length - buffer.length
-
-  this.indices.forEach(function (d, i) {
-    pb[2 * lb[d] + d % 2] = (i % 2 ? yScale : xScale)(buffer[i])
-  })
-
+  parse.call(this, d)
   this.stroke(this.attr.stroke)
 }
 

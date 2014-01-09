@@ -27,29 +27,29 @@ examples.map = function (selector) {
   .attr('stroke', 'orange')
   .attr("d", path)
 
-  svg.append("path")
-  .datum(graticule)
-  .attr("class", "graticule")
-  .attr('stroke', 'green')
+  // svg.append("path")
+  // .datum(graticule)
+  // .attr("class", "graticule")
+  // .attr('stroke', 'green')
 
-  .attr("d", path);
+  //.attr("d", path)
 
-  svg.append("path")
-  .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
-  .attr("class", "equator")
-  .attr('stroke', 'blue')
-  .attr("d", path);
+  // svg.append("path")
+  // .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
+  // .attr("class", "equator")
+  // .attr('stroke', 'blue')
+  // .attr("d", path)
 
-  var feature = svg.selectAll("path");
+  var feature = svg.selectAll("path")
 
   svg.selectAll('path')
   .attr('fill', 'none')
 
   d3.timer(function() {
-    var dt = Date.now() - time;
-    projection.rotate([rotate[0] + velocity[0] * dt, rotate[1] + velocity[1] * dt]);
-    feature.attr("d", path);
-  });
+    var dt = Date.now() - time
+    projection.rotate([rotate[0] + velocity[0] * dt, rotate[1] + velocity[1] * dt])
+    feature.attr("d", path)
+  })
 }
 
 examples.nope = function (selector) {
