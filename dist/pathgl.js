@@ -156,40 +156,27 @@ function bindUniform(val, key) {
 function initContext(canvas) {
   var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
-};var methods = { m: moveTo
-              , z: closePath
-              , l: lineTo
-
-              , h: horizontalLine
-              , v: verticalLine
-              , c: curveTo
-              , s: shortCurveTo
-              , q: quadraticBezier
-              , t: smoothQuadraticBezier
-              , a: elipticalArc
-              }
-
-function parse (str) {
-  var buffer = [], lb = this.buffer, i, pb = this.posBuffer
-
-  pos = [0, 0]
+};function parse (str, stroke) {
+  var buffer = [], lb = this.buffer, pb = this.posBuffer, indices = this.indices, count = lb.count
+    , l = indices.length
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
-    var instruction = methods[segment[0].toLowerCase()]
-      , coords = segment.slice(1).trim().split(/,| /g)
+    var points = segment.slice(1).trim().split(/,| /g), c = segment[0].toLowerCase(), j = 0
 
-    if (! instruction) return console.log('malformed path:D')
-    if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
-
-    if ('function' == typeof instruction)
-      coords.length == 1 ? instruction.call(buffer, coords) : twoEach(coords, instruction, buffer)
-    else
-      console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
+    while(j < points.length) {
+      var x = points[j++], y = points[j++]
+      l += 1
+      c == 'm' ? buffer.push(x, y) :
+        c == 'l' ? buffer.push(x, y) :
+        c == 'z' ? '' :
+        console.log('malformed path:' + c)
+    }
   })
 
   if (this.indices.length < buffer.length)
     for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
-  else
-    this.indices.length = buffer.length
+
+  if (this.indices.length > buffer.length)
+     console.log('omg'), this.indices.length = buffer.length
 
   lb.count += this.indices.length - buffer.length
 
@@ -197,31 +184,6 @@ function parse (str) {
     pb[2 * lb[d] + d % 2] = (i % 2 ? yScale : xScale)(buffer[i])
   })
 }
-
-var pos
-
-function moveTo(x, y) {
-  this.push(x, y)
-}
-
-function lineTo(x, y) {
-  this.push(x, y)
-}
-
-var subPathStart
-function closePath(next) {
-  subPathStart = pos
-  lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.slice(0, 2))
-}
-
-
-function horizontalLine() {}
-function verticalLine() {}
-function curveTo() {}
-function shortCurveTo() {}
-function quadraticBezier() {}
-function smoothQuadraticBezier () {}
-function elipticalArc(){}
 ;var pointBuffer = new Uint16Array(4 * 4e4)
 var pointPosBuffer = new Float32Array(4 * 4e4)
 pointBuffer.count = 0
@@ -297,8 +259,8 @@ function drawLines(){
 
   // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   // b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  // gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
-  gl.drawArrays(gl.LINE_LOOP, 0, 1e4 * 2)
+  // gl.drawElements(gl.LINE_STRIP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.LINE_STRIP, 0, 1e4 * 2)
 }
 ;function drawPolygons() {
 
@@ -426,6 +388,7 @@ var proto = {
             this.indices.forEach(function (i) {
               colorBuffer[i] = + parseInt(fill.toString().slice(1), 16)
             })
+            return fill
           }
         }
 
@@ -511,8 +474,7 @@ var types = [
             }, {})
 
 function buildPath (d) {
-  parse.call(this, d)
-  this.stroke(this.attr.stroke)
+  parse.call(this, d, this.stroke(this.attr.stroke))
 }
 
 function insertBefore(node, next) {

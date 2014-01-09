@@ -60,6 +60,7 @@ var proto = {
             this.indices.forEach(function (i) {
               colorBuffer[i] = + parseInt(fill.toString().slice(1), 16)
             })
+            return fill
           }
         }
 
@@ -145,8 +146,7 @@ var types = [
             }, {})
 
 function buildPath (d) {
-  parse.call(this, d)
-  this.stroke(this.attr.stroke)
+  parse.call(this, d, this.stroke(this.attr.stroke))
 }
 
 function insertBefore(node, next) {
