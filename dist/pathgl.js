@@ -168,6 +168,42 @@ function initContext(canvas) {
                 , t: smoothQuadraticBezier
                 , a: elipticalArc
                 }
+function parse (str) {
+  var buffer = []
+  pos = [0, 0]
+  str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
+    var instruction = methods[segment[0].toLowerCase()]
+      , coords = segment.slice(1).trim().split(/,| /g)
+
+    if (! instruction) return
+    if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
+
+    if ('function' == typeof instruction)
+      coords.length == 1 ? instruction.call(buffer, coords) : twoEach(coords, instruction, buffer)
+    else
+      console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
+  })
+
+  return buffer
+}
+
+var pos
+
+function moveTo(x, y) {
+  pos = [x, y]
+}
+
+function lineTo(x, y) {
+  this.push(pos[0], pos[1], x, y)
+  pos = [x, y]
+}
+
+var subPathStart
+function closePath(next) {
+  subPathStart = pos
+  lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.slice(0, 2))
+}
+
 
 function horizontalLine() {}
 function verticalLine() {}
@@ -176,50 +212,6 @@ function shortCurveTo() {}
 function quadraticBezier() {}
 function smoothQuadraticBezier () {}
 function elipticalArc(){}
-
-function kludge(coords) {
-  var s = []
-  twoEach(coords, function (a, b) { s.push(+ a, + b) })
-  return s
-}
-
-function parse (str) {
-  var buffer = []
-
-  str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
-    var instruction = methods[segment[0].toLowerCase()]
-      , coords = segment.slice(1).trim().split(/,| /g)
-
-    kludge(coords).forEach(push, buffer)
-    // if (! instruction) return
-    // //if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
-
-    // if ('function' == typeof instruction)
-    //   coords.length == 1 ? instruction.call(buffer) : twoEach(coords, instruction, buffer)
-    // else
-    //   console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
-  })
-
-  return buffer
-}
-
-window.pse = parse
-
-var pos = [0, 0]
-function moveTo(x, y) {
-  pos = [x, y]
-}
-
-var subpathStart
-function closePath(next) {
-  subpathStart = pos
-  lineTo.apply(this, /m/i.test(next) ? next.slice(1).trim().split(/,| /g) : this.coords[0])
-}
-
-function lineTo(x, y) {
-  this.push(pos[0], pos[1], y, 0)
-  pos = [x,y]
-}
 ;var pointBuffer = new Uint16Array(4 * 4e4)
 var pointPosBuffer = new Float32Array(4 * 4e4)
 pointBuffer.count = 0
@@ -264,7 +256,6 @@ function drawPoints(elapsed) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
-
 }
 ;var lineBuffer = new Uint16Array(4 * 1e4)
 var linePosBuffer = new Float32Array(4 * 1e4)
