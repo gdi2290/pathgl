@@ -27,7 +27,7 @@ function drawLines(){
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
   // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
-  // b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
+  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   // gl.drawElements(gl.LINES, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
   gl.drawArrays(gl.LINES, 0, 1e4 * 2)
 }
