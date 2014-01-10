@@ -187,9 +187,10 @@ var attrDefaults = {
 , opacity: .999
 }
 
-for (var i  = 0; i < lineBuffer.length; i+=2) {
-  lineBuffer[i] = i / 2
-  lineBuffer[i + 1] = i / 2
+for (var i  = 0; i < lineBuffer.length; i+=3) {
+  lineBuffer[i] = i / 3
+  lineBuffer[i + 1] = i / 3
+  lineBuffer[i + 2] = i / 3
 }
 
 function constructProxy(type) {

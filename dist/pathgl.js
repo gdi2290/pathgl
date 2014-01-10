@@ -139,7 +139,7 @@ function createProgram(vs, fs) {
 
   program.vFill = gl.getAttribLocation(program, "fill")
   gl.enableVertexAttribArray(program.vFill)
-  
+
   program.vStroke = gl.getAttribLocation(program, "stroke")
   gl.enableVertexAttribArray(program.vStroke)
 
@@ -177,14 +177,13 @@ function initContext(canvas) {
   if (this.indices.length < buffer.length)
     for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
 
-
   if (this.indices.length > buffer.length)
      console.log('omg'), this.indices.length = buffer.length
 
   lb.count += this.indices.length - buffer.length
 
   this.indices.forEach(function (d, i) {
-    pb[2 * lb[d] + d % 2] = buffer[i]
+    pb[3 * lb[d] + d % 3] = buffer[i]
   })
 }
 ;var pointBuffer = new Uint16Array(4 * 4e4)
@@ -243,6 +242,7 @@ function initBuffers () {
 }
 
 var once = _.once(initBuffers)
+
 function drawLines(){
   once()
   gl.bindBuffer(gl.ARRAY_BUFFER, b1)
@@ -260,10 +260,10 @@ function drawLines(){
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
-  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  // gl.drawElements(gl.LINES, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
-  gl.drawArrays(gl.LINES, 0, 1e4 * 2)
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
+  gl.drawElements(gl.LINES, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
 }
 ;function drawPolygons() {
 
@@ -518,9 +518,10 @@ var attrDefaults = {
 , opacity: .999
 }
 
-for (var i  = 0; i < lineBuffer.length; i+=2) {
-  lineBuffer[i] = i / 2
-  lineBuffer[i + 1] = i / 2
+for (var i  = 0; i < lineBuffer.length; i+=3) {
+  lineBuffer[i] = i / 3
+  lineBuffer[i + 1] = i / 3
+  lineBuffer[i + 2] = i / 3
 }
 
 function constructProxy(type) {

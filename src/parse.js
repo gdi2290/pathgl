@@ -19,13 +19,12 @@ function parse (str, stroke) {
   if (this.indices.length < buffer.length)
     for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
 
-
   if (this.indices.length > buffer.length)
      console.log('omg'), this.indices.length = buffer.length
 
   lb.count += this.indices.length - buffer.length
 
   this.indices.forEach(function (d, i) {
-    pb[2 * lb[d] + d % 2] = buffer[i]
+    pb[3 * lb[d] + d % 3] = buffer[i]
   })
 }

@@ -31,7 +31,6 @@ examples.map = function (selector) {
   // .datum(graticule)
   // .attr("class", "graticule")
   // .attr('stroke', 'green')
-
   // .attr("d", path)
 
   // svg.append("path")
