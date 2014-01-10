@@ -6,6 +6,7 @@ pathgl.vertexShader = [
 
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'
+, 'varying float v_type;'
 
 , 'vec3 unpack_color(float col) {'
 , '    if (col == 0.) return vec3(0);'
@@ -17,6 +18,7 @@ pathgl.vertexShader = [
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
 , '    gl_PointSize =  pos.z * 2.;'
 
+, '    v_type = (fill == 0. ? 0. : 1.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
 , '    v_stroke = vec4(unpack_color(stroke), 1.0);'
 , '}'
@@ -26,10 +28,18 @@ pathgl.fragmentShader = [
   'precision mediump float;'
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'
+, 'varying float v_type;'
 
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-//, '    if (dist > 0.5) discard;'
+, '    if (dist > 0.5 && v_type == 1.) discard;'
 , '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
+
+
+//type
+//1 circle
+//2 rect
+//3 line
+//4 path

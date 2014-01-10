@@ -77,7 +77,7 @@ function createProgram(vs, fs) {
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)
 
-  program.vfill = gl.getAttribLocation(program, "fill")
+  program.vFill = gl.getAttribLocation(program, "fill")
   gl.enableVertexAttribArray(program.vFill)
 
   program.vStroke = gl.getAttribLocation(program, "stroke")
