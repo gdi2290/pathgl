@@ -8,22 +8,22 @@ body {
 .sidebar {
     position: relative;
     border-right: 1px solid #888;
-    border-bottom: 2px solid #333;
+    border-bottom: 1px solid #333;
     overflow-y: scroll;
     padding-left: 5px;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1000px) {
     .sidebar {
         position: fixed;
         left: 0;
         top: 0;
         height: 100%;
-        width: 200px;
+        width: 15%;
     }
 
     .right {
-        left: 205px;
+        left: calc(15% + 5px);
         top: 0px;
     }
 }
@@ -42,6 +42,7 @@ ul {
 .right {
     position: relative;
     height: 100%;
+    width: 85%;
 }
 
 a {
@@ -130,7 +131,6 @@ svg {
     border-left: 1px solid #aaa;
 }
 
-
 .edit {
     border: 1px solid #666;
     background: #ccc; 
@@ -141,7 +141,6 @@ svg {
     background: #ccc -ms-linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); 
     background: #ccc linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); 
 }
-
 
 h3 {
     margin: 5px 0px;
