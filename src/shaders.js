@@ -33,7 +33,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 //, '    if (dist > 0.5 && v_type == 1.) discard;'
-, '    gl_FragColor = v_stroke;'
+  , '    gl_FragColor = vec4(gl_PointCoord.y, 1.- gl_PointCoord.y, .5, 1.);'
 , '}'
 ].join('\n')
 

@@ -50,8 +50,6 @@ examples.map = function (selector) {
   });
 }
 
-
-
 examples.nope = function (selector) {
 
   d3.json('/examples/world-50m.json', draw_world)
