@@ -158,7 +158,7 @@ function initContext(canvas) {
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 };function parse (str, stroke) {
   var buffer = [], lb = this.buffer, pb = this.posBuffer, indices = this.indices, count = lb.count
-    , pos = [xScale(0), yScale(0)], i, l = indices.length
+    , pos = [xScale(0), yScale(0)], l = indices.length, i = 0
 
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var points = segment.slice(1).trim().split(/,| /g), c = segment[0].toLowerCase(), j = 0
@@ -166,23 +166,20 @@ function initContext(canvas) {
     while(j < points.length) {
       var x = xScale(points[j++]), y = yScale(points[j++])
       c == 'm' ? pos = [x, y] :
-        c == 'l' ? buffer.push(pos[0], pos[1], x, y) && (pos = [x, y]):
+        c == 'l' ? buffer.push(pos[0], pos[1], x, y) && (pos = [x, y]) :
         c == 'z' ? '' :
         console.log('malformed path:' + c)
     }
   })
 
-  if (this.indices.length < buffer.length)
-    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
+  indices.forEach(function (d, i) {
+    pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
+  })
 
-  if (this.indices.length > buffer.length)
-     this.indices.length = buffer.length
+  while(indices.length < buffer.length) indices.push(lb.count + ++i)
+  if (indices.length > buffer.length) indices.length = buffer.length
 
   lb.count += buffer.length - l
-
-  this.indices.forEach(function (d, i) {
-    pb[3 * lb[d] + d % 3] = buffer[i]
-  })
 }
 ;var pointBuffer = new Uint16Array(4 * 4e4)
 var pointPosBuffer = new Float32Array(4 * 4e4)
@@ -258,10 +255,9 @@ function drawLines(){
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINES, lb.count * 4, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.LINES, lb.count * 3, gl.UNSIGNED_SHORT, 0)
 }
 ;function drawPolygons() {
 
