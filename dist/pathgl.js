@@ -78,7 +78,7 @@ function init(c) {
 function flags () {
   gl.disable(gl.SCISSOR_TEST)
   gl.colorMask(true, true, true, true)
-  gl.stencilMask(1,1,1,1)
+  gl.stencilMask(1, 1, 1, 1)
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 }
@@ -158,9 +158,7 @@ function initContext(canvas) {
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
 };function parse (str, stroke) {
   var buffer = [], lb = this.buffer, pb = this.posBuffer, indices = this.indices, count = lb.count
-    , pos = [xScale(0), yScale(0)], i
-
-  lb.count = 0
+    , pos = [xScale(0), yScale(0)], i, l = indices.length
 
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var points = segment.slice(1).trim().split(/,| /g), c = segment[0].toLowerCase(), j = 0
@@ -178,9 +176,9 @@ function initContext(canvas) {
     for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
 
   if (this.indices.length > buffer.length)
-     console.log('omg'), this.indices.length = buffer.length
+     this.indices.length = buffer.length
 
-  lb.count += this.indices.length - buffer.length
+  lb.count += buffer.length - l
 
   this.indices.forEach(function (d, i) {
     pb[3 * lb[d] + d % 3] = buffer[i]
@@ -543,7 +541,8 @@ function constructProxy(type) {
       buffer[i] = buffer.count + i % 2
     })
 
-    buffer.count += type.name == 'line' ? 2 : 1
+    if (type.name !== 'path')
+      buffer.count += type.name == 'line' ? 2 : 1
 
     return child
   }
@@ -620,7 +619,9 @@ function createTarget( width, height ) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   return target
 }
-;function noop () {}
+;var log = console.log.bind(console)
+
+function noop () {}
 
 function extend (a, b) {
   if (arguments.length > 2) [].forEach.call(arguments, function (b) { extend(a, b) })

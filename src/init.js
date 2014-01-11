@@ -18,7 +18,7 @@ function init(c) {
 function flags () {
   gl.disable(gl.SCISSOR_TEST)
   gl.colorMask(true, true, true, true)
-  gl.stencilMask(1,1,1,1)
+  gl.stencilMask(1, 1, 1, 1)
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 }

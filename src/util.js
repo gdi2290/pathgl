@@ -1,3 +1,5 @@
+var log = console.log.bind(console)
+
 function noop () {}
 
 function extend (a, b) {
