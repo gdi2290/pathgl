@@ -212,8 +212,9 @@ function constructProxy(type) {
       buffer[i] = buffer.count + i % 2
     })
 
-    if (type.name !== 'path')
+    if (type.name !== 'path') {
       buffer.count += type.name == 'line' ? 2 : 1
+    }
 
     return child
   }

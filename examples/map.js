@@ -21,11 +21,11 @@ examples.map = function (selector) {
             .attr("height", height)
             .call(pathgl)
 
-  // svg.append("path")
-  // .datum({type: "Sphere"})
-  // .attr("class", "sphere")
-  // .attr('stroke', 'orange')
-  // .attr("d", path)
+  svg.append("path")
+  .datum({type: "Sphere"})
+  .attr("class", "sphere")
+  .attr('stroke', 'orange')
+  .attr("d", path)
 
   // svg.append("path")
   // .datum(graticule)

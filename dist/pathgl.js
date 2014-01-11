@@ -261,7 +261,7 @@ function drawLines(){
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINES, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.LINES, lb.count * 4, gl.UNSIGNED_SHORT, 0)
 }
 ;function drawPolygons() {
 
@@ -541,8 +541,9 @@ function constructProxy(type) {
       buffer[i] = buffer.count + i % 2
     })
 
-    if (type.name !== 'path')
+    if (type.name !== 'path') {
       buffer.count += type.name == 'line' ? 2 : 1
+    }
 
     return child
   }
