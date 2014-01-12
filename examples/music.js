@@ -1,6 +1,6 @@
 var analyzer
 examples.music = function (selection) {
-  var numLines = 1024
+  var numLines = 2000
   var s = d3.select(selection)
           .attr(size)
           .call(pathgl)
@@ -10,7 +10,7 @@ examples.music = function (selection) {
   var midX = size.width / 2
   var midY = size.height / 2
 
-  var lines = s.selectAll('line').data(d3.range(numLines).map(d3.functor(0)))
+  var lines = s.selectAll('line').data(d3.range(numLines).map(function () { return {a: 0}}))
   .enter()
   .append('line')
   .attr({
@@ -25,11 +25,14 @@ examples.music = function (selection) {
     if (! analyzer) return
     var byteFreq = new Uint8Array(analyzer.frequencyBinCount)
     analyzer.getByteFrequencyData(byteFreq)
-    console.log(byteFreq)
-    lines.data(byteFreq)
-    .attr('stroke', function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" })
-    .attr('x2', function (d, i) { return midX + (Math.cos(i) * d) })
-    .attr('y2', function (d, i) { return midY + (Math.sin(i) * d)})
+    lines.each(function (d, i) {
+      var freq  = byteFreq[i % 1024]
+      d.diff = d.a - freq
+      d.a = freq
+    })
+    .attr('stroke', function (d) { return "hsl(" + d.diff * 5 + ",100%, 50%)" })
+    .attr('x2', function (d, i) { return midX + (Math.cos(i) * d.a) })
+    .attr('y2', function (d, i) { return midY + (Math.sin(i) * d.a)})
   })
   dropAndLoad(document.querySelector('.right'), init, "ArrayBuffer")
 }

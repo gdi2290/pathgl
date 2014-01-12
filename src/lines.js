@@ -14,7 +14,7 @@ var once = _.once(initBuffers)
 function drawLines(){
   once()
   if (lb.count < 1) return
-  gl.lineWidth(5)
+
   gl.bindBuffer(gl.ARRAY_BUFFER, b1)
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
