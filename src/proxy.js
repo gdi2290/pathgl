@@ -57,7 +57,16 @@ var proto = {
             })
            }
         }
-, path: { d: buildPath, pathLength: buildPath } //lines
+, path: { d: buildPath,
+          pathLength: noop,
+          buffer: lineBuffer,
+          stroke: function (v) {
+            var fill = d3.rgb(v)
+            this.indices.forEach(function (i) {
+              colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
+            })
+          }
+}
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
@@ -141,10 +150,27 @@ var types = [
             }, {})
 
 
-function buildLine () {}
-function buildPath () {
-  parse.call(this, this.attr.d)
-  this.buffer = toBuffer(this.path.coords)
+function buildPath (d) {
+  var buffer = parse(d)
+
+  if (this.indices.length > buffer.length) {
+    [].push.apply[this.indices, range(buffer.length, this.buffer.count)]
+    this.buffer.length += this.indices.length - buffer.length
+  }
+  if (this.indices.length < buffer.length){
+    this.indices.length = buffer.length
+    this.buffer.length += buffer.length - this.indices.length
+  }
+
+  this.indices.forEach(function (i) {
+    buffer[i] = buffer.count + i % 2
+    buffer.count += 2
+    linePosBuffer[i] = buffer[i]
+    linePosBuffer[i + 1] = buffer[i + 1]
+
+  })
+
+  this.stroke(this.attr.stroke)
 }
 
 function insertBefore(node, next) {

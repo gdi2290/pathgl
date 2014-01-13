@@ -1,5 +1,59 @@
 examples.map = function (selector) {
 
+  var width = 960,
+      height = 500,
+      rotate = [10, -10],
+      velocity = [.003, -.001],
+      time = Date.now();
+
+  var projection = d3.geo.orthographic()
+                   .scale(240)
+                   .translate([width / 2, height / 2])
+                   .clipAngle(90 + 1e-6)
+                   .precision(.3);
+
+  var path = d3.geo.path()
+             .projection(projection);
+
+  var graticule = d3.geo.graticule();
+
+  var svg = d3.select("canvas").call(pathgl)
+            .attr("width", width)
+            .attr("height", height);
+
+  svg.append("path")
+  .datum({type: "Sphere"})
+  .attr("class", "sphere")
+  .attr("d", path);
+
+  svg.append("path")
+  .datum(graticule)
+  .attr("class", "graticule")
+
+  .attr("d", path);
+
+  svg.append("path")
+  .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
+  .attr("class", "equator")
+  .attr("d", path);
+
+  var feature = svg.selectAll("path");
+
+  svg.selectAll('path')
+  .attr('stroke', '#333')
+  .attr('fill', 'none')
+
+  d3.timer(function() {
+    var dt = Date.now() - time;
+    projection.rotate([rotate[0] + velocity[0] * dt, rotate[1] + velocity[1] * dt]);
+    feature.attr("d", path);
+  });
+}
+
+
+
+examples.nope = function (selector) {
+
   d3.json('/examples/world-50m.json', draw_world)
   d3.csv('/examples/hist.csv', draw_history)
 

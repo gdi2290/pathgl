@@ -6,12 +6,15 @@ pathgl.stop = d3.functor()
 function pathgl(canvas) {
   var gl, program, programs
 
+  if (canvas == null)
+    canvas = document.body.appendChild(extend(document.createElement('canvas'), { height: 500, width: 960 }))
+
   canvas = 'string' == typeof canvas ? document.querySelector(canvas) :
     canvas instanceof d3.selection ? canvas.node() :
     canvas
 
-  if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas')
-;pathgl.vertexShader = [
+  if (! canvas) return console.log('invalid selector')
+  if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');pathgl.vertexShader = [
   'precision mediump float;'
 , 'attribute vec4 pos;'
 , 'attribute float fill;'
@@ -165,35 +168,35 @@ function quadraticBezier() {}
 function smoothQuadraticBezier () {}
 function elipticalArc(){}
 
-function group(coords) {
+function kludge(coords) {
   var s = []
-  twoEach(coords, function (a, b) { s.push([a, b, 0]) })
+  twoEach(coords, function (a, b) { s.push(+ a, + b) })
   return s
 }
 
 function parse (str) {
-  var path = addToBuffer(this)
-
-  if (path.length) return render()
+  var buffer = []
 
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var instruction = methods[segment[0].toLowerCase()]
       , coords = segment.slice(1).trim().split(/,| /g)
 
-    ;[].push.apply(path.coords, group(coords))
-    if (! instruction) return
-    if (instruction.name == 'closePath' && match[i+1]) return instruction.call(path, match[i+1])
+    ;[].push.apply(buffer, kludge(coords))
+    // if (! instruction) return
+    // //if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
 
-    if ('function' == typeof instruction)
-      coords.length == 1 ? instruction.call(path) : twoEach(coords, instruction, path)
-    else
-      console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
+    // if ('function' == typeof instruction)
+    //   coords.length == 1 ? instruction.call(buffer) : twoEach(coords, instruction, buffer)
+    // else
+    //   console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
   })
-  var buff = toBuffer(this.path.coords)
-  this.path.length = 0
-  this.path.push(buff)
+
+  return buffer
 }
 
+window.pse = parse
+
+var pos = [0, 0]
 function moveTo(x, y) {
   pos = [x, y]
 }
@@ -205,7 +208,8 @@ function closePath(next) {
 }
 
 function lineTo(x, y) {
-  this.push(x, y, 0)
+  this.push(pos[0], pos[1], y, 0)
+  pos = [x,y]
 }
 ;var pointBuffer = new Uint16Array(4 * 1e4)
 var pointPosBuffer = new Float32Array(4 * 1e4)
@@ -401,7 +405,16 @@ var proto = {
             })
            }
         }
-, path: { d: buildPath, pathLength: buildPath } //lines
+, path: { d: buildPath,
+          pathLength: noop,
+          buffer: lineBuffer,
+          stroke: function (v) {
+            var fill = d3.rgb(v)
+            this.indices.forEach(function (i) {
+              colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
+            })
+          }
+}
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
@@ -485,10 +498,27 @@ var types = [
             }, {})
 
 
-function buildLine () {}
-function buildPath () {
-  parse.call(this, this.attr.d)
-  this.buffer = toBuffer(this.path.coords)
+function buildPath (d) {
+  var buffer = parse(d)
+
+  if (this.indices.length > buffer.length) {
+    [].push.apply[this.indices, range(buffer.length, this.buffer.count)]
+    this.buffer.length += this.indices.length - buffer.length
+  }
+  if (this.indices.length < buffer.length){
+    this.indices.length = buffer.length
+    this.buffer.length += buffer.length - this.indices.length
+  }
+
+  this.indices.forEach(function (i) {
+    buffer[i] = buffer.count + i % 2
+    buffer.count += 2
+    linePosBuffer[i] = buffer[i]
+    linePosBuffer[i + 1] = buffer[i + 1]
+
+  })
+
+  this.stroke(this.attr.stroke)
 }
 
 function insertBefore(node, next) {
@@ -652,6 +682,10 @@ function flatten(ar) { return ar.reduce(function (a, b) { return a.concat(b.map 
 function clamp (a, x) {
   a = Math.abs(a)
   return x < -a ? -a : x > a ? a : x
+}
+
+function range(a, b) {
+  return new Array(b - a).join(' ').split(' ').map(function (d, i) { return i + a})
 }
 ;  return init(canvas)
 } }()

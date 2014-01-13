@@ -19,35 +19,35 @@ function quadraticBezier() {}
 function smoothQuadraticBezier () {}
 function elipticalArc(){}
 
-function group(coords) {
+function kludge(coords) {
   var s = []
-  twoEach(coords, function (a, b) { s.push([a, b, 0]) })
+  twoEach(coords, function (a, b) { s.push(+ a, + b) })
   return s
 }
 
 function parse (str) {
-  var path = addToBuffer(this)
-
-  if (path.length) return render()
+  var buffer = []
 
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var instruction = methods[segment[0].toLowerCase()]
       , coords = segment.slice(1).trim().split(/,| /g)
 
-    ;[].push.apply(path.coords, group(coords))
-    if (! instruction) return
-    if (instruction.name == 'closePath' && match[i+1]) return instruction.call(path, match[i+1])
+    ;[].push.apply(buffer, kludge(coords))
+    // if (! instruction) return
+    // //if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
 
-    if ('function' == typeof instruction)
-      coords.length == 1 ? instruction.call(path) : twoEach(coords, instruction, path)
-    else
-      console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
+    // if ('function' == typeof instruction)
+    //   coords.length == 1 ? instruction.call(buffer) : twoEach(coords, instruction, buffer)
+    // else
+    //   console.error(instruction + ' ' + segment[0] + ' is not yet implemented')
   })
-  var buff = toBuffer(this.path.coords)
-  this.path.length = 0
-  this.path.push(buff)
+
+  return buffer
 }
 
+window.pse = parse
+
+var pos = [0, 0]
 function moveTo(x, y) {
   pos = [x, y]
 }
@@ -59,5 +59,6 @@ function closePath(next) {
 }
 
 function lineTo(x, y) {
-  this.push(x, y, 0)
+  this.push(pos[0], pos[1], y, 0)
+  pos = [x,y]
 }
