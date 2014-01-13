@@ -12,7 +12,7 @@ examples.waveform = function (selection) {
   .attr({
     x1: size.width >> 1
   , y1: size.height >> 1
-  , stroke: function (d, i) { return 'blue green brown red'.split(' ')[i] }
+  , stroke: function (d, i) { return 'pink green blue red'.split(' ')[i] }
   , x2: function (d) { return Math.cos(d * scale) * 1000 }
   , y2: function (d) { return Math.sin(d * scale) * 1000 }
   })

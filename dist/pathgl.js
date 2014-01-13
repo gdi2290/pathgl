@@ -21,13 +21,14 @@ function pathgl(canvas) {
 , 'varying vec4 v_fill;'
 
 , 'vec3 unpack_color(float col) {'
+, '    if (col == 0.) return vec3(0);'
 , '    return vec3(mod(col / 256. / 256., 256.),'
 , '                mod(col / 256. , 256.),'
 , '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  pos.z * 2.;'
+//, '    gl_PointSize =  pos.z * 2.;'
 
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
 , '    v_stroke = vec4(unpack_color(stroke), 1.0);'
@@ -38,10 +39,11 @@ pathgl.fragmentShader = [
   'precision mediump float;'
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'
+
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-, '    if (dist > 0.5) discard;'
-, '    gl_FragColor = v_fill;'
+//, '    if (dist > 0.5) discard;'
+, '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
 ;var stopRendering = false
@@ -265,10 +267,10 @@ function drawLines(){
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
-  // gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  // gl.enableVertexAttribArray(program.vFill)
-  // gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  // gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vFill)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
@@ -392,8 +394,10 @@ var proto = {
         , buffer: lineBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
-            colorBuffer[this.indices[0] + 0] = + fill.toString().slice(1)
-          }
+            this.indices.forEach(function (i) {
+              colorBuffer[i+1] = parseInt(fill.toString().slice(1), 16)
+            })
+           }
         }
 , path: { d: buildPath, pathLength: buildPath } //lines
 , polygon: { points: noop } //lines
@@ -535,13 +539,13 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
-    var i = child.indices = [buffer.count * 4]
+    var i = child.indices = [buffer.count, buffer.count + 1]
 
     i.forEach(function (i) {
       buffer[i] = buffer.count + i % 2
     })
 
-    buffer.count += 1
+    buffer.count += 2
 
     return child
   }

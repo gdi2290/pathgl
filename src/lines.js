@@ -15,10 +15,10 @@ function drawLines(){
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
-  // gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  // gl.enableVertexAttribArray(program.vFill)
-  // gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  // gl.vertexAttribPointer(program.vFill, 4, gl.FLOAT, false, 0, 0)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vFill)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
