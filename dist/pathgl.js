@@ -59,7 +59,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(1e5)
+var colorBuffer = new Float32Array(10e5)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -181,8 +181,8 @@ function initContext(canvas) {
 
   lb.count += buffer.length - l
 }
-;var pointBuffer = new Uint16Array(4e5)
-var pointPosBuffer = new Float32Array(4e5)
+;var pointBuffer = new Uint16Array(20e4)
+var pointPosBuffer = new Float32Array(20e4)
 pointBuffer.count = 0
 pb = pointBuffer
 ppb = pointPosBuffer
@@ -197,7 +197,13 @@ var points = {
   , stroke: {}
 }
 
+var p1, p2, p3, p4
+
+var oncep = _.once(function initBuffersp() {
+  p1 = gl.createBuffer(), p2 = gl.createBuffer(), p3 = gl.createBuffer(), p4 = gl.createBuffer()
+})
 function drawPoints(elapsed) {
+  oncep()
   if (! pointBuffer.count) return
   // for(var attr in pointAttr) {
   //   gl.bindBuffer(gl.ARRAY_BUFFER, points[attr].buffer)
@@ -206,28 +212,27 @@ function drawPoints(elapsed) {
   //   gl.vertexAttribPointer(points[attr].vLoc, points[attr].length, gl.FLOAT, false, 0, 0)
   // }
 
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bindBuffer(gl.ARRAY_BUFFER, p1)
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vPos, 4, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bindBuffer(gl.ARRAY_BUFFER, p2)
   gl.enableVertexAttribArray(program.vStroke)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bindBuffer(gl.ARRAY_BUFFER, p3)
   gl.enableVertexAttribArray(program.vFill)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
-;var lineBuffer = new Uint16Array(4 * 1e4)
-var linePosBuffer = new Float32Array(4 * 1e4)
+;var lineBuffer = new Uint16Array(10e5)
+var linePosBuffer = new Float32Array(10e5)
 lineBuffer.count = 0
 lb = lineBuffer
 lpb = linePosBuffer

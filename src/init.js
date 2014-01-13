@@ -1,5 +1,5 @@
 var stopRendering = false
-var colorBuffer = new Float32Array(1e5)
+var colorBuffer = new Float32Array(10e5)
 
 pathgl.uniforms = { mouse: [0, 0] }
 

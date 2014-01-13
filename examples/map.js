@@ -1,57 +1,4 @@
 examples.map = function (selector) {
-  var width = size.width,
-      height = size.height,
-      rotate = [10, -10],
-      velocity = [.03, -.001],
-      time = Date.now();
-
-  var projection = d3.geo.orthographic()
-                   .scale(240)
-                   .translate([width / 2, height / 2])
-                   .clipAngle(90 + 1e-6)
-                   .precision(.3);
-
-  var path = d3.geo.path()
-             .projection(projection);
-
-  var graticule = d3.geo.graticule();
-
-  var svg = d3.select(selector)
-            .attr("width", width)
-            .attr("height", height)
-            .call(pathgl)
-
-  svg.append("path")
-  .datum({type: "Sphere"})
-  .attr("class", "sphere")
-  .attr('stroke', 'orange')
-  .attr("d", path)
-
-  svg.append("path")
-  .datum(graticule)
-  .attr("class", "graticule")
-  .attr('stroke', 'green')
-  .attr("d", path)
-
-  svg.append("path")
-  .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
-  .attr("class", "equator")
-  .attr('stroke', 'blue')
-  .attr("d", path)
-
-  var feature = svg.selectAll("path")
-
-  svg.selectAll('path')
-  .attr('fill', 'none')
-
-  d3.timer(function() {
-    var dt = Date.now() - time
-    projection.rotate([rotate[0] + velocity[0] * dt, rotate[1] + velocity[1] * dt])
-    feature.attr("d", path)
-  })
-}
-
-examples.nope = function (selector) {
 
   d3.json('/examples/world-50m.json', draw_world)
   d3.csv('/examples/hist.csv', draw_history)
@@ -74,17 +21,13 @@ examples.nope = function (selector) {
     g.append('path')
     .attr('class', 'graticule noclick')
     .attr('d', path)
-    .attr('fill', 'none')
     .attr('stroke', '#fff')
-    .attr('stroke-width', '.5')
 
     g.selectAll("path")
     .data(topojson.feature(world, world.objects.countries).features)
     .enter().append("path")
     .attr({ class: 'world'
           , d: path
-          , fill: '#d7c7ad'
-          , 'fill-opacity': .5
           , stroke: '#766951'
           })
   };
@@ -93,19 +36,9 @@ examples.nope = function (selector) {
     var dates, m, to
       , from = -500
 
-    d3.select('.main')
-    .append('text')
-    .attr({ fill: 'white'
-          , stroke: '#333'
-          , text: 0
-          , class:'year'
-          , y: innerHeight * 0.9
-          , x: 350
-          , 'text-anchor':'end'
-          , text: 0
-          , 'font-size': '100px'
-          , 'font-family': 'Helvetica'
-          })
+    d3.select('body')
+    .append('div')
+    .attr('class', 'current_year')
 
     var num = {}
 
@@ -145,10 +78,10 @@ examples.nope = function (selector) {
     })
     .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
 
-    slider.append('line')
-    .attr('stroke', 'pink')
-    .attr('y1', y.range()[0])
-    .attr('y2', y.range()[1])
+    // slider.append('line')
+    // .attr('stroke', 'pink')
+    // .attr('y1', y.range()[0])
+    // .attr('y2', y.range()[1])
 
     d3.select('body').insert('p', '*')
     .attr('class', 'title')
@@ -169,8 +102,8 @@ examples.nope = function (selector) {
     function forward() {
       document.title = from = from > 2010 ? -500 : from + 1
 
-      d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
-      d3.select('.year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
+      //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
+      d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
 
       var e = d3.select(selector)
               .selectAll('.nil')
