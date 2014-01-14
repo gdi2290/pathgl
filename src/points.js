@@ -1,5 +1,5 @@
-var pointBuffer = new Uint16Array(4 * 4e4)
-var pointPosBuffer = new Float32Array(4 * 4e4)
+var pointBuffer = new Uint16Array(4e5)
+var pointPosBuffer = new Float32Array(4e5)
 pointBuffer.count = 0
 pb = pointBuffer
 ppb = pointPosBuffer

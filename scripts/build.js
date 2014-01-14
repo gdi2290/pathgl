@@ -5,10 +5,14 @@ var compressor = require('uglify-js')
   , main = 'main.js'
   , port = 1234
 
+var connections = []
+
 build()
 fs.watch('src', build)
 http.createServer(live_reloader).listen(port)
 console.log('watching for file save on port ' + port)
+
+
 
 ;['src', 'examples', 'lib']
 .filter(function (name) { return fs.statSync(name).isDirectory() })
@@ -51,7 +55,12 @@ function read (file) {
   return '' + fs.readFileSync(source + file)
 }
 
+
 function live_reloader(req, res) {
   console.log('connection received')
-  process.once('write_file', function () { res.end() })
+  connections.push(res)
 }
+
+process.on('write_file', function () {
+  while(connections.length) connections.pop().end()
+})

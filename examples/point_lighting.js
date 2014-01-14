@@ -1,5 +1,5 @@
 examples.point_lighting = function (selector) {
-  var data = d3.range(selector == 'canvas' ? 40000 : 2000).map(function() {
+  var data = d3.range(selector == 'canvas' ? 1e5 : 2000).map(function() {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
@@ -31,18 +31,14 @@ examples.point_lighting = function (selector) {
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0005 * d.xloc
       d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0005 * d.yloc
 
-      if (selector == 'canvas') {
         this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))
         this.posBuffer[this.indices[0] + 1] = pathgl.yScale(y(d.yloc += d.yvel))
-        this.posBuffer[this.indices[0] + 2] = 2 + 1000 * Math.abs(d.xvel * d.yvel)
-      }
+        this.posBuffer[this.indices[0] + 2] = 1 + 1000 * Math.abs(d.xvel * d.yvel)
     })
-
-      if (selector == 'svg')
-        circle
-        .attr("cx", function(d) { return x(d.xloc += d.xvel) })
-        .attr("cy", function(d) { return y(d.yloc += d.yvel) })
-        .attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
+        // circle
+        // .attr("cx", function(d) { return x(d.xloc += d.xvel) })
+        // .attr("cy", function(d) { return y(d.yloc += d.yvel) })
+        // .attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
         //.attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
   })
 

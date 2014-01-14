@@ -59,7 +59,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(4 * 1e4)
+var colorBuffer = new Float32Array(1e5)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -181,8 +181,8 @@ function initContext(canvas) {
 
   lb.count += buffer.length - l
 }
-;var pointBuffer = new Uint16Array(4 * 4e4)
-var pointPosBuffer = new Float32Array(4 * 4e4)
+;var pointBuffer = new Uint16Array(4e5)
+var pointPosBuffer = new Float32Array(4e5)
 pointBuffer.count = 0
 pb = pointBuffer
 ppb = pointPosBuffer
@@ -240,6 +240,7 @@ var once = _.once(initBuffers)
 
 function drawLines(){
   once()
+  if (lb.count < 1) return
   gl.bindBuffer(gl.ARRAY_BUFFER, b1)
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
