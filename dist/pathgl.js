@@ -384,7 +384,7 @@ var proto = {
         , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {
-              colorBuffer[i] = + parseInt(fill.toString().slice(1), 16)
+              colorBuffer[i / 2] = + parseInt(fill.toString().slice(1), 16)
             })
             return fill
           }
@@ -473,6 +473,7 @@ var types = [
 
 function buildPath (d) {
   parse.call(this, d, this.stroke(this.attr.stroke))
+  this.stroke(this.attr.stroke)
 }
 
 function insertBefore(node, next) {
