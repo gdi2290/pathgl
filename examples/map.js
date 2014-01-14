@@ -27,11 +27,11 @@ examples.map = function (selector) {
   .attr('stroke', 'orange')
   .attr("d", path)
 
-  // svg.append("path")
-  // .datum(graticule)
-  // .attr("class", "graticule")
-  // .attr('stroke', 'green')
-  // .attr("d", path)
+  svg.append("path")
+  .datum(graticule)
+  .attr("class", "graticule")
+  .attr('stroke', 'green')
+  .attr("d", path)
 
   svg.append("path")
   .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})

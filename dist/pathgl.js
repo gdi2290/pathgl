@@ -176,7 +176,7 @@ function initContext(canvas) {
     pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
   })
 
-  while(indices.length < buffer.length) indices.push(lb.count + ++i)
+  while(indices.length < buffer.length) indices.push(lb.count + i++)
   if (indices.length > buffer.length) indices.length = buffer.length
 
   lb.count += buffer.length - l
@@ -531,8 +531,11 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
+
     var i = child.indices =
-      type.name == 'line' ? [buffer.count, buffer.count + 1] : [buffer.count * 4]
+      type.name == 'line' ? [buffer.count, buffer.count + 1] :
+      type.name == 'circle' ? [buffer.count * 4] :
+      []
 
     i.forEach(function (i) {
       buffer[i] = buffer.count + i % 2

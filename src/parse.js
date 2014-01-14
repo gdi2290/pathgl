@@ -18,7 +18,7 @@ function parse (str, stroke) {
     pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
   })
 
-  while(indices.length < buffer.length) indices.push(lb.count + ++i)
+  while(indices.length < buffer.length) indices.push(lb.count + i++)
   if (indices.length > buffer.length) indices.length = buffer.length
 
   lb.count += buffer.length - l

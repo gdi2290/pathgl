@@ -205,8 +205,11 @@ function constructProxy(type) {
     child.attr = Object.create(attrDefaults)
     child.tag = el.tagName.toLowerCase()
     child.parentNode = child.parentElement = canvas
+
     var i = child.indices =
-      type.name == 'line' ? [buffer.count, buffer.count + 1] : [buffer.count * 4]
+      type.name == 'line' ? [buffer.count, buffer.count + 1] :
+      type.name == 'circle' ? [buffer.count * 4] :
+      []
 
     i.forEach(function (i) {
       buffer[i] = buffer.count + i % 2
