@@ -1,6 +1,6 @@
 function querySelectorAll(selector, r) {
   return selector.replace(/^\s+|\s*([,\s\+\~>]|$)\s*/g, '$1').split(',')
-  .forEach(function (s) { query(s, this).forEach(push.bind(r)) }, this, r = []) || r
+  .forEach(function (s) { query(s, this).forEach(push.bind(r = [])) }, this) || r
 }
 
 function query(selector, root) {

@@ -35,5 +35,5 @@ function clamp (a, x) {
 }
 
 function range(a, b) {
-  return new Array(b - a).join(' ').split(' ').map(function (d, i) { return i + a})
+  return Array(Math.abs(b - a)).join().split(',').map(function (d, i) { return i + a })
 }

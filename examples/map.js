@@ -1,7 +1,6 @@
 examples.map = function (selector) {
-
-  var width = 960,
-      height = 500,
+  var width = size.width,
+      height = size.height,
       rotate = [10, -10],
       velocity = [.003, -.001],
       time = Date.now();
@@ -17,9 +16,10 @@ examples.map = function (selector) {
 
   var graticule = d3.geo.graticule();
 
-  var svg = d3.select("canvas").call(pathgl)
+  var svg = d3.select(selector)
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height)
+            .call(pathgl)
 
   svg.append("path")
   .datum({type: "Sphere"})
@@ -40,7 +40,7 @@ examples.map = function (selector) {
   var feature = svg.selectAll("path");
 
   svg.selectAll('path')
-  .attr('stroke', '#333')
+  .attr('stroke', 'teal')
   .attr('fill', 'none')
 
   d3.timer(function() {

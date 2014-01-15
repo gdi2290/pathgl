@@ -151,25 +151,21 @@ var types = [
 
 
 function buildPath (d) {
-  var buffer = parse(d)
+  var buffer = parse(d), lb = this.buffer
 
-  if (this.indices.length > buffer.length) {
-    [].push.apply[this.indices, range(buffer.length, this.buffer.count)]
-    this.buffer.length += this.indices.length - buffer.length
-  }
-  if (this.indices.length < buffer.length){
+  if (this.indices.length < buffer.length)
+    range(lb.count, buffer.length + lb.count).forEach(push, this.indices)
+
+  else if (this.indices.length > buffer.length)
     this.indices.length = buffer.length
-    this.buffer.length += buffer.length - this.indices.length
-  }
 
-  this.indices.forEach(function (i) {
-    buffer[i] = buffer.count + i % 2
-    buffer.count += 2
-    linePosBuffer[i] = buffer[i]
-    linePosBuffer[i + 1] = buffer[i + 1]
+  lb.count = 1e4
 
+  this.indices.forEach(function (d, i) {
+    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? x(buffer[i]) : y(buffer[i])
   })
 
+  //if (lb.count > lb.length) console.log('lb exceeded max size')
   this.stroke(this.attr.stroke)
 }
 
@@ -209,6 +205,11 @@ var attrDefaults = {
 , x: 0
 , y: 0
 , opacity: .999
+}
+
+for (var i  = 0; i < lineBuffer.length; i+=2) {
+  lineBuffer[i] = i / 2
+  lineBuffer[i + 1] = i / 2
 }
 
 function constructProxy(type) {

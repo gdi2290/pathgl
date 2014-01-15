@@ -5,7 +5,6 @@ lb = lineBuffer
 lpb = linePosBuffer
 
 function drawLines(){
-
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
@@ -16,12 +15,12 @@ function drawLines(){
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
-  //gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  gl.disableVertexAttribArray(program.vFill)
-  //gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
-  //gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.enableVertexAttribArray(program.vFill)
+  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINES, lineBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.POINTS, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
 }

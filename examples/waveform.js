@@ -1,5 +1,5 @@
 examples.waveform = function (selection) {
-  var numLines = 2e3
+  var numLines = 2
   var s = d3.select(selection)
           .attr(size)
           .call(pathgl)
