@@ -32,7 +32,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  10. * 2.;'
+, '    gl_PointSize =  5.;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -49,7 +49,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 //, '    if (dist > 0.5 && v_type == 1.) discard;'
-  , '    gl_FragColor = vec4(gl_PointCoord.y, 1.- gl_PointCoord.y, .5, 1.);'
+  , '    gl_FragColor = vec4(gl_PointCoord.y, 1.-gl_PointCoord.y, 1., 1.);'
 , '}'
 ].join('\n')
 
@@ -191,7 +191,7 @@ function parse (str) {
     var instruction = methods[segment[0].toLowerCase()]
       , coords = segment.slice(1).trim().split(/,| /g)
 
-    ;[].push.apply(buffer, kludge(coords))
+    kludge(coords).forEach(push, buffer)
     // if (! instruction) return
     // //if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
 
@@ -221,8 +221,8 @@ function lineTo(x, y) {
   this.push(pos[0], pos[1], y, 0)
   pos = [x,y]
 }
-;var pointBuffer = new Uint16Array(4 * 1e4)
-var pointPosBuffer = new Float32Array(4 * 1e4)
+;var pointBuffer = new Uint16Array(4 * 4e4)
+var pointPosBuffer = new Float32Array(4 * 4e4)
 pointBuffer.count = 0
 pb = pointBuffer
 ppb = pointPosBuffer
@@ -246,6 +246,7 @@ function drawPoints(elapsed) {
   //   gl.vertexAttribPointer(points[attr].vLoc, points[attr].length, gl.FLOAT, false, 0, 0)
   // }
 
+
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, pointPosBuffer, gl.DYNAMIC_DRAW)
@@ -264,6 +265,7 @@ function drawPoints(elapsed) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
+
 }
 ;var lineBuffer = new Uint16Array(4 * 1e4)
 var linePosBuffer = new Float32Array(4 * 1e4)
@@ -271,25 +273,33 @@ lineBuffer.count = 0
 lb = lineBuffer
 lpb = linePosBuffer
 
+function initBuffers () {
+  b1 = gl.createBuffer(), b2 = gl.createBuffer(), b3 = gl.createBuffer(), b4 = gl.createBuffer()
+}
+
+var once = _.once(initBuffers)
 function drawLines(){
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  once()
+  gl.bindBuffer(gl.ARRAY_BUFFER, b1)
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vPos, 2, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bindBuffer(gl.ARRAY_BUFFER, b2)
   gl.enableVertexAttribArray(program.vStroke)
-  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  b4._ || gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vStroke, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bindBuffer(gl.ARRAY_BUFFER, b3)
   gl.enableVertexAttribArray(program.vFill)
-  gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
+  b4._ || gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer())
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.POINTS, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
+  b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
+  gl.drawElements(gl.LINE_FAN, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
+
+  b4._  = true
 }
 ;function drawPolygons() {
 
@@ -519,7 +529,7 @@ function buildPath (d) {
   lb.count = 1e4
 
   this.indices.forEach(function (d, i) {
-    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? x(buffer[i]) : y(buffer[i])
+    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? y(buffer[i]) : x(buffer[i])
   })
 
   //if (lb.count > lb.length) console.log('lb exceeded max size')

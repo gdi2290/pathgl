@@ -2,7 +2,7 @@ examples.map = function (selector) {
   var width = size.width,
       height = size.height,
       rotate = [10, -10],
-      velocity = [.003, -.001],
+      velocity = [.03, -.001],
       time = Date.now();
 
   var projection = d3.geo.orthographic()

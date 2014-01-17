@@ -162,7 +162,7 @@ function buildPath (d) {
   lb.count = 1e4
 
   this.indices.forEach(function (d, i) {
-    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? x(buffer[i]) : y(buffer[i])
+    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? y(buffer[i]) : x(buffer[i])
   })
 
   //if (lb.count > lb.length) console.log('lb exceeded max size')

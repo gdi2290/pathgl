@@ -16,7 +16,7 @@ pathgl.vertexShader = [
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  10. * 2.;'
+, '    gl_PointSize =  5.;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -33,7 +33,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 //, '    if (dist > 0.5 && v_type == 1.) discard;'
-  , '    gl_FragColor = vec4(gl_PointCoord.y, 1.- gl_PointCoord.y, .5, 1.);'
+  , '    gl_FragColor = vec4(gl_PointCoord.y, 1.-gl_PointCoord.y, 1., 1.);'
 , '}'
 ].join('\n')
 

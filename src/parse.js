@@ -32,7 +32,7 @@ function parse (str) {
     var instruction = methods[segment[0].toLowerCase()]
       , coords = segment.slice(1).trim().split(/,| /g)
 
-    ;[].push.apply(buffer, kludge(coords))
+    kludge(coords).forEach(push, buffer)
     // if (! instruction) return
     // //if (instruction.name == 'closePath' && match[i+1]) return instruction.call(buffer, match[i+1])
 
