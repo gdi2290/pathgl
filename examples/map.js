@@ -24,18 +24,20 @@ examples.map = function (selector) {
   svg.append("path")
   .datum({type: "Sphere"})
   .attr("class", "sphere")
+  .attr('stroke', 'orange')
   .attr("d", path)
 
   svg.append("path")
   .datum(graticule)
   .attr("class", "graticule")
+  .attr('stroke', 'green')
 
   .attr("d", path);
 
   svg.append("path")
   .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
   .attr("class", "equator")
-  .attr('stroke', 'purple')
+  .attr('stroke', 'blue')
   .attr("d", path);
 
   var feature = svg.selectAll("path");

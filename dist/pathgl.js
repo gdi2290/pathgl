@@ -434,12 +434,12 @@ var proto = {
         , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {
-              colorBuffer[i] = 16761035
+              colorBuffer[i] = + parseInt(fill.toString().slice(1), 16)
             })
             colorBuffer[this.indices[this.indices.length - 2]] =
               colorBuffer[this.indices[this.indices.length - 1]] = 16777215
           }
-}
+        }
 
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
@@ -536,7 +536,6 @@ function buildPath (d) {
     this.indices.length = buffer.length
 
   lb.count += this.indices.length - buffer.length
-  //if (this.indices.length !==buffer.length) debugger
 
   this.indices.forEach(function (d, i) {
     linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? y(buffer[i]) : x(buffer[i])
