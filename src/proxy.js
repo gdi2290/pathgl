@@ -11,11 +11,11 @@ var proto = {
               this.posBuffer[this.indices[0] + 2] = v
             }
           , cx: function (v) {
-              this.posBuffer[this.indices[0] + 0] = x(v)
+              this.posBuffer[this.indices[0] + 0] = xScale(v)
 
             }
           , cy: function (v) {
-              this.posBuffer[this.indices[0] + 1] = y(v)
+              this.posBuffer[this.indices[0] + 1] = yScale(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
@@ -38,10 +38,10 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = x(v) }
-        , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = y(v) }
-        , x2: function (v) { this.posBuffer[this.indices[1] * 2] = x(v) }
-        , y2: function (v) { this.posBuffer[this.indices[1] * 2  + 1] = y(v) }
+, line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = xScale(v) }
+        , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = yScale(v) }
+        , x2: function (v) { this.posBuffer[this.indices[1] * 2] = xScale(v) }
+        , y2: function (v) { this.posBuffer[this.indices[1] * 2  + 1] = yScale(v) }
         , buffer: lineBuffer
         , posBuffer: linePosBuffer
         , stroke: function (v) {
@@ -161,7 +161,7 @@ function buildPath (d) {
   lb.count += this.indices.length - buffer.length
 
   this.indices.forEach(function (d, i) {
-    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? y(buffer[i]) : x(buffer[i])
+    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? yScale(buffer[i]) : xScale(buffer[i])
   })
 
   this.stroke(this.attr.stroke)
