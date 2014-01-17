@@ -375,14 +375,6 @@ d3.scale.linear()
 .domain([0, canvas.height])
 .range([1, -1])
 
-var x  = function (x) {
-  return 2 * (x / canvas.width) - 1
-}
-
-var y = function (y) {
-  return 1 - ((y / canvas.height) * 2)
-}
-
 var proto = {
   circle: { r: function (v) {
               this.posBuffer[this.indices[0] + 2] = v
@@ -625,14 +617,13 @@ function event (type, listener) {
     e[type] = []
   }
   e[type].push(this.id)
-};pathgl.xScale  = function (x) {
+};function xScale(x) {
   return 2 * (x / canvas.width) - 1
 }
 
-pathgl.yScale = function (y) {
+function yScale(y) {
   return 1 - ((y / canvas.height) * 2)
 }
-
 
 function drawLoop(elapsed) {
   beforeRender(elapsed)
@@ -724,5 +715,8 @@ function clamp (a, x) {
 function range(a, b) {
   return Array(Math.abs(b - a)).join().split(',').map(function (d, i) { return i + a })
 }
-;  return init(canvas)
+;  pathgl.xScale  = xScale
+  pathgl.yScale = yScale
+
+  return init(canvas)
 } }()

@@ -6,14 +6,6 @@ d3.scale.linear()
 .domain([0, canvas.height])
 .range([1, -1])
 
-var x  = function (x) {
-  return 2 * (x / canvas.width) - 1
-}
-
-var y = function (y) {
-  return 1 - ((y / canvas.height) * 2)
-}
-
 var proto = {
   circle: { r: function (v) {
               this.posBuffer[this.indices[0] + 2] = v
