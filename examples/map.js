@@ -24,7 +24,7 @@ examples.map = function (selector) {
   svg.append("path")
   .datum({type: "Sphere"})
   .attr("class", "sphere")
-  .attr("d", path);
+  .attr("d", path)
 
   svg.append("path")
   .datum(graticule)
@@ -35,12 +35,12 @@ examples.map = function (selector) {
   svg.append("path")
   .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
   .attr("class", "equator")
+  .attr('stroke', 'purple')
   .attr("d", path);
 
   var feature = svg.selectAll("path");
 
   svg.selectAll('path')
-  .attr('stroke', 'teal')
   .attr('fill', 'none')
 
   d3.timer(function() {

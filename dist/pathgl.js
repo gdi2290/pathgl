@@ -32,7 +32,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-//, '    gl_PointSize =  2. * pos.z;'
+, '    gl_PointSize =  2. * 10.;'//pos.z
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -49,7 +49,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 //, '    if (dist > 0.5 && v_type == 1.) discard;'
-, '    gl_FragColor = v_stroke;'
+, '    gl_FragColor = v_stroke;'//v_stroke
 , '}'
 ].join('\n')
 
@@ -297,7 +297,9 @@ function drawLines(){
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINES, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
+
+
 
   b4._  = true
 }
@@ -426,21 +428,28 @@ var proto = {
             })
            }
         }
-, path: { d: buildPath,
-          pathLength: noop,
-          buffer: lineBuffer,
-          stroke: function (v) {
+, path: { d: buildPath
+        , pathLength: noop
+        , buffer: lineBuffer
+        , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {
-              colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
+              colorBuffer[i] = 16761035
             })
+            colorBuffer[this.indices[this.indices.length - 2]] =
+              colorBuffer[this.indices[this.indices.length - 1]] = 16777215
           }
 }
+
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
+
+_.each(colorBuffer, function (d, i, o) {
+  o[i] = 16761035
+})
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
@@ -518,23 +527,21 @@ var types = [
               return a
             }, {})
 
-
 function buildPath (d) {
-  var buffer = parse(d), lb = this.buffer
+  var buffer = parse(d), lb = this.buffer, i
 
   if (this.indices.length < buffer.length)
-    range(lb.count, buffer.length + lb.count).forEach(push, this.indices)
-
-  else if (this.indices.length > buffer.length)
+    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
+  else
     this.indices.length = buffer.length
 
-  lb.count = 1e4
+  lb.count += this.indices.length - buffer.length
+  //if (this.indices.length !==buffer.length) debugger
 
   this.indices.forEach(function (d, i) {
     linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? y(buffer[i]) : x(buffer[i])
   })
 
-  //if (lb.count > lb.length) console.log('lb exceeded max size')
   this.stroke(this.attr.stroke)
 }
 

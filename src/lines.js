@@ -28,7 +28,9 @@ function drawLines(){
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINES, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.LINE_LOOP, 1e4 * 2, gl.UNSIGNED_SHORT, 0)
+
+
 
   b4._  = true
 }

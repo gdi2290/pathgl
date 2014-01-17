@@ -59,21 +59,28 @@ var proto = {
             })
            }
         }
-, path: { d: buildPath,
-          pathLength: noop,
-          buffer: lineBuffer,
-          stroke: function (v) {
+, path: { d: buildPath
+        , pathLength: noop
+        , buffer: lineBuffer
+        , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {
-              colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
+              colorBuffer[i] = 16761035
             })
+            colorBuffer[this.indices[this.indices.length - 2]] =
+              colorBuffer[this.indices[this.indices.length - 1]] = 16777215
           }
 }
+
 , polygon: { points: noop } //lines
 , polyline: { points: noop } //lines
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
+
+_.each(colorBuffer, function (d, i, o) {
+  o[i] = 16761035
+})
 
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
@@ -151,23 +158,21 @@ var types = [
               return a
             }, {})
 
-
 function buildPath (d) {
-  var buffer = parse(d), lb = this.buffer
+  var buffer = parse(d), lb = this.buffer, i
 
   if (this.indices.length < buffer.length)
-    range(lb.count, buffer.length + lb.count).forEach(push, this.indices)
-
-  else if (this.indices.length > buffer.length)
+    for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
+  else
     this.indices.length = buffer.length
 
-  lb.count = 1e4
+  lb.count += this.indices.length - buffer.length
+  //if (this.indices.length !==buffer.length) debugger
 
   this.indices.forEach(function (d, i) {
     linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? y(buffer[i]) : x(buffer[i])
   })
 
-  //if (lb.count > lb.length) console.log('lb exceeded max size')
   this.stroke(this.attr.stroke)
 }
 
