@@ -49,7 +49,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 //, '    if (dist > 0.5 && v_type == 1.) discard;'
-  , '    gl_FragColor = vec4(gl_PointCoord.y, 1.-gl_PointCoord.y, 1., 1.);'
+  , '    gl_FragColor = v_fill;'
 , '}'
 ].join('\n')
 
@@ -406,6 +406,7 @@ var proto = {
             }
 
           , buffer: pointBuffer
+          , posBuffer: pointPosBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point

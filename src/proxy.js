@@ -39,6 +39,7 @@ var proto = {
             }
 
           , buffer: pointBuffer
+          , posBuffer: pointPosBuffer
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner} //point

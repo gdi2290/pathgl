@@ -28,22 +28,27 @@ examples.point_lighting = function (selector) {
 
 
 
-  d3.timer(function() {
+  var xs  = function (x) {
+    return 2 * (x / width) - 1
+  }
 
-    data.forEach(function(d) {
-      d.xloc += d.xvel
-      d.yloc += d.yvel
+  var ys = function (y) {
+    return 1 - ((y / height) * 2)
+  }
+  d3.timer(function() {
+    circle.each(function(d) {
+      this.posBuffer[this.indices[0] + 0] = xs( x (d.xloc += d.xvel))
+      this.posBuffer[this.indices[0] + 1] = ys( y ( d.yloc += d.yvel))
+      this.posBuffer[this.indices[0] + 2] = Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10)
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0005 * d.xloc
       d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0005 * d.yloc
     })
 
-console.time('hello')
-    circle
-    .attr("cx", function(d) { return x(d.xloc) })
-    .attr("cy", function(d) { return y(d.yloc) })
-    .attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
+    //circle
+    //.attr("cx", function(d) { return x(d.xloc) })
+    //.attr("cy", function(d) { return y(d.yloc) })
+    //.attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
     //.attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
-console.timeEnd('hello')
   })
 
 
