@@ -16,14 +16,14 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
-              pointPosBuffer[this.indices[0] + 2] = v
+              this.posBuffer[this.indices[0] + 2] = v
             }
           , cx: function (v) {
-              pointPosBuffer[this.indices[0] + 0] = x(v)
+              this.posBuffer[this.indices[0] + 0] = x(v)
 
             }
           , cy: function (v) {
-              pointPosBuffer[this.indices[0] + 1] = y(v)
+              this.posBuffer[this.indices[0] + 1] = y(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
@@ -46,11 +46,12 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { linePosBuffer[this.indices[0] * 2] = x(v) }
-        , y1: function (v) { linePosBuffer[this.indices[0] * 2 + 1] = y(v) }
-        , x2: function (v) { linePosBuffer[this.indices[1] * 2] = x(v) }
-        , y2: function (v) { linePosBuffer[this.indices[1] * 2  + 1] = y(v) }
+, line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = x(v) }
+        , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = y(v) }
+        , x2: function (v) { this.posBuffer[this.indices[1] * 2] = x(v) }
+        , y2: function (v) { this.posBuffer[this.indices[1] * 2  + 1] = y(v) }
         , buffer: lineBuffer
+        , posBuffer: linePosBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {

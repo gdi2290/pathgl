@@ -32,7 +32,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * pos.z;'
+//, '    gl_PointSize =  2. * pos.z;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -48,8 +48,8 @@ pathgl.fragmentShader = [
 
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-, '    if (dist > 0.5 && v_type == 1.) discard;'
-  , '    gl_FragColor = v_fill;'
+//, '    if (dist > 0.5 && v_type == 1.) discard;'
+, '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
 
@@ -297,7 +297,7 @@ function drawLines(){
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   b4._ || gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
-  gl.drawElements(gl.LINE_FAN, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.LINES, lineBuffer.count * 2, gl.UNSIGNED_SHORT, 0)
 
   b4._  = true
 }
@@ -383,14 +383,14 @@ var y = function (y) {
 
 var proto = {
   circle: { r: function (v) {
-              pointPosBuffer[this.indices[0] + 2] = v
+              this.posBuffer[this.indices[0] + 2] = v
             }
           , cx: function (v) {
-              pointPosBuffer[this.indices[0] + 0] = x(v)
+              this.posBuffer[this.indices[0] + 0] = x(v)
 
             }
           , cy: function (v) {
-              pointPosBuffer[this.indices[0] + 1] = y(v)
+              this.posBuffer[this.indices[0] + 1] = y(v)
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
@@ -413,11 +413,12 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop } //point
 
-, line: { x1: function (v) { linePosBuffer[this.indices[0] * 2] = x(v) }
-        , y1: function (v) { linePosBuffer[this.indices[0] * 2 + 1] = y(v) }
-        , x2: function (v) { linePosBuffer[this.indices[1] * 2] = x(v) }
-        , y2: function (v) { linePosBuffer[this.indices[1] * 2  + 1] = y(v) }
+, line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = x(v) }
+        , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = y(v) }
+        , x2: function (v) { this.posBuffer[this.indices[1] * 2] = x(v) }
+        , y2: function (v) { this.posBuffer[this.indices[1] * 2  + 1] = y(v) }
         , buffer: lineBuffer
+        , posBuffer: linePosBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {

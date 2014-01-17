@@ -21,7 +21,7 @@ examples.point_lighting = function (selector) {
   var circle = svg.selectAll("circle")
            .data(data)
            .enter().append("circle")
-           .attr('fill', function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" })
+           .attr('fill', random_hue)
            .attr("cx", 10)
            .attr("cy", 10)
            .attr("r", 50)
@@ -56,3 +56,5 @@ examples.point_lighting = function (selector) {
   d3.select('.blurb').text("Compare with http://bl.ocks.org/mbostock/raw/2647924/")
   c.selectAll('circle')
 }
+
+function random_hue () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
