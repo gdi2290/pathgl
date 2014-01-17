@@ -32,7 +32,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  5.;'
+, '    gl_PointSize =  2. * pos.z;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.0);'
@@ -48,7 +48,7 @@ pathgl.fragmentShader = [
 
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-//, '    if (dist > 0.5 && v_type == 1.) discard;'
+, '    if (dist > 0.5 && v_type == 1.) discard;'
   , '    gl_FragColor = v_fill;'
 , '}'
 ].join('\n')
@@ -394,7 +394,7 @@ var proto = {
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
-              colorBuffer[this.indices[0] / 4] = 1 + parseInt(fill.toString().slice(1), 16)
+              colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
             }
 
           , stroke: function (v) {

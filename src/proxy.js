@@ -27,7 +27,7 @@ var proto = {
             }
           , fill: function (v) {
               var fill = d3.rgb(v)
-              colorBuffer[this.indices[0] / 4] = 1 + parseInt(fill.toString().slice(1), 16)
+              colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
             }
 
           , stroke: function (v) {

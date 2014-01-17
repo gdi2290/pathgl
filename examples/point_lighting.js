@@ -4,7 +4,7 @@ examples.point_lighting = function (selector) {
              })
 
   var width = size.width
-      height = size.height
+    , height = size.height
 
   var x = d3.scale.linear()
           .domain([-5, 5])
@@ -26,8 +26,6 @@ examples.point_lighting = function (selector) {
                .attr("cy", 10)
                .attr("r", 50)
 
-
-
   var xs  = function (x) {
     return 2 * (x / width) - 1
   }
@@ -39,11 +37,11 @@ examples.point_lighting = function (selector) {
     circle.each(function(d) {
       this.posBuffer[this.indices[0] + 0] = xs( x (d.xloc += d.xvel))
       this.posBuffer[this.indices[0] + 1] = ys( y ( d.yloc += d.yvel))
-      this.posBuffer[this.indices[0] + 2] = Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10)
+      this.posBuffer[this.indices[0] + 2] = 2 + 1000 * Math.abs(d.xvel * d.yvel)
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0005 * d.xloc
       d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0005 * d.yloc
     })
-
+      console.timeEnd('a')
     //circle
     //.attr("cx", function(d) { return x(d.xloc) })
     //.attr("cy", function(d) { return y(d.yloc) })
