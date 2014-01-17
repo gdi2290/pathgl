@@ -54,6 +54,7 @@ var proto = {
 , path: { d: buildPath
         , pathLength: noop
         , buffer: lineBuffer
+        , posBuffer: linePosBuffer
         , stroke: function (v) {
             var fill = d3.rgb(v)
             this.indices.forEach(function (i) {
@@ -151,7 +152,7 @@ var types = [
             }, {})
 
 function buildPath (d) {
-  var buffer = parse(d), lb = this.buffer, i
+  var buffer = parse(d), lb = this.buffer, i, pb = this.posBuffer
 
   if (this.indices.length < buffer.length)
     for (i = lb.count + 1; i < buffer.length + lb.count;) this.indices.push(i++)
@@ -161,7 +162,7 @@ function buildPath (d) {
   lb.count += this.indices.length - buffer.length
 
   this.indices.forEach(function (d, i) {
-    linePosBuffer[2 * lb[d] + d % 2] = i % 2 ? yScale(buffer[i]) : xScale(buffer[i])
+    pb[2 * lb[d] + d % 2] = (i % 2 ? yScale : xScale)(buffer[i])
   })
 
   this.stroke(this.attr.stroke)
