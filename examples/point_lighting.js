@@ -26,21 +26,14 @@ examples.point_lighting = function (selector) {
            .attr("cy", 10)
            .attr("r", 50)
 
-  var xs  = function (x) {
-    return 2 * (x / width) - 1
-  }
-
-  var ys = function (y) {
-    return 1 - ((y / height) * 2)
-  }
   d3.timer(function() {
     circle.each(function(d) {
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0005 * d.xloc
       d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0005 * d.yloc
 
       if (selector == 'canvas') {
-        this.posBuffer[this.indices[0] + 0] = xs(x(d.xloc += d.xvel))
-        this.posBuffer[this.indices[0] + 1] = ys(y(d.yloc += d.yvel))
+        this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))
+        this.posBuffer[this.indices[0] + 1] = pathgl.yScale(y(d.yloc += d.yvel))
         this.posBuffer[this.indices[0] + 2] = 2 + 1000 * Math.abs(d.xvel * d.yvel)
       }
     })

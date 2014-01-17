@@ -1,3 +1,12 @@
+pathgl.xScale  = function (x) {
+  return 2 * (x / canvas.width) - 1
+}
+
+pathgl.yScale = function (y) {
+  return 1 - ((y / canvas.height) * 2)
+}
+
+
 function drawLoop(elapsed) {
   beforeRender(elapsed)
 
