@@ -15,6 +15,14 @@ examples.swarm = function (selector) {
           .domain([-5, 5])
           .range([0, height])
 
+  d3.selection.prototype.pAttr = function (obj) {
+    this.each(function(d) {
+      this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))
+      this.posBuffer[this.indices[0] + 1] = pathgl.yScale(y(d.yloc += d.yvel))
+      this.posBuffer[this.indices[0] + 2] = 1 + 1000 * Math.abs(d.xvel * d.yvel)
+    })
+      this.node().buffer.changed = true
+  }
   var svg = d3.select(selector)
             .attr('height', height).attr('width', width)
             .call(pathgl)
@@ -32,21 +40,16 @@ examples.swarm = function (selector) {
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0004 * d.xloc
       d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0004 * d.yloc
 
-      if (! inlining) return
-      this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))
-      this.posBuffer[this.indices[0] + 1] = pathgl.yScale(y(d.yloc += d.yvel))
-      this.posBuffer[this.indices[0] + 2] = 1 + 1000 * Math.abs(d.xvel * d.yvel)
-      this.buffer.changed = true
     })
-      if (! inlining)
-        circle
-        .attr("cx", function(d) { return x(d.xloc += d.xvel) })
-        .attr("cy", function(d) { return y(d.yloc += d.yvel) })
-        .attr("r", function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) })
-        .attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
+      circle
+      .pAttr({"cx":function(d) { return x(d.xloc += d.xvel) }
+             , "cy":function(d) { return y(d.yloc += d.yvel) }
+             , "r":function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) }})
   })
 
   c.selectAll('circle')
+
+
 }
 
 function random_hue () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }

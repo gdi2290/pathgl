@@ -83,7 +83,31 @@ examples.map = function (selector) {
     })
     .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
 
-    d3.select('body').insert('p', '*')
+    var b = svg.insert("g", '*')
+    .attr("class", "brush")
+    .call(d3.svg.brush().x(x)
+          .on("brushstart", brushstart)
+          .on("brush", brushmove)
+          .on("brushend", brushend))
+    .selectAll("rect")
+    .attr('y', height * .8)
+    .attr("height", height * .2);
+
+    function brushstart() {
+      console.log(123)
+      b.attr("fill-opacity", .2);
+    }
+
+    function brushmove() {
+      var s = d3.event.target.extent();
+    }
+
+    function brushend() {
+      b.attr('fill-opacity', 0)
+    }
+
+
+    d3.select('.right').insert('p', '*')
     .attr('class', 'title')
     .style({ color: 'white'
            , position: 'absolute'
@@ -96,10 +120,13 @@ examples.map = function (selector) {
 
     hist = hist.sort(function(a, b) { return a.year - b.year })
 
+    //hist.forEach(function (d) { d.location[0] += 20 * Math.random(); d.location[1] += 20 *Math.random() })
     dates = hist.map(function(d) {
               return d.location =
                 proj(d.location.split(' ').map(parseFloat).reverse()) || d
             }).filter(function(d) { return d.year < 2010 })
+
+    pathgl.uniform('dates', [0, 0])
 
     webgl
     .selectAll('.nil')
@@ -109,7 +136,6 @@ examples.map = function (selector) {
     .on('mouseover', mouseover)
     .attr({ class:'point'
           , fill: function(){ return d3.hsl(Math.random()*360, 1, 0.5) }
-          , stroke: function(d){ return d.fill }
           , cx: function(d){ return d.location[0] }
           , cy: function(d){ return d.location[1] }
           , cz: function(d){ return + d.year }

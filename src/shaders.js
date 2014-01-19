@@ -19,12 +19,15 @@ pathgl.vertexShader = [
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * pos.z - (pos.w < dates[0] ? dates[0] - pos.w: '
-, '                    abs(dates[1] - pos.w));'
+, '    float size;'
+, '    if (dates[0] != 6000.) size = (2. * pos.z - (pos.w < dates[0] ? dates[0] - pos.w: '
+, '                    abs(dates[1] - pos.w)));'
+, '    else size = 2. * pos.z;'
+, '    gl_PointSize =  size > 30. ? 10. : size;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
-, '    v_stroke = vec4(unpack_color(stroke), 1.);'
+, '    v_stroke = vec4(unpack_color(stroke), .5);'
 , '}'
 ].join('\n')
 
