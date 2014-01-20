@@ -112,6 +112,7 @@ examples.map = function (selector) {
           , stroke: function(d){ return d.fill }
           , cx: function(d){ return d.location[0] }
           , cy: function(d){ return d.location[1] }
+          , cz: function(d){ return + d.year }
           , r: 15
           })
 

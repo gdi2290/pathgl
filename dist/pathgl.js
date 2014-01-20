@@ -35,7 +35,8 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2.;'
+, '    gl_PointSize =  2. * pos.z - (pos.w < dates[0] ? dates[0] - pos.w: '
+, '                    abs(dates[1] - pos.w));'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
