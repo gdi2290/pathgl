@@ -1,6 +1,6 @@
 function parse (str, stroke) {
   var buffer = [], lb = this.buffer, pb = this.posBuffer, indices = this.indices, count = lb.count
-    , pos = [0, 0]
+    , pos = [0, 0], i
   str.match(/[a-z][^a-z]*/ig).forEach(function (segment, i, match) {
     var points = segment.slice(1).trim().split(/,| /g), c = segment[0].toLowerCase(), j = 0
 
