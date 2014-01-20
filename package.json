@@ -2,6 +2,17 @@
   "name": "pathgl",
   "version": "0.1.0",
   "description": "..",
+  "scripts": {
+    "prepublish": "node npm-scripts prepublish",
+    "postpublish": "node npm-scripts postpublish",
+    "preinstall": "node npm-scripts preinstall",
+    "postinstall": "node npm-scripts postinstall",
+    "preuninstall": "node npm-scripts preuninstall",
+    "postuninstall": "node npm-scripts postuninstall",
+    "preupdate": "node npm-scripts preupdate",
+    "postupdate": "node npm-scripts postupdate",
+    "start": "node server"
+  },
   "keywords": [
     "pathgl",
     "path",
