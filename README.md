@@ -1,4 +1,4 @@
-# Pathgl
+# Pathgl [![Build Status](https://travis-ci.org/adnan-wahab/pathgl.png?branch=gh-pages)
 Pathgl sits between d3 and the dom and lets you draw to webgl instead of svg.
 
 ## Usage
