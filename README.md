@@ -1,14 +1,13 @@
 # PathGL [![Build Status](https://travis-ci.org/adnan-wahab/pathgl.png?branch=master)](https://travis-ci.org/adnan-wahab/pathgl)
 Pathgl sits between d3 and the dom and lets you draw to webgl instead of svg.
 
+## Getting Started
+Download the [latest version](http://adnanwahab.org/pathgl/dist/pathgl.zip) and include in your html.
 
-## How do I add this to my project?
-
-You can download pathgl by:
-
-* (prefered) Using bower and running `bower install pathgl --save`
-* Using npm and running `npm install pathgl --save`
-* Downloading it manually by clicking [here to download zip version](https://github.com/adnan-wahab/pathgl/archive/gh-pages.zip)
+Or link directly to the latest release, copy this snippet: 
+```html
+<script src="http://adnanwahab.com/pathgl/dist/pathgl.min.js" charset="utf-8"></script>
+```
 
 ## Usage
 
@@ -29,13 +28,3 @@ Alternatively:
 d3.select('canvas').call(pathgl)
 .append('circle')
 ```
-
-## roadmap
- - batch all rendering so only 3 draws per frame if shapes are grouped: points, lines, triangle_fan
- - event listeners
- - Make path parser comply with spec
- - stroke-dasharray
- - antialiasing
- - patterns, post processing effects, inject code/data into shaders
- - datatextures
- - custom shapes (hexagon, 3d??)
