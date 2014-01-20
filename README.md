@@ -9,6 +9,8 @@ Or link directly to the latest release, copy this snippet:
 <script src="http://adnanwahab.com/pathgl/dist/pathgl.min.js" charset="utf-8"></script>
 ```
 
+or Using npm and running `npm install pathgl --save`
+
 ## Usage
 
 If webgl is available then your circles will be WEBGL, if not, fallback to svg.
