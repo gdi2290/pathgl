@@ -5,22 +5,24 @@ module.exports = function(config) {
   config.set({
 
     // base path, that will be used to resolve files and exclude
-    basePath: '',
+    basePath: '..',
 
 
     // frameworks to use
-    frameworks: ['mocha'],
+    frameworks: ['mocha', 'sinon-chai'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/*.js'
+      'node_modules/d3/d3.min.js',
+      'dist/pathgl.js',
+      'test/spec/*.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-      
+
     ],
 
 
@@ -43,7 +45,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // Start these browsers, currently available:
