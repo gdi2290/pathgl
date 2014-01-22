@@ -15,7 +15,12 @@ examples.map = function (selector) {
             .call(pathgl)
 
   var webgl = d3.select('canvas').attr(size).call(pathgl).attr('class', 'no-click')
-
+  var p = d3.select('.right').insert('div', '*')
+          .attr('class', 'event_text')
+          .style({
+    display: 'inline'
+  , 'margin': '0 auto'
+  })
   d3.json('/examples/world-50m.json', draw_world)
   d3.csv('/examples/hist.csv', draw_history)
 
@@ -102,6 +107,21 @@ examples.map = function (selector) {
     function brushmove() {
       var s = d3.event.target.extent();
       pathgl.uniform('dates', s)
+      document.title = s.map(Math.round)
+      d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
+      svg.on('click', function () {
+        var x = d3.event.x, y = d3.event.y
+
+        var event = _.filter(hist, function (event) {
+                      return s[0] < (+ event.year)  && (+ event.year) < s[1]
+                    }).map(function (e) {
+                      var c = e.node
+                      e.dist = distance(c.attr.cx, c.attr.cy, x, y)
+                      return e
+                    })
+                    .sort(function (a, b) { return a.dist - b.dist })
+        p.text(event.length && event[0].event)
+      })
     }
 
     function brushend() {
@@ -122,10 +142,9 @@ examples.map = function (selector) {
     hist = hist.sort(function(a, b) { return a.year - b.year })
 
     //hist.forEach(function (d) { d.location[0] += 20 * Math.random(); d.location[1] += 20 *Math.random() })
-    dates = hist.map(function(d) {
-              return d.location =
-                proj(d.location.split(' ').map(parseFloat).reverse()) || d
-            }).filter(function(d) { return d.year < 2010 })
+    hist.forEach(function(d) {
+      d.location = proj(d.location.split(' ').map(parseFloat).reverse()) || d
+            })
 
     pathgl.uniform('dates', [0, 0])
 
@@ -142,11 +161,18 @@ examples.map = function (selector) {
           , cz: function(d){ return + d.year }
           , r: 15
           })
+    .each(function (d) {
+      return d.node = this
+    })
 
-    function forward() {
-      document.title = from = from > 2010 ? -500 : from + 1
-      pathgl.uniform('dates', [from, from + 5])
-      d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
-    }
   }
+
+
+}
+
+
+
+function distance (x1, y1, x2, y2) {
+  var xd = x2 - x1, yd = y2 - y1
+  return xd * xd + yd * yd
 }

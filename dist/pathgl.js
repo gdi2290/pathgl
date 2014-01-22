@@ -580,18 +580,15 @@ function constructProxy(type) {
 }
 
 var e = {}
-//keep track of what element is being hovered over
+
 function event (type, listener) {
-  if (! e[type]) {
-    d3.select('canvas').on(type, function () {
-      this.__scene__.filter(function () {
-        //check what shape cursor is on top of
-        //if the id is in e[type], dispatch listener
-      })
-    })
-    e[type] = []
-  }
-  e[type].push(this.id)
+  // if (e[type]) return
+  // var c = d3.select(this.parentElement)
+  // console.log(this.parentElement)
+  // c.on('click.pathgl', function () {
+  //   console.log(d3.event.x)
+  //   //c.selectAll('*').filter(function () {})
+  // })
 };function xScale(x) {
   return 2 * (x / canvas.width) - 1
 }
