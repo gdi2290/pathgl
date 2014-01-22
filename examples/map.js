@@ -95,7 +95,6 @@ examples.map = function (selector) {
     .attr("height", height * .2);
 
     function brushstart() {
-      console.log(123)
       b.attr("fill-opacity", .2);
     }
 
@@ -148,9 +147,9 @@ examples.map = function (selector) {
       pathgl.uniform('dates', [from, from + 5])
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
-
+      if (window.location.hash !== '#map') setTimeout(forward, 50)
     }
 
-    window.int = setInterval(forward, 50)
+    window.int = setTimeout(forward, 50)
   }
 }

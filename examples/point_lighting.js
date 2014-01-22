@@ -19,8 +19,7 @@ examples.swarm = function (selector) {
     this.each(function(d) {
       for(var attr in obj)
         this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
-    })
-      this.node().buffer.changed = true
+    }).node().buffer.changed = true
   }
   var svg = d3.select(selector)
             .attr('height', height).attr('width', width)
@@ -44,6 +43,8 @@ examples.swarm = function (selector) {
       , "cy":function(d) { return y(d.yloc += d.yvel) }
       , "r":function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) }
       })
+
+    return window.location.hash !== '#swarm'
   })
 }
 
