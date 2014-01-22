@@ -135,7 +135,7 @@ examples.map = function (selector) {
     .append('circle')
     .on('mouseover', mouseover)
     .attr({ class:'point'
-          , fill: function(){ return d3.hsl(Math.random()*360, 1, 0.5) }
+          , fill: function(d){ return d3.hsl(Math.random()*360, 1, 0.5) }
           , cx: function(d){ return d.location[0] }
           , cy: function(d){ return d.location[1] }
           , cz: function(d){ return + d.year }
@@ -147,9 +147,9 @@ examples.map = function (selector) {
       pathgl.uniform('dates', [from, from + 5])
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
-      if (window.location.hash !== '#map') setTimeout(forward, 50)
+      if (window.location.hash == '#map') setTimeout(forward, 50)
     }
 
-    window.int = setTimeout(forward, 50)
+    setTimeout(forward, 50)
   }
 }

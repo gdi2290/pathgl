@@ -16,10 +16,12 @@ examples.swarm = function (selector) {
           .range([0, height])
 
   d3.selection.prototype.pAttr = function (obj) {
+    if (selector != 'canvas') return this.attr(obj)
     this.each(function(d) {
       for(var attr in obj)
         this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
     }).node().buffer.changed = true
+    return this
   }
   var svg = d3.select(selector)
             .attr('height', height).attr('width', width)
