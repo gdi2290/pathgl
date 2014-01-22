@@ -89,8 +89,9 @@ examples.map = function (selector) {
           .on("brushstart", brushstart)
           .on("brush", brushmove)
           .on("brushend", brushend))
+    .attr('transform', '')
     .selectAll("rect")
-    .attr('y', height * .8)
+    .attr('fill', 'pink')
     .attr("height", height * .2);
 
     function brushstart() {

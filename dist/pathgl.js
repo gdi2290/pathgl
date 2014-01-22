@@ -390,6 +390,7 @@ var proto = {
 
           , buffer: pointBuffer
           , posBuffer: pointPosBuffer
+          , schema: ['cx', 'cy', 'r', 'cz']
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
 , rect: { width: noop, height: noop, x: noop, y: noop, rx: roundedCorner, ry:  roundedCorner}

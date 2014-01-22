@@ -17,6 +17,7 @@ examples.swarm = function (selector) {
 
   d3.selection.prototype.pAttr = function (obj) {
     this.each(function(d) {
+      //to remove the scale, move clipping to shader, where it belongs
       this.posBuffer[this.indices[0] + 0] = pathgl.xScale(obj.cx(d))
       this.posBuffer[this.indices[0] + 1] = pathgl.yScale(obj.cy(d))
       this.posBuffer[this.indices[0] + 2] = obj.r(d)
