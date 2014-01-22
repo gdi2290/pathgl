@@ -11,7 +11,7 @@ examples.music = function (selection) {
   var midY = size.height / 2
 
 
-  var audio = d3.select('.right').append('audio').attr('src', 'comedown.mp4')
+  var audio = d3.select('.right').append('audio').attr('src', 'overture.mp3')
   audio.on('play', initAudio).node().play()
 
   var lines = s.selectAll('line').data(d3.range(numLines).map(function () { return {a: 0}}))
@@ -24,7 +24,7 @@ examples.music = function (selection) {
   , x2: function (d, i) { return Math.cos(i * 2) * innerWidth }
   , y2: function (d, i) { return Math.sin(i * 2) * innerHeight }
   })
-
+  //"hsl(" + Math.random() * 360 + ",100%, 50%)"
   d3.timer(function () {
     if (! analyzer) return
     var byteFreq = new Uint8Array(analyzer.frequencyBinCount)
@@ -34,9 +34,11 @@ examples.music = function (selection) {
       d.diff = d.a - freq
       d.a = freq
     })
-    .attr('stroke', function (d) { return "hsl(" + d.diff * 5 + ",100%, 50%)" })
+    .attr('stroke', function (d) { return "hsl(" + Math.abs(d.diff * 10 + 200) + ",100%, 50%)" })
     .attr('x2', function (d, i) { return midX + (Math.cos(i) * d.a) })
     .attr('y2', function (d, i) { return midY + (Math.sin(i) * d.a)})
+
+    //s.node().style.background = "hsl(" + d3.sum(byteFreq) * 5 + ",100%, 50%)"
   })
   dropAndLoad(document.querySelector('.right'), initDnD, "ArrayBuffer")
 }
