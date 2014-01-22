@@ -10,12 +10,16 @@ examples.music = function (selection) {
   var midX = size.width / 2
   var midY = size.height / 2
 
+
+  var audio = d3.select('.right').append('audio').attr('src', 'comedown.mp4')
+  audio.on('play', initAudio).node().play()
+
   var lines = s.selectAll('line').data(d3.range(numLines).map(function () { return {a: 0}}))
-  .enter()
-  .append('line')
-  .attr({
-    x1: size.width >> 1
-  , y1: size.height >> 1
+              .enter()
+              .append('line')
+              .attr({
+                x1: size.width >> 1
+              , y1: size.height >> 1
   , stroke: function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
   , x2: function (d, i) { return Math.cos(i * 2) * innerWidth }
   , y2: function (d, i) { return Math.sin(i * 2) * innerHeight }
@@ -34,28 +38,38 @@ examples.music = function (selection) {
     .attr('x2', function (d, i) { return midX + (Math.cos(i) * d.a) })
     .attr('y2', function (d, i) { return midY + (Math.sin(i) * d.a)})
   })
-  dropAndLoad(document.querySelector('.right'), init, "ArrayBuffer")
+  dropAndLoad(document.querySelector('.right'), initDnD, "ArrayBuffer")
 }
 
-function init (arrayBuffer) {
-window.audioCtx = new webkitAudioContext()
+function initAudio() {
+  window.audio = this
+  var audioContext = new webkitAudioContext();
+  window.analyzer = audioContext.createAnalyser();
+  var source = audioContext.createMediaElementSource(audio);
+  source.connect(analyzer);
+  analyzer.connect(audioContext.destination);
+  audio.play();
+}
+
+function initDnD (arrayBuffer) {
+  window.audioCtx = new webkitAudioContext()
   window.analyser = audioCtx.createAnalyser()
-  // If a sound is still playing, stop it.
+
   if (window.source)
     source.noteOff(0)
-  // Decode the data in our array into an audio buffer
+
+  if (window.source)
+    audio.stop()
   audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
-    // Use the audio buffer with as our audio source
+
     window.source = audioCtx.createBufferSource()
     source.buffer = buffer
-    // Connect to the analyser ...
+
     source.connect(analyser)
-    // and back to the destination, to play the sound after the analysis.
+
     analyser.connect(audioCtx.destination)
-    // Start playing the buffer.
+
     source.start(0)
-    // Initialize a visualizer object
-    // Finally, initialize the visualizer.
     analyzer = analyser
   })
 }
