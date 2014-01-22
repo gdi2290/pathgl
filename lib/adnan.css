@@ -81,12 +81,11 @@ a:hover {
     padding-left: 1px;
     position: absolute;
 }
-canvas {
-}
-
-svg {
+.no-click {
     pointer-events: none;
 }
+
+
 
 .CodeMirror {
     margin: 50px 50px;

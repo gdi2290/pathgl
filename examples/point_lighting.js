@@ -23,8 +23,9 @@ examples.swarm = function (selector) {
     }).node().buffer.changed = true
     return this
   }
+
   var svg = d3.select(selector)
-            .attr('height', height).attr('width', width)
+            .attr('height', height).attr('width', width).attr('class', null)
             .call(pathgl)
 
   var circle = svg.selectAll("circle")

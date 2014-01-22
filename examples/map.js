@@ -14,10 +14,11 @@ examples.map = function (selector) {
             .attr("height", height)
             .call(pathgl)
 
-  var webgl = d3.select('canvas').attr(size).call(pathgl)
+  var webgl = d3.select('canvas').attr(size).call(pathgl).attr('class', 'no-click')
 
   d3.json('/examples/world-50m.json', draw_world)
   d3.csv('/examples/hist.csv', draw_history)
+
 
   function mouseover(d) {
     d3.select('.title').text(d.title + ' ' + d.year + ', '  + d.event);
@@ -89,21 +90,22 @@ examples.map = function (selector) {
           .on("brushstart", brushstart)
           .on("brush", brushmove)
           .on("brushend", brushend))
-    .attr('transform', '')
+    .attr('transform', 'translate(' + [0, height * .8] +  ')')
     .selectAll("rect")
-    .attr('fill', 'pink')
+    .attr('fill', 'blue')
     .attr("height", height * .2);
 
     function brushstart() {
-      b.attr("fill-opacity", .2);
+      //b.attr("fill-opacity", .2);
     }
 
     function brushmove() {
       var s = d3.event.target.extent();
+      pathgl.uniform('dates', s)
     }
 
     function brushend() {
-      b.attr('fill-opacity', 0)
+      //b.attr('fill-opacity', 0)
     }
 
 
@@ -145,11 +147,7 @@ examples.map = function (selector) {
     function forward() {
       document.title = from = from > 2010 ? -500 : from + 1
       pathgl.uniform('dates', [from, from + 5])
-      //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
-      if (window.location.hash == '#map') setTimeout(forward, 50)
     }
-
-    setTimeout(forward, 50)
   }
 }
