@@ -9,6 +9,7 @@ function yScale(y) {
 function drawLoop(elapsed) {
   beforeRender()
 
+  pathgl.uniform(elapsed)
   drawPoints(elapsed)
   drawLines(elapsed)
   drawPolygons(elapsed)

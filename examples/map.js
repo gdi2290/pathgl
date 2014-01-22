@@ -84,19 +84,19 @@ examples.map = function (selector) {
     })
     .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
 
-    var b = svg.insert("g", '*')
+    var b = svg.append("g")
     .attr("class", "brush")
     .call(d3.svg.brush().x(x)
           .on("brushstart", brushstart)
           .on("brush", brushmove)
           .on("brushend", brushend))
-    .attr('transform', 'translate(' + [0, height * .8] +  ')')
+    .attr('transform', 'translate(' + [0, height * .9] +  ')')
     .selectAll("rect")
     .attr('fill', 'blue')
-    .attr("height", height * .2);
+    .attr('opacity', '.7')
+    .attr("height", height * .1);
 
     function brushstart() {
-      //b.attr("fill-opacity", .2);
     }
 
     function brushmove() {
@@ -105,7 +105,6 @@ examples.map = function (selector) {
     }
 
     function brushend() {
-      //b.attr('fill-opacity', 0)
     }
 
 

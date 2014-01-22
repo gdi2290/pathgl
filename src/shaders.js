@@ -1,6 +1,7 @@
 pathgl.vertexShader = [
   'precision mediump float;'
 , 'uniform float type;'
+, 'uniform float clock;'
 , 'uniform vec2 mouse;'
 , 'uniform vec2 resolution;'
 , 'uniform vec2 dates;'
@@ -30,7 +31,7 @@ pathgl.vertexShader = [
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
-, '    v_stroke = vec4(unpack_color(stroke), 1.);'
+, '    v_stroke = vec4(unpack_color(stroke), .5);'
 , '}'
 ].join('\n')
 

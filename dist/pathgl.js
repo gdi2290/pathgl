@@ -17,6 +17,7 @@ function pathgl(canvas) {
   if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');pathgl.vertexShader = [
   'precision mediump float;'
 , 'uniform float type;'
+, 'uniform float clock;'
 , 'uniform vec2 mouse;'
 , 'uniform vec2 resolution;'
 , 'uniform vec2 dates;'
@@ -46,7 +47,7 @@ function pathgl(canvas) {
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
-, '    v_stroke = vec4(unpack_color(stroke), 1.);'
+, '    v_stroke = vec4(unpack_color(stroke), .5);'
 , '}'
 ].join('\n')
 
@@ -70,8 +71,6 @@ pathgl.fragmentShader = [
 //4 path
 ;var stopRendering = false
 var colorBuffer = new Float32Array(2e4)
-
-pathgl.uniforms = { mouse: [0, 0] }
 
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
@@ -149,6 +148,7 @@ function createProgram(vs, fs) {
        , mouse: [0, 0]
        , dates: [0, 0]
        , resolution: [0, 0]
+       , clock: [0]
        }, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
@@ -603,6 +603,7 @@ function yScale(y) {
 function drawLoop(elapsed) {
   beforeRender()
 
+  pathgl.uniform(elapsed)
   drawPoints(elapsed)
   drawLines(elapsed)
   drawPolygons(elapsed)

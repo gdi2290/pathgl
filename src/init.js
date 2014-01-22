@@ -1,8 +1,6 @@
 var stopRendering = false
 var colorBuffer = new Float32Array(2e4)
 
-pathgl.uniforms = { mouse: [0, 0] }
-
 pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
@@ -79,6 +77,7 @@ function createProgram(vs, fs) {
        , mouse: [0, 0]
        , dates: [0, 0]
        , resolution: [0, 0]
+       , clock: [0]
        }, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
