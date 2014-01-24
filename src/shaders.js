@@ -26,13 +26,13 @@ pathgl.vertexShader = [
 
 pathgl.fragmentShader = [
   'precision mediump float;'
+, 'uniform float type;'
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'
-, 'varying float v_type;'
 
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-//, '    if (dist > 0.5 && v_type == 1.) discard;'
+, '    if (type == 1. && dist > 0.5) discard;'
 , '    gl_FragColor = v_stroke;'//v_stroke
 , '}'
 ].join('\n')

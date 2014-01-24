@@ -1,5 +1,5 @@
-var pointBuffer = new Uint16Array(16e4)
-var pointPosBuffer = new Float32Array(16e4)
+var pointBuffer = new Uint16Array(8e4)
+var pointPosBuffer = new Float32Array(8e4)
 pointBuffer.count = 0
 pb = pointBuffer
 ppb = pointPosBuffer
@@ -43,6 +43,8 @@ function drawPoints(elapsed) {
   gl.enableVertexAttribArray(program.vFill)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
+
+  program.settype([1])
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)

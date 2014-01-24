@@ -42,13 +42,13 @@ function pathgl(canvas) {
 
 pathgl.fragmentShader = [
   'precision mediump float;'
+, 'uniform float type;'
 , 'varying vec4 v_stroke;'
 , 'varying vec4 v_fill;'
-, 'varying float v_type;'
 
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
-//, '    if (dist > 0.5 && v_type == 1.) discard;'
+, '    if (type == 1. && dist > 0.5) discard;'
 , '    gl_FragColor = v_stroke;'//v_stroke
 , '}'
 ].join('\n')
@@ -59,7 +59,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(4e4)
+var colorBuffer = new Float32Array(2e4)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -132,7 +132,7 @@ function createProgram(vs, fs) {
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  each({}, bindUniform)
+  each({type: [0]}, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)
@@ -181,8 +181,8 @@ function initContext(canvas) {
 
   lb.count += buffer.length - l
 }
-;var pointBuffer = new Uint16Array(16e4)
-var pointPosBuffer = new Float32Array(16e4)
+;var pointBuffer = new Uint16Array(8e4)
+var pointPosBuffer = new Float32Array(8e4)
 pointBuffer.count = 0
 pb = pointBuffer
 ppb = pointPosBuffer
@@ -227,6 +227,8 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
+  program.settype([1])
+
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
@@ -260,6 +262,8 @@ function drawLines(){
   gl.enableVertexAttribArray(program.vFill)
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
+
+  program.settype(0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)

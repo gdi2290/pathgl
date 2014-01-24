@@ -1,5 +1,5 @@
 var stopRendering = false
-var colorBuffer = new Float32Array(4e4)
+var colorBuffer = new Float32Array(2e4)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -72,7 +72,7 @@ function createProgram(vs, fs) {
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  each({}, bindUniform)
+  each({type: [0]}, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)

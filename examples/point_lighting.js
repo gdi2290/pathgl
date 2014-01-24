@@ -1,6 +1,6 @@
 examples.point_lighting = function (selector) {
   var inlining = selector == 'canvas'
-  var data = d3.range(selector == 'canvas' ? 4e4 : 2000).map(function() {
+  var data = d3.range(selector == 'canvas' ? 2e4 : 2000).map(function() {
                return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
              })
 
@@ -35,7 +35,7 @@ examples.point_lighting = function (selector) {
       if (! inlining) return
       this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))
       this.posBuffer[this.indices[0] + 1] = pathgl.yScale(y(d.yloc += d.yvel))
-      this.posBuffer[this.indices[0] + 2] = 1000 * Math.abs(d.xvel * d.yvel)
+      this.posBuffer[this.indices[0] + 2] = 1 + 1000 * Math.abs(d.xvel * d.yvel)
     })
       if (! inlining)
         circle
