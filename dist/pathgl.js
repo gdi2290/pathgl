@@ -59,7 +59,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(2e4)
+var colorBuffer = new Float32Array(2e6)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -147,9 +147,11 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  var loc = gl.getUniformLocation(program, key)
+  var loc = gl.getUniformLocation(program, key), old
   ;(program['set' + key] = function (data) {
-    gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
+      if (old == data) return
+      gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
+      old = data
   })(val)
 }
 

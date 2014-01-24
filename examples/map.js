@@ -13,10 +13,9 @@ examples.map = function (selector) {
 
   function draw_world(err, world) {
     var g = d3.select(selector)
-            .attr('class', 'main')
-            .style('margin', '0px auto')
             .attr('width', size.width)
-            .attr('height', size.height).call(pathgl)
+            .attr('height', size.height)
+            .call(pathgl)
 
     // g.append('path')
     // .attr('class', 'graticule noclick')
@@ -28,7 +27,7 @@ examples.map = function (selector) {
     .enter().append("path")
     .attr({ class: 'world'
           , d: path
-          , stroke: '#766951'
+          , stroke: 'blue'
           })
   };
 
@@ -96,7 +95,8 @@ examples.map = function (selector) {
 
     hist = hist.sort(function(a, b) { return a.year - b.year })
 
-    dates = hist.map(function(d) { return d.location = proj(d.location.split(' ').map(parseFloat).reverse()) || d })
+    dates = hist
+            .map(function(d) { return d.location = proj(d.location.split(' ').map(parseFloat).reverse()) || d })
             .filter(function(d) { return d < 2010 })
 
     function forward() {
