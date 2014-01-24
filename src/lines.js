@@ -1,5 +1,5 @@
-var lineBuffer = new Uint16Array(10e5)
-var linePosBuffer = new Float32Array(10e5)
+var lineBuffer = new Uint16Array(2e6)
+var linePosBuffer = new Float32Array(2e6)
 lineBuffer.count = 0
 lb = lineBuffer
 lpb = linePosBuffer

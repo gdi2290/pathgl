@@ -30,7 +30,7 @@ examples.point_lighting = function (selector) {
   d3.timer(function() {
     circle.each(function(d) {
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0004 * d.xloc
-      d.yvel += 0.14 * (Math.random() - .5) - 0.05 * d.yvel - 0.0004 * d.yloc
+      d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0004 * d.yloc
 
       if (! inlining) return
       this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))

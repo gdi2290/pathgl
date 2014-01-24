@@ -15,13 +15,13 @@ examples.map = function (selector) {
     var g = d3.select(selector)
             .attr('class', 'main')
             .style('margin', '0px auto')
-            .attr('width', window.innerWidth)
-            .attr('height', window.innerHeight * .9).call(pathgl)
+            .attr('width', size.width)
+            .attr('height', size.height).call(pathgl)
 
-    g.append('path')
-    .attr('class', 'graticule noclick')
-    .attr('d', path)
-    .attr('stroke', '#fff')
+    // g.append('path')
+    // .attr('class', 'graticule noclick')
+    // .attr('d', path)
+    // .attr('stroke', '#fff')
 
     g.selectAll("path")
     .data(topojson.feature(world, world.objects.countries).features)
@@ -48,11 +48,11 @@ examples.map = function (selector) {
 
     var x = d3.scale.linear()
             .domain([-500, 2030])
-            .range([0, innerWidth])
+            .range([0, size.width])
 
     var y = d3.scale.pow().exponent(.7)
             .domain([0, d3.max(d3.values(num))])
-            .range([innerHeight * .99, innerHeight * .8])
+            .range([size.width * .99, size.height * .8])
 
     var slider =
       d3.select(selector)
@@ -67,16 +67,16 @@ examples.map = function (selector) {
     slider
     .append('path').datum(hist)
     .attr('class', 'slider')
-    .attr('fill', 'indianred')
+    .attr('stroke', 'indianred')
     .attr('d', area)
 
-    slider
-    .on('click', function () { from = ~~ x.invert(+d3.mouse(this)[0]) })
-    .on('mousemove', function () {
-      d3.select('line').attr('stroke-width', 2)
-      .attr('transform','translate('+d3.mouse(this)[0]+',0)')
-    })
-    .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
+    // slider
+    // .on('click', function () { from = ~~ x.invert(+d3.mouse(this)[0]) })
+    // .on('mousemove', function () {
+    //   d3.select('line').attr('stroke-width', 2)
+    //   .attr('transform','translate('+d3.mouse(this)[0]+',0)')
+    // })
+    // .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
 
     // slider.append('line')
     // .attr('stroke', 'pink')
@@ -100,6 +100,7 @@ examples.map = function (selector) {
             .filter(function(d) { return d < 2010 })
 
     function forward() {
+      return
       document.title = from = from > 2010 ? -500 : from + 1
 
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
