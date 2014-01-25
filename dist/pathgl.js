@@ -35,7 +35,7 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * pos.z;'
+, '    gl_PointSize =  2.;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
@@ -62,7 +62,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(1.5e6)
+var colorBuffer = new Float32Array(1.5e4)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -246,8 +246,8 @@ function drawPoints(elapsed) {
   }
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
-;var lineBuffer = new Uint16Array(1.5e6)
-var linePosBuffer = new Float32Array(1.5e6)
+;var lineBuffer = new Uint16Array(1.5e4)
+var linePosBuffer = new Float32Array(1.5e4)
 lineBuffer.count = 0
 
 lb = lineBuffer

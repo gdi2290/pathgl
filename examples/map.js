@@ -117,7 +117,7 @@ examples.map = function (selector) {
 
     function forward() {
       document.title = from = from > 2010 ? -500 : from + 1
-
+      pathgl.uniform('dates', [from, from + 5])
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
 
