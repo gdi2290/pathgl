@@ -18,6 +18,7 @@ function pathgl(canvas) {
   'precision mediump float;'
 , 'uniform float type;'
 , 'uniform vec2 mouse;'
+, 'uniform vec2 dates;'
 , 'attribute vec4 pos;'
 , 'attribute float fill;'
 , 'attribute float stroke;'
@@ -135,7 +136,9 @@ function createProgram(vs, fs) {
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   each({ type: [0]
-       , mouse: [0, 0]}, bindUniform)
+       , mouse: [0, 0]
+       , dates: [0, 0]
+       }, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)
@@ -237,8 +240,8 @@ function drawPoints(elapsed) {
 
     pathgl.uniform('type', 1)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
     pointBuffer.changed = false
   }
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
@@ -364,6 +367,9 @@ var proto = {
             }
           , cy: function (v) {
               this.posBuffer[this.indices[0] + 1] = yScale(v)
+            }
+          , cz: function (v) {
+              this.posBuffer[this.indices[0] + 3] = v
             }
           , fill: function (v) {
               var fill = d3.rgb(v)

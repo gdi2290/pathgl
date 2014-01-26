@@ -73,7 +73,9 @@ function createProgram(vs, fs) {
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
   each({ type: [0]
-       , mouse: [0, 0]}, bindUniform)
+       , mouse: [0, 0]
+       , dates: [0, 0]
+       }, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)

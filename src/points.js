@@ -42,8 +42,8 @@ function drawPoints(elapsed) {
 
     pathgl.uniform('type', 1)
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
     pointBuffer.changed = false
   }
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)

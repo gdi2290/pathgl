@@ -17,6 +17,9 @@ var proto = {
           , cy: function (v) {
               this.posBuffer[this.indices[0] + 1] = yScale(v)
             }
+          , cz: function (v) {
+              this.posBuffer[this.indices[0] + 3] = v
+            }
           , fill: function (v) {
               var fill = d3.rgb(v)
               colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
