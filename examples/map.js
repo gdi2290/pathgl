@@ -101,25 +101,26 @@ examples.map = function (selector) {
                 proj(d.location.split(' ').map(parseFloat).reverse()) || d
             }).filter(function(d) { return d.year < 2010 })
 
+    webgl
+    .selectAll('.nil')
+    .data(hist)
+    .enter()
+    .append('circle')
+    .on('mouseover', mouseover)
+    .attr({ class:'point'
+          , fill: function(){ return d3.hsl(Math.random()*360, 1, 0.5) }
+          , stroke: function(d){ return d.fill }
+          , cx: function(d){ return d.location[0] }
+          , cy: function(d){ return d.location[1] }
+          , r: 15
+          })
+
     function forward() {
       document.title = from = from > 2010 ? -500 : from + 1
 
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
 
-      webgl
-      .selectAll('.nil')
-      .data(hist.filter(function(d) { return from === +d.year }))
-      .enter()
-      .append('circle')
-      .on('mouseover', mouseover)
-      .attr({ class:'point'
-            , fill: function(){ return d3.hsl(Math.random()*360, 1, 0.5) }
-            , stroke: function(d){ return d.fill }
-            , cx: function(d){ return d.location[0] }
-            , cy: function(d){ return d.location[1] }
-            , r: 15
-            })
     }
 
     window.int = setInterval(forward, 50)

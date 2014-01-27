@@ -106,6 +106,7 @@ var baseProto = extend(Object.create(null), {
   }
 
 , setAttribute: function (name, value) {
+    this.buffer.changed = true
     this.attr[name] = value
     this[name] && this[name](value)
   }

@@ -18,12 +18,11 @@ pathgl.vertexShader = [
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * pos.z * (2. *  distance(mouse.xy, pos.xy));'
+, '    gl_PointSize =  2. * pos.z;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
-, '    v_stroke = (vec4(unpack_color(stroke), 1.0) * .5) +'
-, '        (vec4(distance(mouse.x, pos.x), distance(mouse.y, pos.y), distance(mouse.x, pos.y), 1.) * .5);'
+, '    v_stroke = vec4(unpack_color(stroke), 1.);'
 , '}'
 ].join('\n')
 
