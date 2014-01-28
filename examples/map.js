@@ -1,4 +1,5 @@
 examples.map = function (selector) {
+  selector = 'svg'
   var width = size.width,
       height = size.height,
       rotate = [10, -10],
@@ -13,28 +14,29 @@ examples.map = function (selector) {
             .attr("height", height)
             .call(pathgl)
 
+  var webgl = d3.select('canvas').attr(size).call(pathgl)
+
   d3.json('/examples/world-50m.json', draw_world)
-  //d3.csv('/examples/hist.csv', draw_history)
+  d3.csv('/examples/hist.csv', draw_history)
 
   function mouseover(d) {
     d3.select('.title').text(d.title + ' ' + d.year + ', '  + d.event);
   }
 
   function draw_world(err, world) {
-    // svg.append('path')
-    // .attr('class', 'graticule noclick')
-    // .datum(d3.geo.graticule())
-    // .attr('d', path)
-    // .attr('stroke', 'red')
-    // .attr('fill', 'none')
+    svg.append('path')
+    .attr('class', 'graticule noclick')
+    .datum(d3.geo.graticule())
+    .attr('d', path)
+    .attr('dashed-array', '10 5 7 3')
+    .attr('stroke', '#999')
 
     svg.selectAll("path")
     .data(topojson.feature(world, world.objects.countries).features)
     .enter().append("path")
     .attr({ class: 'world'
           , d: path
-          , fill: 'white'
-          , stroke: 'blue'
+          , fill: '#333'
           })
   }
 
@@ -56,38 +58,30 @@ examples.map = function (selector) {
             .domain([-500, 2030])
             .range([0, size.width])
 
-    var y = d3.scale.pow().exponent(.7)
+    var y = d3.scale.linear()
             .domain([0, d3.max(d3.values(num))])
-            .range([size.width * .99, size.height * .8])
+            .range([size.height, 0])
 
-    // var slider =
-    //   d3.select(selector)
-    //   .style('height', y.range()[0]  + 'px')
-    //   .attr('class', 'slider')
 
-    // var area = d3.svg.area()
-    //            .x(function (d) { return x(+d.year) })
-    //            .y0(y.range()[0])
-    //            .y1(function (d) { return y(num[+d.year]) })
+    var area = d3.svg.area()
+               .x(function (d) { return x(+d.year) })
+               .y0(size.height)
+               .y1(function (d) { return y(num[+d.year]) })
 
-    // slider
-    // .append('path').datum(hist)
-    // .attr('class', 'slider')
-    // .attr('stroke', 'indianred')
-    // .attr('d', area)
+    svg
+    .append('path').datum(hist)
+    .attr('class', 'slider')
+    .attr('fill', 'indianred')
+    .attr('stroke', 'indianred')
+    .attr('d', area)
 
-    // slider
-    // .on('click', function () { from = ~~ x.invert(+d3.mouse(this)[0]) })
-    // .on('mousemove', function () {
-    //   d3.select('line').attr('stroke-width', 2)
-    //   .attr('transform','translate('+d3.mouse(this)[0]+',0)')
-    // })
-    // .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
-
-    // slider.append('line')
-    // .attr('stroke', 'pink')
-    // .attr('y1', y.range()[0])
-    // .attr('y2', y.range()[1])
+    svg
+    .on('click', function () { from = ~~ x.invert(+d3.mouse(this)[0]) })
+    .on('mousemove', function () {
+      d3.select('line').attr('stroke-width', 2)
+      .attr('transform','translate('+d3.mouse(this)[0]+',0)')
+    })
+    .on('mouseout', function ( ){ d3.select('line').attr('stroke-width',1) })
 
     d3.select('body').insert('p', '*')
     .attr('class', 'title')
@@ -102,18 +96,18 @@ examples.map = function (selector) {
 
     hist = hist.sort(function(a, b) { return a.year - b.year })
 
-    dates = hist
-            .map(function(d) { return d.location = proj(d.location.split(' ').map(parseFloat).reverse()) || d })
-            .filter(function(d) { return d < 2010 })
+    dates = hist.map(function(d) {
+              return d.location =
+                proj(d.location.split(' ').map(parseFloat).reverse()) || d
+            }).filter(function(d) { return d.year < 2010 })
 
     function forward() {
-      return
       document.title = from = from > 2010 ? -500 : from + 1
 
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
 
-      d3.select(selector)
+      webgl
       .selectAll('.nil')
       .data(hist.filter(function(d) { return from === +d.year }))
       .enter()
@@ -124,22 +118,10 @@ examples.map = function (selector) {
             , stroke: function(d){ return d.fill }
             , cx: function(d){ return d.location[0] }
             , cy: function(d){ return d.location[1] }
-            , r: 0
-            , opacity : 0.85
-            , 'stroke-opacity': 0.5
+            , r: 15
             })
-      .transition()
-      .ease('cubic')
-      .duration(2500)
-      .attr('opacity', 0)
-      .attr('r', 15)
-      .remove()
     }
 
     window.int = setInterval(forward, 50)
   }
-
-  function extend(target, source) { for(var i in source) target[i] = source[i] }
-  function rand_num(n) { return ~~ (Math.random() * n) }
-  function rand_color() { return 'RGB(' + [255, 255, 255].map(rand_num).toString() + ')' }
 }
