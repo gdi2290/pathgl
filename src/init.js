@@ -29,7 +29,7 @@ function bindEvents(canvas) {
 
 function mousemoved() {
   var m = d3.mouse(this)
-  pathgl.uniform('mouse', [m[0] / innerWidth, m[1] / innerHeight])
+  pathgl.uniform('mouse', [xScale(m[0]), yScale(m[1])])
 }
 
 function monkeyPatch(canvas) {

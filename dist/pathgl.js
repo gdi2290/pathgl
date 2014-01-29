@@ -34,11 +34,12 @@ function pathgl(canvas) {
 
 , 'void main() {'
 , '    gl_Position = vec4(pos.xy, 1., 1.);'
-, '    gl_PointSize =  2. * pos.z;'
+, '    gl_PointSize =  2. * pos.z * (2. *  distance(mouse.xy, pos.xy));'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
-, '    v_fill = vec4(distance(mouse.x, pos.x), distance(mouse.y, pos.y), distance(mouse.y, pos.x) , 1.);'
-, '    v_stroke = vec4(unpack_color(stroke), 1.0);'
+, '    v_fill = vec4(unpack_color(fill), 1.);'
+, '    v_stroke = (vec4(unpack_color(stroke), 1.0) * .5) +'
+, '        (vec4(distance(mouse.x, pos.x), distance(mouse.y, pos.y), distance(mouse.x, pos.y), 1.) * .5);'
 , '}'
 ].join('\n')
 
@@ -51,7 +52,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (type == 1. && dist > 0.5) discard;'
-, '    gl_FragColor = v_fill;'//v_stroke
+, '    gl_FragColor = v_stroke;'
 , '}'
 ].join('\n')
 
@@ -91,7 +92,7 @@ function bindEvents(canvas) {
 
 function mousemoved() {
   var m = d3.mouse(this)
-  pathgl.uniform('mouse', [m[0] / innerWidth, m[1] / innerHeight])
+  pathgl.uniform('mouse', [xScale(m[0]), yScale(m[1])])
 }
 
 function monkeyPatch(canvas) {
