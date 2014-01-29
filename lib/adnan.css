@@ -66,13 +66,11 @@ canvas {
 }
 
 svg {
-    width: calc(100% - 250px);
     pointer-events: none;
 }
 
 .CodeMirror {
     margin: 50px 50px;
-    border: 1px dotted #333;
     width: 75%;
     height: 600px !important;
     font-size: 1.2em;
@@ -164,7 +162,7 @@ label {
 }
 
 .running {
-    background: deeppink;
+    background: aliceblue;
 }
 
 .blurb {
