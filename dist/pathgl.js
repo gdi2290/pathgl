@@ -16,6 +16,8 @@ function pathgl(canvas) {
   if (! canvas) return console.log('invalid selector')
   if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');pathgl.vertexShader = [
   'precision mediump float;'
+, 'uniform float type;'
+, 'uniform vec2 mouse;'
 , 'attribute vec4 pos;'
 , 'attribute float fill;'
 , 'attribute float stroke;'
@@ -35,7 +37,7 @@ function pathgl(canvas) {
 , '    gl_PointSize =  2. * pos.z;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
-, '    v_fill = vec4(unpack_color(fill), 1.0);'
+, '    v_fill = vec4(distance(mouse.x, pos.x), distance(mouse.y, pos.y), distance(mouse.y, pos.x) , 1.);'
 , '    v_stroke = vec4(unpack_color(stroke), 1.0);'
 , '}'
 ].join('\n')
@@ -49,7 +51,7 @@ pathgl.fragmentShader = [
 , 'void main() {'
 , '    float dist = distance(gl_PointCoord, vec2(0.5));'
 , '    if (type == 1. && dist > 0.5) discard;'
-, '    gl_FragColor = v_stroke;'//v_stroke
+, '    gl_FragColor = v_fill;'//v_stroke
 , '}'
 ].join('\n')
 
@@ -89,7 +91,7 @@ function bindEvents(canvas) {
 
 function mousemoved() {
   var m = d3.mouse(this)
-  pathgl.uniforms.mouse = [m[0] / innerWidth, m[1] / innerHeight]
+  pathgl.uniform('mouse', [m[0] / innerWidth, m[1] / innerHeight])
 }
 
 function monkeyPatch(canvas) {
@@ -132,7 +134,8 @@ function createProgram(vs, fs) {
 
   if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
 
-  each({type: [0]}, bindUniform)
+  each({ type: [0]
+       , mouse: [0, 0]}, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
   gl.enableVertexAttribArray(program.vPos)
@@ -188,6 +191,7 @@ function initContext(canvas) {
 }
 
 pathgl.uniform = function (attr, value) {
+  if (program[attr])
   program[attr](value)
 };var pointBuffer = new Uint16Array(8e4)
 var pointPosBuffer = new Float32Array(8e4)

@@ -28,5 +28,6 @@ function parse (str, stroke) {
 }
 
 pathgl.uniform = function (attr, value) {
+  if (program[attr])
   program[attr](value)
 }
