@@ -59,7 +59,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(2e6)
+var colorBuffer = new Float32Array(5e4)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -169,17 +169,17 @@ function initContext(canvas) {
       var x = xScale(points[j++]), y = yScale(points[j++])
       c == 'm' ? pos = [x, y] :
         c == 'l' ? buffer.push(pos[0], pos[1], x, y) && (pos = [x, y]) :
-        c == 'z' ? '' :
-        console.log('malformed path:' + c)
+        c == 'z' ? null :
+        console.log('%d method is not supported malformed path:', c)
     }
-  })
-
-  indices.forEach(function (d, i) {
-    pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
   })
 
   while(indices.length < buffer.length) indices.push(lb.count + i++)
   if (indices.length > buffer.length) indices.length = buffer.length
+
+  indices.forEach(function (d, i) {
+    pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
+  })
 
   lb.count += buffer.length - l
 }
@@ -235,8 +235,8 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
-;var lineBuffer = new Uint16Array(2e6)
-var linePosBuffer = new Float32Array(2e6)
+;var lineBuffer = new Uint16Array(5e4)
+var linePosBuffer = new Float32Array(5e4)
 lineBuffer.count = 0
 lb = lineBuffer
 lpb = linePosBuffer
@@ -250,6 +250,7 @@ var once = _.once(initBuffers)
 function drawLines(){
   once()
   if (lb.count < 1) return
+
   gl.bindBuffer(gl.ARRAY_BUFFER, b1)
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
@@ -270,6 +271,7 @@ function drawLines(){
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.LINES, lb.count * 3, gl.UNSIGNED_SHORT, 0)
+
 }
 ;function drawPolygons() {
 
@@ -397,7 +399,6 @@ var proto = {
             this.indices.forEach(function (i) {
               colorBuffer[i / 2] = + parseInt(fill.toString().slice(1), 16)
             })
-            return fill
           }
         }
 

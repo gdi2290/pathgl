@@ -1,5 +1,5 @@
-var lineBuffer = new Uint16Array(2e6)
-var linePosBuffer = new Float32Array(2e6)
+var lineBuffer = new Uint16Array(5e4)
+var linePosBuffer = new Float32Array(5e4)
 lineBuffer.count = 0
 lb = lineBuffer
 lpb = linePosBuffer
@@ -13,6 +13,7 @@ var once = _.once(initBuffers)
 function drawLines(){
   once()
   if (lb.count < 1) return
+
   gl.bindBuffer(gl.ARRAY_BUFFER, b1)
   gl.enableVertexAttribArray(program.vPos)
   gl.bufferData(gl.ARRAY_BUFFER, linePosBuffer, gl.DYNAMIC_DRAW)
@@ -33,4 +34,5 @@ function drawLines(){
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.LINES, lb.count * 3, gl.UNSIGNED_SHORT, 0)
+
 }

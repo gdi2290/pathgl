@@ -60,7 +60,6 @@ var proto = {
             this.indices.forEach(function (i) {
               colorBuffer[i / 2] = + parseInt(fill.toString().slice(1), 16)
             })
-            return fill
           }
         }
 

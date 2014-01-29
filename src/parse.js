@@ -9,17 +9,17 @@ function parse (str, stroke) {
       var x = xScale(points[j++]), y = yScale(points[j++])
       c == 'm' ? pos = [x, y] :
         c == 'l' ? buffer.push(pos[0], pos[1], x, y) && (pos = [x, y]) :
-        c == 'z' ? '' :
-        console.log('malformed path:' + c)
+        c == 'z' ? null :
+        console.log('%d method is not supported malformed path:', c)
     }
-  })
-
-  indices.forEach(function (d, i) {
-    pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
   })
 
   while(indices.length < buffer.length) indices.push(lb.count + i++)
   if (indices.length > buffer.length) indices.length = buffer.length
+
+  indices.forEach(function (d, i) {
+    pb[3 * lb[d] + d % 3] = i < buffer.length && buffer[i]
+  })
 
   lb.count += buffer.length - l
 }

@@ -1,35 +1,56 @@
 examples.map = function (selector) {
+  var width = size.width,
+      height = size.height,
+      rotate = [10, -10],
+      velocity = [.03, -.001],
+      time = Date.now();
 
-  d3.json('/examples/world-50m.json', draw_world)
-  d3.csv('/examples/hist.csv', draw_history)
-
-  var proj = d3.geo.equirectangular().scale(275).translate([550, 400])
+  var proj = d3.geo.albers().scale(158).translate([size.width / 2, size.height / 2]).precision(.1)
     , path = d3.geo.path().projection(proj)
-    , grat = d3.geo.graticule()
+
+  var graticule = d3.geo.graticule();
+
+  var svg = d3.select(selector)
+            .attr("width", width)
+            .attr("height", height)
+            .call(pathgl)
+
+  svg.append("path")
+  .datum(graticule)
+  .attr("class", "graticule")
+  .attr("d", path)
+  .attr('stroke', 'green')
+
+  //   var g = d3.select(selector)
+  //           .attr(size)
+  //           .call(pathgl)
+
+  // svg.append('path')
+  // .attr('class', 'graticule noclick')
+  // .datum(d3.geo.graticule())
+  // .attr('d', path)
+  // .attr('stroke', 'red')
+  // .attr('fill', 'none')
+
+  //d3.json('/examples/world-50m.json', draw_world)
+  //d3.csv('/examples/hist.csv', draw_history)
 
   function mouseover(d) {
     d3.select('.title').text(d.title + ' ' + d.year + ', '  + d.event);
   }
 
   function draw_world(err, world) {
-    var g = d3.select(selector)
-            .attr('width', size.width)
-            .attr('height', size.height)
-            .call(pathgl)
 
-    // g.append('path')
-    // .attr('class', 'graticule noclick')
-    // .attr('d', path)
-    // .attr('stroke', '#fff')
 
-    g.selectAll("path")
-    .data(topojson.feature(world, world.objects.countries).features)
-    .enter().append("path")
-    .attr({ class: 'world'
-          , d: path
-          , stroke: 'blue'
-          })
-  };
+    // g.selectAll("path")
+    // .data(topojson.feature(world, world.objects.countries).features)
+    // .enter().append("path")
+    // .attr({ class: 'world'
+    //       , d: path
+    //       , fill: 'white'
+    //       , stroke: 'blue'
+    //       })
+  }
 
   function draw_history(err, hist) {
     var dates, m, to
@@ -53,21 +74,21 @@ examples.map = function (selector) {
             .domain([0, d3.max(d3.values(num))])
             .range([size.width * .99, size.height * .8])
 
-    var slider =
-      d3.select(selector)
-      .style('height', y.range()[0]  + 'px')
-      .attr('class', 'slider')
+    // var slider =
+    //   d3.select(selector)
+    //   .style('height', y.range()[0]  + 'px')
+    //   .attr('class', 'slider')
 
-    var area = d3.svg.area()
-               .x(function (d) { return x(+d.year) })
-               .y0(y.range()[0])
-               .y1(function (d) { return y(num[+d.year]) })
+    // var area = d3.svg.area()
+    //            .x(function (d) { return x(+d.year) })
+    //            .y0(y.range()[0])
+    //            .y1(function (d) { return y(num[+d.year]) })
 
-    slider
-    .append('path').datum(hist)
-    .attr('class', 'slider')
-    .attr('stroke', 'indianred')
-    .attr('d', area)
+    // slider
+    // .append('path').datum(hist)
+    // .attr('class', 'slider')
+    // .attr('stroke', 'indianred')
+    // .attr('d', area)
 
     // slider
     // .on('click', function () { from = ~~ x.invert(+d3.mouse(this)[0]) })
@@ -106,11 +127,10 @@ examples.map = function (selector) {
       //d3.select('line').attr('transform', 'translate(' + x(from) + ',0)')
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
 
-      var e = d3.select(selector)
-              .selectAll('.nil')
-              .data(hist.filter(function(d) { return from === +d.year }))
-
-      e.enter()
+      d3.select(selector)
+      .selectAll('.nil')
+      .data(hist.filter(function(d) { return from === +d.year }))
+      .enter()
       .append('circle')
       .on('mouseover', mouseover)
       .attr({ class:'point'
