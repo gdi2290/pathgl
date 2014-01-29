@@ -59,7 +59,7 @@ pathgl.fragmentShader = [
 //3 line
 //4 path
 ;var stopRendering = false
-var colorBuffer = new Float32Array(5e4)
+var colorBuffer = new Float32Array(1.5e6)
 
 pathgl.uniforms = { mouse: [0, 0] }
 
@@ -235,9 +235,10 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
-;var lineBuffer = new Uint16Array(5e4)
-var linePosBuffer = new Float32Array(5e4)
+;var lineBuffer = new Uint16Array(1.5e6)
+var linePosBuffer = new Float32Array(1.5e6)
 lineBuffer.count = 0
+
 lb = lineBuffer
 lpb = linePosBuffer
 

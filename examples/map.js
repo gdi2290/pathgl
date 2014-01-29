@@ -5,34 +5,15 @@ examples.map = function (selector) {
       velocity = [.03, -.001],
       time = Date.now();
 
-  var proj = d3.geo.albers().scale(158).translate([size.width / 2, size.height / 2]).precision(.1)
+  var proj = d3.geo.equirectangular().scale(158).translate([size.width / 2, size.height / 2])
     , path = d3.geo.path().projection(proj)
-
-  var graticule = d3.geo.graticule();
 
   var svg = d3.select(selector)
             .attr("width", width)
             .attr("height", height)
             .call(pathgl)
 
-  svg.append("path")
-  .datum(graticule)
-  .attr("class", "graticule")
-  .attr("d", path)
-  .attr('stroke', 'green')
-
-  //   var g = d3.select(selector)
-  //           .attr(size)
-  //           .call(pathgl)
-
-  // svg.append('path')
-  // .attr('class', 'graticule noclick')
-  // .datum(d3.geo.graticule())
-  // .attr('d', path)
-  // .attr('stroke', 'red')
-  // .attr('fill', 'none')
-
-  //d3.json('/examples/world-50m.json', draw_world)
+  d3.json('/examples/world-50m.json', draw_world)
   //d3.csv('/examples/hist.csv', draw_history)
 
   function mouseover(d) {
@@ -40,16 +21,21 @@ examples.map = function (selector) {
   }
 
   function draw_world(err, world) {
+    // svg.append('path')
+    // .attr('class', 'graticule noclick')
+    // .datum(d3.geo.graticule())
+    // .attr('d', path)
+    // .attr('stroke', 'red')
+    // .attr('fill', 'none')
 
-
-    // g.selectAll("path")
-    // .data(topojson.feature(world, world.objects.countries).features)
-    // .enter().append("path")
-    // .attr({ class: 'world'
-    //       , d: path
-    //       , fill: 'white'
-    //       , stroke: 'blue'
-    //       })
+    svg.selectAll("path")
+    .data(topojson.feature(world, world.objects.countries).features)
+    .enter().append("path")
+    .attr({ class: 'world'
+          , d: path
+          , fill: 'white'
+          , stroke: 'blue'
+          })
   }
 
   function draw_history(err, hist) {
