@@ -147,11 +147,11 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  var loc = gl.getUniformLocation(program, key), old
-  ;(program['set' + key] = function (data) {
-      if (old == data) return
+  var loc = gl.getUniformLocation(program, key), keep
+  ;(program[key] = function (data) {
+      if (keep == data) return
       gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
-      old = data
+      keep = data
   })(val)
 }
 
@@ -172,7 +172,7 @@ function initContext(canvas) {
       var x = xScale(points[j++]), y = yScale(points[j++])
       c == 'm' ? origin = pos = [x, y] :
         c == 'l' ? buffer.push(pos[0], pos[1], x, y) && (pos = [x, y]) :
-        c == 'z' ? buffer.push(pos[0], pos[1], origin[0], origin[1]):
+        c == 'z' ? buffer.push(pos[0], pos[1], origin[0], origin[1]) && (pos = origin):
         console.log('%d method is not supported malformed path:', c)
     }
   })
@@ -186,7 +186,10 @@ function initContext(canvas) {
 
   lb.count += buffer.length - l
 }
-;var pointBuffer = new Uint16Array(8e4)
+
+pathgl.uniform = function (attr, value) {
+  program[attr](value)
+};var pointBuffer = new Uint16Array(8e4)
 var pointPosBuffer = new Float32Array(8e4)
 pointBuffer.count = 0
 pb = pointBuffer
@@ -232,7 +235,7 @@ function drawPoints(elapsed) {
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  program.settype([1])
+  pathgl.uniform('type', 1)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
@@ -270,7 +273,7 @@ function drawLines(){
   gl.bufferData(gl.ARRAY_BUFFER, colorBuffer, gl.DYNAMIC_DRAW)
   gl.vertexAttribPointer(program.vFill, 1, gl.FLOAT, false, 0, 0)
 
-  program.settype(0)
+  pathgl.uniform('type', 0)
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b4)
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, lineBuffer, gl.DYNAMIC_DRAW)

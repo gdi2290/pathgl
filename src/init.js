@@ -87,11 +87,11 @@ function createProgram(vs, fs) {
 }
 
 function bindUniform(val, key) {
-  var loc = gl.getUniformLocation(program, key), old
-  ;(program['set' + key] = function (data) {
-      if (old == data) return
+  var loc = gl.getUniformLocation(program, key), keep
+  ;(program[key] = function (data) {
+      if (keep == data) return
       gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
-      old = data
+      keep = data
   })(val)
 }
 

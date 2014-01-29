@@ -12,7 +12,7 @@ function parse (str, stroke) {
       var x = xScale(points[j++]), y = yScale(points[j++])
       c == 'm' ? origin = pos = [x, y] :
         c == 'l' ? buffer.push(pos[0], pos[1], x, y) && (pos = [x, y]) :
-        c == 'z' ? buffer.push(pos[0], pos[1], origin[0], origin[1]):
+        c == 'z' ? buffer.push(pos[0], pos[1], origin[0], origin[1]) && (pos = origin):
         console.log('%d method is not supported malformed path:', c)
     }
   })
@@ -25,4 +25,8 @@ function parse (str, stroke) {
   })
 
   lb.count += buffer.length - l
+}
+
+pathgl.uniform = function (attr, value) {
+  program[attr](value)
 }
