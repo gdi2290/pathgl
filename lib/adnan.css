@@ -130,6 +130,7 @@ svg {
 }
 
 .edit {
+    display: none;
     border: 1px solid #666;
     background: #ccc; 
     background: #ccc -moz-linear-gradient(top, rgba(255,255,255,.35) 0%, rgba(10,10,10,.4) 100%); 
