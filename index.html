@@ -26,7 +26,7 @@
 	<script src="dist/pathgl.js"></script>
 </head>
 
-<body class="container">
+<body>
   <div class="nav">
 			<h3>Examples</h3>
       <ul class="examples">
@@ -58,17 +58,32 @@
 		<svg>:(</svg>
 		<canvas >:(</canvas>
 		<div class="blurb">
-      <h1>PathGL</h1>
-      <h7></h7>
-      <a class="btn" href="#start">Get Started</a>
-      <a class="btn" href="/dist/pathgl.zip">Download PathGL v0.0.0</a>
+      <div class="center">
+        <h1>PathGL</h1>
+        <h7>A webGL renderer for Data Visualization</h7>
+        <br>
+        <br>
+        <a class="btn" href="#start">Get Started</a>
+        <a class="btn" href="/dist/pathgl.zip">Download PathGL v0.0.0</a>
+      </div>
       <div class="container">
-        <div class="three"></div>
-        <div class="three"></div>
-        <div class="three"></div>
+        <div class="three">
+          <h2>Dynamic Shader Recompiliation</h2>
+          Pathgl bundles with a collection of powerful and commonly used GLSL code 
+          as well as a transpiler for building glsl expressions on the fly. 
+        </div>
+        <div class="three">
+          <h2>Virtual Dom</h2>
+          Pathgl implements a scene graph with svg semantics, so you 
+          can and should use it with prexisting libraries like D3. 
+        </div>
+        <div class="three">
+          <h2>Data Textures</h2>
+          Load in Billions of data points directly into your graphics card. 
+        </div>
       </div>
     </div>
   </div>
-		<button class="edit">Edit Code</button>
-	</div>
+	<button class="edit">Edit Code</button>
+</div>
 </body>

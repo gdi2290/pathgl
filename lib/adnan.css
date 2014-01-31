@@ -97,7 +97,7 @@ svg {
     color: black;
 }
 
-.edit {
+.btn, .edit {
     background: #eee;
     background: #eee -moz-linear-gradient(top, rgba(255,255,255,.2) 0%, rgba(0,0,0,.2) 100%);
     background: #eee -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,.2)), color-stop(100%,rgba(0,0,0,.2)));
@@ -189,4 +189,29 @@ label {
     position: absolute;
     left: 50px;
     top: 90%;
+}
+
+.container {
+    padding-top: 100px;
+} 
+
+.three {
+    width: 30%;
+    float: left;
+    display: inline;
+    padding-right: 3%;
+}
+
+.center {
+    margin: 0 auto;
+    width: 50%;
+}
+
+.btn {
+    display: inline;
+}
+
+h1 {
+    text-align: center;
+    width: 50%;
 }
