@@ -1,20 +1,37 @@
 body {
     color: #222831;
-    font: .8em "freight-sans-pro", sans-serif;
     margin: 0;
     padding: 0;
+    font-family: "HelveticaNeue",Helvetica,Arial,sans-serif;
+    background: transparent;
+    background: -webkit-linear-gradient(rgba(255,255,255,0.3),rgba(255,255,255,0));
+    background: -moz-linear-gradient(rgba(255,255,255,0.3),rgba(255,255,255,0));
+    background: -ms-linear-gradient(rgba(255,255,255,0.3),rgba(255,255,255,0));
+    background: -o-linear-gradient(rgba(255,255,255,0.3),rgba(255,255,255,0));
+    background: linear-gradient(rgba(255,255,255,0.3),rgba(255,255,255,0));
+    background-color: #e8ebef;
+    background-repeat: no-repeat;
 }
 
-.sidebar {
+.nav {
     position: relative;
-    border-right: 1px solid #888;
-    border-bottom: 1px solid #333;
     overflow-y: scroll;
     padding-left: 5px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.25);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6),0 0 1px 1px rgba(80,84,92,0.1),0 1px 2px rgba(80,84,92,0.2);
+}
+
+h3 {
+    margin: 18px 0 7px;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: bold;
+    color: #9ca5b5;
 }
 
 @media (min-width: 1000px) {
-    .sidebar {
+    .nav {
         position: fixed;
         left: 0;
         top: 0;
@@ -34,7 +51,8 @@ ul {
     margin-top: 0px;
 }
 
-.sidebar li {
+.nav li {
+    text-decoration: none;
     list-style:none;
     overflow: hidden;
 }
@@ -43,19 +61,20 @@ ul {
     position: relative;
     height: 100%;
     width: 85%;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 1px 1px rgba(80,84,92,0.1),0 1px 2px rgba(80,84,92,0.5);
 }
 
-a {
+label, a {
+    width: 100%;
+    color: #008cdd;
     padding: 9px 17px;
-    color: #333;
     text-decoration: none;
     display: block;
 }
 
 a:hover {
-    background: #888;
-    color: white;
-    width: 100%;
+    text-decoration: underline;
 }
 
 .edit, canvas, svg {
@@ -163,7 +182,7 @@ label {
 }
 
 .running {
-    background: aliceblue;
+    background: rgba(240, 248, 255, .9);
 }
 
 .blurb {
