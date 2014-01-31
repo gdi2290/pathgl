@@ -8,6 +8,10 @@ function init(c) {
   canvas = c
   gl = initContext(canvas)
   program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
+  setInterval(function () {
+    pathgl.uniform('resolution', [canvas.width, canvas.height])
+  }, 50)
+
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
@@ -75,6 +79,7 @@ function createProgram(vs, fs) {
   each({ type: [0]
        , mouse: [0, 0]
        , dates: [0, 0]
+       , resolution: [0, 0]
        }, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")

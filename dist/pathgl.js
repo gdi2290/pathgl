@@ -18,6 +18,7 @@ function pathgl(canvas) {
   'precision mediump float;'
 , 'uniform float type;'
 , 'uniform vec2 mouse;'
+, 'uniform vec2 resolution;'
 , 'uniform vec2 dates;'
 , 'attribute vec4 pos;'
 , 'attribute float fill;'
@@ -34,11 +35,13 @@ function pathgl(canvas) {
 , '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
-, '    gl_Position = vec4(pos.xy, 1., 1.);'
+, '    gl_Position = vec4(2. * (pos.x / resolution.x) - 1., 1. - ((pos.y / resolution.y) * 2.),  1., 1.);'
+
 , '    float size;'
+
 , '    if (dates[0] != 6000.) size = (2. * pos.z - (pos.w < dates[0] ? dates[0] - pos.w: '
 , '                    abs(dates[1] - pos.w)));'
-, '    else size = 2. * pos.z;'
+, '    else size = 20. * pos.z;'
 , '    gl_PointSize =  size > 30. ? 10. : size;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
@@ -75,6 +78,10 @@ function init(c) {
   canvas = c
   gl = initContext(canvas)
   program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
+  setInterval(function () {
+    pathgl.uniform('resolution', [canvas.width, canvas.height])
+  }, 50)
+
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
@@ -142,6 +149,7 @@ function createProgram(vs, fs) {
   each({ type: [0]
        , mouse: [0, 0]
        , dates: [0, 0]
+       , resolution: [0, 0]
        }, bindUniform)
 
   program.vPos = gl.getAttribLocation(program, "pos")
@@ -198,8 +206,8 @@ function initContext(canvas) {
 }
 
 pathgl.uniform = function (attr, value) {
-  if (program[attr])
-  program[attr](value)
+  if (arguments.length < 2) return value
+  if (program[attr]) program[attr](value)
 };var pointBuffer = new Uint16Array(8e4)
 var pointPosBuffer = new Float32Array(8e4)
 pointBuffer.count = 0

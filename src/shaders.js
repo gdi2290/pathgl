@@ -2,6 +2,7 @@ pathgl.vertexShader = [
   'precision mediump float;'
 , 'uniform float type;'
 , 'uniform vec2 mouse;'
+, 'uniform vec2 resolution;'
 , 'uniform vec2 dates;'
 , 'attribute vec4 pos;'
 , 'attribute float fill;'
@@ -18,11 +19,13 @@ pathgl.vertexShader = [
 , '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
-, '    gl_Position = vec4(pos.xy, 1., 1.);'
+, '    gl_Position = vec4(2. * (pos.x / resolution.x) - 1., 1. - ((pos.y / resolution.y) * 2.),  1., 1.);'
+
 , '    float size;'
+
 , '    if (dates[0] != 6000.) size = (2. * pos.z - (pos.w < dates[0] ? dates[0] - pos.w: '
 , '                    abs(dates[1] - pos.w)));'
-, '    else size = 2. * pos.z;'
+, '    else size = 20. * pos.z;'
 , '    gl_PointSize =  size > 30. ? 10. : size;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
