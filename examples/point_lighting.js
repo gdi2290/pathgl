@@ -17,10 +17,8 @@ examples.swarm = function (selector) {
 
   d3.selection.prototype.pAttr = function (obj) {
     this.each(function(d) {
-      //to remove the scale, move clipping to shader, where it belongs
-      this.posBuffer[this.indices[0] + 0] = obj.cx(d)
-      this.posBuffer[this.indices[0] + 1] = obj.cy(d)
-      this.posBuffer[this.indices[0] + 2] = obj.r(d)
+      for(var attr in obj)
+        this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
     })
       this.node().buffer.changed = true
   }

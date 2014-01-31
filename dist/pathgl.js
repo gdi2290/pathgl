@@ -361,15 +361,7 @@ var combinators = { ' ': function (d) { return d && d !== __scene__ && d.parent(
                   }
 var chunker = //taken from sizle
   /^(\*|\w+)?(?:([\.\#]+[\w\-\.#]+)?)(\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\])?(:([\w\-]+)(\(['"]?([^()]+)['"]?\))?)?/
-;d3.scale.linear()
-.domain([0, canvas.width])
-.range([-1, 1])
-
-d3.scale.linear()
-.domain([0, canvas.height])
-.range([1, -1])
-
-var proto = {
+;var proto = {
   circle: { r: function (v) {
               this.posBuffer[this.indices[0] + 2] = v
             }
