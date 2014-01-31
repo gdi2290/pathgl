@@ -11,11 +11,11 @@ var proto = {
               this.posBuffer[this.indices[0] + 2] = v
             }
           , cx: function (v) {
-              this.posBuffer[this.indices[0] + 0] = xScale(v)
+              this.posBuffer[this.indices[0] + 0] = v
 
             }
           , cy: function (v) {
-              this.posBuffer[this.indices[0] + 1] = yScale(v)
+              this.posBuffer[this.indices[0] + 1] = v
             }
           , cz: function (v) {
               this.posBuffer[this.indices[0] + 3] = v
@@ -42,10 +42,10 @@ var proto = {
 
 , image: { 'xlink:href': noop, height: noop, width: noop, x: noop, y: noop }
 
-, line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = xScale(v) }
-        , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = yScale(v) }
-        , x2: function (v) { this.posBuffer[this.indices[1] * 2] = xScale(v) }
-        , y2: function (v) { this.posBuffer[this.indices[1] * 2  + 1] = yScale(v) }
+, line: { x1: function (v) { this.posBuffer[this.indices[0] * 2] = v }
+        , y1: function (v) { this.posBuffer[this.indices[0] * 2 + 1] = v }
+        , x2: function (v) { this.posBuffer[this.indices[1] * 2] = v }
+        , y2: function (v) { this.posBuffer[this.indices[1] * 2  + 1] = v }
         , buffer: lineBuffer
         , posBuffer: linePosBuffer
         , stroke: function (v) {
