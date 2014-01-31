@@ -17,9 +17,9 @@ examples.swarm = function (selector) {
 
   d3.selection.prototype.pAttr = function (obj) {
     this.each(function(d) {
-      this.posBuffer[this.indices[0] + 0] = pathgl.xScale(x(d.xloc += d.xvel))
-      this.posBuffer[this.indices[0] + 1] = pathgl.yScale(y(d.yloc += d.yvel))
-      this.posBuffer[this.indices[0] + 2] = 1 + 1000 * Math.abs(d.xvel * d.yvel)
+      this.posBuffer[this.indices[0] + 0] = pathgl.xScale(obj.cx(d))
+      this.posBuffer[this.indices[0] + 1] = pathgl.yScale(obj.cy(d))
+      this.posBuffer[this.indices[0] + 2] = obj.r(d)
     })
       this.node().buffer.changed = true
   }
@@ -39,17 +39,12 @@ examples.swarm = function (selector) {
     circle.each(function(d) {
       d.xvel += 0.04 * (Math.random() - .5) - 0.05 * d.xvel - 0.0004 * d.xloc
       d.yvel += 0.04 * (Math.random() - .5) - 0.05 * d.yvel - 0.0004 * d.yloc
-
     })
       circle
-      .pAttr({"cx":function(d) { return x(d.xloc += d.xvel) }
+      .pAttr({ "cx":function(d) { return x(d.xloc += d.xvel) }
              , "cy":function(d) { return y(d.yloc += d.yvel) }
              , "r":function(d) { return Math.min(2 + 1000 * Math.abs(d.xvel * d.yvel), 10) }})
   })
-
-  c.selectAll('circle')
-
-
 }
 
 function random_hue () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }

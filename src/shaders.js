@@ -27,7 +27,7 @@ pathgl.vertexShader = [
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
 , '    v_fill = vec4(unpack_color(fill), 1.);'
-, '    v_stroke = vec4(unpack_color(stroke), .5);'
+, '    v_stroke = vec4(unpack_color(stroke), 1.);'
 , '}'
 ].join('\n')
 
