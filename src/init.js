@@ -8,10 +8,6 @@ function init(c) {
   canvas = c
   gl = initContext(canvas)
   program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
-  setInterval(function () {
-    pathgl.uniform('resolution', [canvas.width, canvas.height])
-  }, 50)
-
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
@@ -28,6 +24,9 @@ function flags () {
 }
 
 function bindEvents(canvas) {
+  setInterval(function () {
+    pathgl.uniform('resolution', [canvas.width, canvas.height])
+  }, 50)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
 }
 

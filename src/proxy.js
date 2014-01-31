@@ -1,3 +1,5 @@
+
+
 var proto = {
   circle: { r: function (v) {
               this.posBuffer[this.indices[0] + 2] = v
@@ -25,8 +27,8 @@ var proto = {
             opacity: function () {
             }
 
-          , buffer: pointBuffer
-          , posBuffer: pointPosBuffer
+          , buffer: canvas.pb = canvas.pb || new Uint16Array(8e4)
+          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(8e4)
           , schema: ['cx', 'cy', 'r', 'cz']
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -59,11 +61,18 @@ var proto = {
           }
         }
 
+
+
 , polygon: { points: noop }
 , polyline: { points: noop }
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
+
+
+
+proto.circle.buffer.count = 0
+
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
 , children: Object.freeze([])

@@ -78,10 +78,6 @@ function init(c) {
   canvas = c
   gl = initContext(canvas)
   program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
-  setInterval(function () {
-    pathgl.uniform('resolution', [canvas.width, canvas.height])
-  }, 50)
-
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
@@ -98,6 +94,9 @@ function flags () {
 }
 
 function bindEvents(canvas) {
+  setInterval(function () {
+    pathgl.uniform('resolution', [canvas.width, canvas.height])
+  }, 50)
   d3.select(canvas).on('mousemove.pathgl', mousemoved)
 }
 
@@ -176,7 +175,8 @@ function bindUniform(val, key) {
 function initContext(canvas) {
   var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   return gl && extend(gl, { viewportWidth: canvas.width, viewportHeight: canvas.height })
-};function parse (str, stroke) {
+}
+;function parse (str, stroke) {
   var buffer = [], lb = this.buffer, pb = this.posBuffer, indices = this.indices, count = lb.count
     , pos = [xScale(0), yScale(0)], l = indices.length, i = 0
     , origin = [xScale(0), yScale(0)]
@@ -208,28 +208,15 @@ function initContext(canvas) {
 pathgl.uniform = function (attr, value) {
   if (arguments.length < 2) return value
   if (program[attr]) program[attr](value)
-};var pointBuffer = new Uint16Array(8e4)
-var pointPosBuffer = new Float32Array(8e4)
-pointBuffer.count = 0
-pb = pointBuffer
-ppb = pointPosBuffer
-cb = colorBuffer
-var buff
-var points = {
-    pos: {
-      buffer: 0
-    , vLoc: 0
-    }
-  , fill: {}
-  , stroke: {}
-}
-
-var p1, p2, p3, p4
+};var p1, p2, p3, p4
 
 var oncep = _.once(function initBuffersp() {
   p1 = gl.createBuffer(), p2 = gl.createBuffer(), p3 = gl.createBuffer(), p4 = gl.createBuffer()
 })
+
 function drawPoints(elapsed) {
+  var pointBuffer = canvas.pb
+  var pointPosBuffer = canvas.ppb
   oncep()
   if (! pointBuffer.count) return
 
@@ -361,7 +348,9 @@ var combinators = { ' ': function (d) { return d && d !== __scene__ && d.parent(
                   }
 var chunker = //taken from sizle
   /^(\*|\w+)?(?:([\.\#]+[\w\-\.#]+)?)(\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\])?(:([\w\-]+)(\(['"]?([^()]+)['"]?\))?)?/
-;var proto = {
+;
+
+var proto = {
   circle: { r: function (v) {
               this.posBuffer[this.indices[0] + 2] = v
             }
@@ -388,8 +377,8 @@ var chunker = //taken from sizle
             opacity: function () {
             }
 
-          , buffer: pointBuffer
-          , posBuffer: pointPosBuffer
+          , buffer: canvas.pb = canvas.pb || new Uint16Array(8e4)
+          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(8e4)
           , schema: ['cx', 'cy', 'r', 'cz']
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -422,11 +411,18 @@ var chunker = //taken from sizle
           }
         }
 
+
+
 , polygon: { points: noop }
 , polyline: { points: noop }
 , g: { appendChild: function (tag) { this.children.push(appendChild(tag)) },  ctr: function () { this.children = [] } }
 , text: { x: noop, y: noop, dx: noop, dy: noop }
 }
+
+
+
+proto.circle.buffer.count = 0
+
 var baseProto = extend(Object.create(null), {
   querySelectorAll: querySelectorAll
 , children: Object.freeze([])

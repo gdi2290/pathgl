@@ -1,25 +1,12 @@
-var pointBuffer = new Uint16Array(8e4)
-var pointPosBuffer = new Float32Array(8e4)
-pointBuffer.count = 0
-pb = pointBuffer
-ppb = pointPosBuffer
-cb = colorBuffer
-var buff
-var points = {
-    pos: {
-      buffer: 0
-    , vLoc: 0
-    }
-  , fill: {}
-  , stroke: {}
-}
-
 var p1, p2, p3, p4
 
 var oncep = _.once(function initBuffersp() {
   p1 = gl.createBuffer(), p2 = gl.createBuffer(), p3 = gl.createBuffer(), p4 = gl.createBuffer()
 })
+
 function drawPoints(elapsed) {
+  var pointBuffer = canvas.pb
+  var pointPosBuffer = canvas.ppb
   oncep()
   if (! pointBuffer.count) return
 
