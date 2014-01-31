@@ -45,7 +45,6 @@ examples.point_lighting = function (selector) {
         .attr("fill", function (d) { return d.xvel > -0 ? 'red' : 'steelblue' })
   })
 
-  d3.select('.blurb').text("Compare with http://bl.ocks.org/mbostock/raw/2647924/")
   c.selectAll('circle')
 }
 
