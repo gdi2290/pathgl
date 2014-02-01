@@ -12,7 +12,12 @@ examples.music = function (selection) {
 
 
   var audio = d3.select('.right').append('audio').attr('src', 'overture.mp3')
-  audio.on('play', initAudio).node().play()
+
+  var node = audio.on('play', initAudio).node()
+  node.play()
+  s.on('click', function () {
+    node.currentTime = 65
+  })
 
   var lines = s.selectAll('line').data(d3.range(numLines).map(function () { return {a: 0}}))
               .enter()
