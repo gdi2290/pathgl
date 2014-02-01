@@ -2,6 +2,7 @@ pathgl.vertexShader = [
   'precision mediump float;'
 , 'uniform float type;'
 , 'uniform float clock;'
+
 , 'uniform vec2 mouse;'
 , 'uniform vec2 resolution;'
 , 'uniform vec2 dates;'
