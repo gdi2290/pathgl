@@ -30,9 +30,12 @@ examples.music = function (selection) {
   , y2: function (d, i) { return Math.sin(i * 2) * innerHeight }
   })
   //"hsl(" + Math.random() * 360 + ",100%, 50%)"
+  window.x  = 0
+
   d3.timer(function () {
     if (! analyzer) return
     var byteFreq = new Uint8Array(analyzer.frequencyBinCount)
+
     analyzer.getByteFrequencyData(byteFreq)
     lines.each(function (d, i) {
       var freq  = byteFreq[i % 1024]

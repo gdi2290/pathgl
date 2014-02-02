@@ -5,7 +5,7 @@ pathgl.stop = function () { stopRendering = true }
 function init(c) {
   canvas = c
   gl = initContext(canvas)
-  program = createProgram(pathgl.vertexShader, pathgl.fragmentShader)
+  program = initProgram()
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
@@ -46,59 +46,6 @@ function monkeyPatch(canvas) {
   , __pos__: []
   , __program__: void 0
   })
-}
-
-function compileShader (type, src) {
-  var shader = gl.createShader(type)
-  gl.shaderSource(shader, src)
-  gl.compileShader(shader)
-  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw src + ' ' + gl.getShaderInfoLog(shader)
-  return shader
-}
-
-function createProgram(vs, fs) {
-  program = gl.createProgram()
-
-  vs = compileShader(gl.VERTEX_SHADER, vs)
-  fs = compileShader(gl.FRAGMENT_SHADER, fs)
-
-  gl.attachShader(program, vs)
-  gl.attachShader(program, fs)
-
-  gl.deleteShader(vs)
-  gl.deleteShader(fs)
-
-  gl.linkProgram(program)
-  gl.useProgram(program)
-
-  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
-
-  each({ type: [0]
-       , mouse: [0, 0]
-       , dates: [0, 0]
-       , resolution: [0, 0]
-       , clock: [0]
-       }, bindUniform)
-
-  program.vPos = gl.getAttribLocation(program, "pos")
-  gl.enableVertexAttribArray(program.vPos)
-
-  program.vFill = gl.getAttribLocation(program, "fill")
-  gl.enableVertexAttribArray(program.vFill)
-
-  program.vStroke = gl.getAttribLocation(program, "stroke")
-  gl.enableVertexAttribArray(program.vStroke)
-
-  return program
-}
-
-function bindUniform(val, key) {
-  var loc = gl.getUniformLocation(program, key), keep
-  ;(program[key] = function (data) {
-      if (keep == data) return
-      gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
-      keep = data
-  })(val)
 }
 
 function initContext(canvas) {

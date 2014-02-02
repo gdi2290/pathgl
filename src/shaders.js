@@ -31,8 +31,8 @@ pathgl.vertexShader = [
 , '    gl_PointSize =  size > 30. ? 10. : size;'
 
 , '    v_type = (fill > 0. ? 1. : 0.);'
-, '    v_fill = vec4(unpack_color(fill), 1.);'
-, '    v_stroke = vec4(unpack_color(stroke), 1.);'
+, '    v_fill = vec4(unpack_color(stroke), 1.);'
+, '    v_stroke = adnan;'
 , '}'
 ].join('\n')
 
@@ -54,3 +54,66 @@ pathgl.fragmentShader = [
 //2 rect
 //3 line
 //4 path
+
+d3.selection.prototype.shader = function (hello) {
+  initProgram(hello)
+}
+
+
+function createProgram(vs, fs) {
+  program = gl.createProgram()
+
+  vs = compileShader(gl.VERTEX_SHADER, vs)
+  fs = compileShader(gl.FRAGMENT_SHADER, fs)
+
+  gl.attachShader(program, vs)
+  gl.attachShader(program, fs)
+
+  gl.deleteShader(vs)
+  gl.deleteShader(fs)
+
+  gl.linkProgram(program)
+  gl.useProgram(program)
+
+  if (! gl.getProgramParameter(program, gl.LINK_STATUS)) throw name + ': ' + gl.getProgramInfoLog(program)
+
+  each({ type: [0]
+       , mouse: [0, 0]
+       , dates: [0, 0]
+       , resolution: [0, 0]
+       , clock: [0]
+       }, bindUniform)
+
+  program.vPos = gl.getAttribLocation(program, "pos")
+  gl.enableVertexAttribArray(program.vPos)
+
+  program.vFill = gl.getAttribLocation(program, "fill")
+  gl.enableVertexAttribArray(program.vFill)
+
+  program.vStroke = gl.getAttribLocation(program, "stroke")
+  gl.enableVertexAttribArray(program.vStroke)
+
+  return program
+}
+
+function initProgram (subst) {
+  subst  = subst || 'vec4(unpack_color(stroke), 1.);'
+  return createProgram(pathgl.vertexShader.replace('adnan', subst), pathgl.fragmentShader)
+}
+
+function compileShader (type, src) {
+  var shader = gl.createShader(type)
+  gl.shaderSource(shader, src)
+  gl.compileShader(shader)
+  if (! gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw src + ' ' + gl.getShaderInfoLog(shader)
+  return shader
+}
+
+function bindUniform(val, key) {
+  var loc = gl.getUniformLocation(program, key), keep
+  ;(program[key] = function (data) {
+      if (keep == data) return
+      gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
+      keep = data
+  })(val)
+}
