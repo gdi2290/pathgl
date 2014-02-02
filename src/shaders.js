@@ -23,16 +23,10 @@ pathgl.vertexShader = [
 , 'void main() {'
 , '    gl_Position = vec4(2. * (pos.x / resolution.x) - 1., 1. - ((pos.y / resolution.y) * 2.),  1., 1.);'
 
-, '    float size;'
-
-, '    if (dates[0] != 6000.) size = (2. * pos.z - (pos.w < dates[0] ? dates[0] - pos.w: '
-, '                    abs(dates[1] - pos.w)));'
-, '    else size = 20. * pos.z;'
-, '    gl_PointSize =  size > 30. ? 10. : size;'
-
+, '    gl_PointSize =  replace_radius;'
 , '    v_type = (fill > 0. ? 1. : 0.);'
-, '    v_fill = vec4(unpack_color(stroke), 1.);'
-, '    v_stroke = adnan;'
+, '    v_fill = vec4(unpack_color(fill), 1.);'
+, '    v_stroke = replace_stroke;'
 , '}'
 ].join('\n')
 
@@ -58,7 +52,6 @@ pathgl.fragmentShader = [
 d3.selection.prototype.shader = function (hello) {
   initProgram(hello)
 }
-
 
 function createProgram(vs, fs) {
   program = gl.createProgram()
@@ -97,8 +90,15 @@ function createProgram(vs, fs) {
 }
 
 function initProgram (subst) {
-  subst  = subst || 'vec4(unpack_color(stroke), 1.);'
-  return createProgram(pathgl.vertexShader.replace('adnan', subst), pathgl.fragmentShader)
+  var defaults = _.extend({
+    stroke: 'vec4(unpack_color(stroke), 1.);'
+  , radius: '2. * pos.z;'
+  }, subst), vertex = pathgl.vertexShader
+
+  for(var attr in defaults)
+    vertex = vertex.replace('replace_'+attr, defaults[attr])
+
+  return createProgram(vertex, pathgl.fragmentShader)
 }
 
 function compileShader (type, src) {
@@ -113,6 +113,7 @@ function bindUniform(val, key) {
   var loc = gl.getUniformLocation(program, key), keep
   ;(program[key] = function (data) {
       if (keep == data) return
+      if (data == null) return keep
       gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
       keep = data
   })(val)

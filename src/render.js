@@ -1,11 +1,3 @@
-function xScale(x) {
-  return 2 * (x / canvas.width) - 1
-}
-
-function yScale(y) {
-  return 1 - ((y / canvas.height) * 2)
-}
-
 function drawLoop(elapsed) {
   beforeRender()
 

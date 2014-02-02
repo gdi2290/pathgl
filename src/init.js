@@ -2,6 +2,7 @@ var stopRendering = false
 var colorBuffer = new Float32Array(2e4)
 
 pathgl.stop = function () { stopRendering = true }
+
 function init(c) {
   canvas = c
   gl = initContext(canvas)
@@ -30,7 +31,7 @@ function bindEvents(canvas) {
 
 function mousemoved() {
   var m = d3.mouse(this)
-  pathgl.uniform('mouse', [xScale(m[0]), yScale(m[1])])
+  pathgl.uniform('mouse', [m[0], m[1]])
 }
 
 function monkeyPatch(canvas) {
