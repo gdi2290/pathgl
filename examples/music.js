@@ -1,6 +1,6 @@
 var analyzer
 examples.music = function (selection) {
-  var numLines = 2000
+  var numLines = 2048
   var s = d3.select(selection)
           .attr(size)
           .call(pathgl)
@@ -30,15 +30,16 @@ examples.music = function (selection) {
   , y2: function (d, i) { return Math.sin(i * 2) * innerHeight }
   })
   //"hsl(" + Math.random() * 360 + ",100%, 50%)"
-  window.x  = 0
 
   d3.timer(function () {
     if (! analyzer) return
-    var byteFreq = new Uint8Array(analyzer.frequencyBinCount)
+    var freqData = new Uint8Array(analyzer.frequencyBinCount)
+    var timeData = new Uint8Array(analyzer.frequencyBinCount)
 
-    analyzer.getByteFrequencyData(byteFreq)
+    analyzer.getByteTimeDomainData(timeData)
+    analyzer.getByteFrequencyData(freqData)
     lines.each(function (d, i) {
-      var freq  = byteFreq[i % 1024]
+      var freq  = (i > 1024 ? freqData : timeData)[i % 1024]
       d.diff = d.a - freq
       d.a = freq
     })
