@@ -33,5 +33,6 @@ function drawPoints(elapsed) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
     pointBuffer.changed = false
   }
+
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }

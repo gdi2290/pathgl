@@ -1,5 +1,4 @@
 var stopRendering = false
-var colorBuffer = new Float32Array(2e4)
 
 pathgl.stop = function () { stopRendering = true }
 

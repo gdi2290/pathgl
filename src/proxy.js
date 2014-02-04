@@ -1,4 +1,4 @@
-
+var colorBuffer = new Float32Array(2*4e5)
 
 var proto = {
   circle: { r: function (v) {
@@ -27,8 +27,8 @@ var proto = {
             opacity: function () {
             }
 
-          , buffer: canvas.pb = canvas.pb || new Uint16Array(8e4)
-          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(8e4)
+          , buffer: canvas.pb = canvas.pb || new Uint16Array(2*4e5)
+          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(2*4e5)
           , schema: ['cx', 'cy', 'r', 'cz']
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -240,3 +240,6 @@ function event (type, listener) {
   //   //c.selectAll('*').filter(function () {})
   // })
 }
+
+var tween =
+'float x(i) { return a / b + b * i }'

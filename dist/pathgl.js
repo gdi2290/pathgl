@@ -37,7 +37,11 @@ function pathgl(canvas) {
 , '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
-, '    gl_Position = vec4(2. * (pos.x / resolution.x) - 1., 1. - ((pos.y / resolution.y) * 2.),  1., 1.);'
+
+, '    float x = replace_x;'
+, '    float y = replace_y;'
+
+, '    gl_Position = vec4(2. * (x / resolution.x) - 1., 1. - ((y / resolution.y) * 2.),  1., 1.);'
 
 , '    gl_PointSize =  replace_radius;'
 , '    v_type = (fill > 0. ? 1. : 0.);'
@@ -66,9 +70,11 @@ pathgl.fragmentShader = [
 //4 path
 
 d3.selection.prototype.shader = function (attr, name) {
-  var args = {}
-  args[attr] = name
-  initProgram(args)
+  if(arguments.length == 2) {
+    var args = {}
+    args[attr] = name
+  }
+  initProgram(args || attr)
   return this
 }
 
@@ -109,9 +115,16 @@ function createProgram(vs, fs) {
 }
 
 function initProgram (subst) {
+  each(subst, function (v, k, o) {
+    if (k == 'cx') o['x'] = v
+    if (k == 'cy') o['y'] = v
+
+  })
   var defaults = _.extend({
     stroke: 'vec4(unpack_color(stroke), 1.);'
   , radius: '2. * pos.z;'
+  , x: 'pos.x;'
+  , y: 'pos.y;'
   }, subst), vertex = pathgl.vertexShader
 
   for(var attr in defaults)
@@ -136,8 +149,16 @@ function bindUniform(val, key) {
       gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
       keep = data
   })(val)
+}
+
+d3.selection.prototype.pAttr = function (obj) {
+  //check if svg
+  this.each(function(d) {
+    for(var attr in obj)
+      this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
+  }).node().buffer.changed = true
+  return this
 };var stopRendering = false
-var colorBuffer = new Float32Array(2e4)
 
 pathgl.stop = function () { stopRendering = true }
 
@@ -255,10 +276,11 @@ function drawPoints(elapsed) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, pointBuffer, gl.DYNAMIC_DRAW)
     pointBuffer.changed = false
   }
+
   gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
-;var lineBuffer = new Uint16Array(1.5e4)
-var linePosBuffer = new Float32Array(1.5e4)
+;var lineBuffer = new Uint16Array(4e4)
+var linePosBuffer = new Float32Array(4e4)
 lineBuffer.count = 0
 
 lb = lineBuffer
@@ -360,7 +382,7 @@ var combinators = { ' ': function (d) { return d && d !== __scene__ && d.parent(
                   }
 var chunker = //taken from sizle
   /^(\*|\w+)?(?:([\.\#]+[\w\-\.#]+)?)(\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\])?(:([\w\-]+)(\(['"]?([^()]+)['"]?\))?)?/
-;
+;var colorBuffer = new Float32Array(2*4e5)
 
 var proto = {
   circle: { r: function (v) {
@@ -389,8 +411,8 @@ var proto = {
             opacity: function () {
             }
 
-          , buffer: canvas.pb = canvas.pb || new Uint16Array(8e4)
-          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(8e4)
+          , buffer: canvas.pb = canvas.pb || new Uint16Array(2*4e5)
+          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(2*4e5)
           , schema: ['cx', 'cy', 'r', 'cz']
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points
@@ -601,10 +623,14 @@ function event (type, listener) {
   //   console.log(d3.event.x)
   //   //c.selectAll('*').filter(function () {})
   // })
-};function drawLoop(elapsed) {
+}
+
+var tween =
+'float x(i) { return a / b + b * i }';function drawLoop(elapsed) {
   beforeRender()
 
-  pathgl.uniform(elapsed)
+  pathgl.uniform('clock', elapsed)
+
   drawPoints(elapsed)
   drawLines(elapsed)
   drawPolygons(elapsed)

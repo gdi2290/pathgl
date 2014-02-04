@@ -21,7 +21,11 @@ pathgl.vertexShader = [
 , '                mod(col, 256.)) / 256.; }'
 
 , 'void main() {'
-, '    gl_Position = vec4(2. * (pos.x / resolution.x) - 1., 1. - ((pos.y / resolution.y) * 2.),  1., 1.);'
+
+, '    float x = replace_x;'
+, '    float y = replace_y;'
+
+, '    gl_Position = vec4(2. * (x / resolution.x) - 1., 1. - ((y / resolution.y) * 2.),  1., 1.);'
 
 , '    gl_PointSize =  replace_radius;'
 , '    v_type = (fill > 0. ? 1. : 0.);'
@@ -50,9 +54,11 @@ pathgl.fragmentShader = [
 //4 path
 
 d3.selection.prototype.shader = function (attr, name) {
-  var args = {}
-  args[attr] = name
-  initProgram(args)
+  if(arguments.length == 2) {
+    var args = {}
+    args[attr] = name
+  }
+  initProgram(args || attr)
   return this
 }
 
@@ -93,9 +99,16 @@ function createProgram(vs, fs) {
 }
 
 function initProgram (subst) {
+  each(subst, function (v, k, o) {
+    if (k == 'cx') o['x'] = v
+    if (k == 'cy') o['y'] = v
+
+  })
   var defaults = _.extend({
     stroke: 'vec4(unpack_color(stroke), 1.);'
   , radius: '2. * pos.z;'
+  , x: 'pos.x;'
+  , y: 'pos.y;'
   }, subst), vertex = pathgl.vertexShader
 
   for(var attr in defaults)
@@ -120,4 +133,13 @@ function bindUniform(val, key) {
       gl['uniform' + val.length + 'fv'](loc, Array.isArray(data) ? data : [data])
       keep = data
   })(val)
+}
+
+d3.selection.prototype.pAttr = function (obj) {
+  //check if svg
+  this.each(function(d) {
+    for(var attr in obj)
+      this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
+  }).node().buffer.changed = true
+  return this
 }

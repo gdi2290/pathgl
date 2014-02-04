@@ -1,7 +1,8 @@
 function drawLoop(elapsed) {
   beforeRender()
 
-  pathgl.uniform(elapsed)
+  pathgl.uniform('clock', elapsed)
+
   drawPoints(elapsed)
   drawLines(elapsed)
   drawPolygons(elapsed)
