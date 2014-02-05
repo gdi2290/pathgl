@@ -175,8 +175,10 @@ function init(c) {
 
 function flags () {
   gl.disable(gl.SCISSOR_TEST)
-  gl.colorMask(true, true, true, true)
   gl.stencilMask(1, 1, 1, 1)
+  //gl.clearColor(1,1,1,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.colorMask(true, true, true, true);
   gl.disable(gl.BLEND)
   gl.enable(gl.CULL_FACE)
 }
@@ -654,7 +656,13 @@ function countFrames(elapsed) {
 
 function beforeRender() {
   // countFrames(elapsed)
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+  gl.disable(gl.BLEND)
+  //gl.clearColor(1, 1, 1, 1);
+  //gl.colorMask(false, false, false, true);
+  gl.clear(gl.COLOR_BUFFER_BIT
+           //| gl.DEPTH_BUFFER_BIT
+           //| gl.STENCIL_BUFFER_BIT
+          )
 }
 
 function createTarget( width, height ) {

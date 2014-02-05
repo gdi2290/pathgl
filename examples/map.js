@@ -21,9 +21,9 @@ examples.map = function (selector) {
     display: 'inline'
   , 'margin': '0 auto'
   })
+
   d3.json('/examples/world-50m.json', draw_world)
   d3.csv('/examples/hist.csv', draw_history)
-
 
   function mouseover(d) {
     d3.select('.title').text(d.title + ' ' + d.year + ', '  + d.event);
@@ -153,24 +153,21 @@ examples.map = function (selector) {
     .data(hist)
     .enter()
     .append('circle')
-    .on('mouseover', mouseover)
     .attr({ class:'point'
-          , fill: function(d){ return d3.hsl(Math.random()*360, 1, 0.5) }
+          , fill: function(d){ return d3.hsl(Math.random()*360, .9, 0.5) }
           , cx: function(d){ return d.location[0] }
           , cy: function(d){ return d.location[1] }
           , cz: function(d){ return + d.year }
           , r: 15
           })
+    .shader({
+      'radius': '(pos.w < dates.y && pos.w > dates.x) ? 10. : 10. - (max(distance(pos.w, dates.y), distance(pos.w, dates.x)) / 20.);'
+    })
     .each(function (d) {
       return d.node = this
     })
-
   }
-
-
 }
-
-
 
 function distance (x1, y1, x2, y2) {
   var xd = x2 - x1, yd = y2 - y1
