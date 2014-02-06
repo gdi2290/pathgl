@@ -1,4 +1,5 @@
-var colorBuffer = new Float32Array(2*4e5)
+var bSize = 4e5
+var colorBuffer = new Float32Array(bSize)
 
 var proto = {
   circle: { r: function (v) {
@@ -27,8 +28,8 @@ var proto = {
             opacity: function () {
             }
 
-          , buffer: canvas.pb = canvas.pb || new Uint16Array(2*4e5)
-          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(2*4e5)
+          , buffer: canvas.pb = canvas.pb || new Uint16Array(bSize)
+          , posBuffer: canvas.ppb = canvas.ppb ||  new Float32Array(bSize)
           , schema: ['cx', 'cy', 'r', 'cz']
           }
 , ellipse: { cx: noop, cy: noop, rx: noop, ry: noop } //points

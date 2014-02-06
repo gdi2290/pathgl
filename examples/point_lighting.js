@@ -1,8 +1,6 @@
 examples.swarm = function (selector) {
   var inlining = selector == 'canvas'
-  var data = d3.range(selector == 'canvas' ? 1e4 : 2000).map(function() {
-               return { xloc: 0, yloc: 0, xvel: 0, yvel: 0 }
-             })
+  var data = d3.range(selector == 'canvas' ? 1e5 : 2000)
 
   var width = size.width
     , height = size.height
@@ -23,16 +21,22 @@ examples.swarm = function (selector) {
            .data(data)
            .enter().append("circle")
            .attr('fill', random_hue)
-           .attr("cx", 10)
-           .attr("cy", function (d, i) { return data.negth  -  i})
-           .attr('cz', function (d, i) { return i })
-           .attr("r", function (d, i) { return i % 100 })
+           .pAttr({
+             "cx":function (d, i) { return d / 1e8 }
+           , "cy": function (d, i) { return (data.length  -  d) / 20000 }
+           , 'cz': function (d, i) { return d }
+           , "r": function (d, i) { return d % 1000 } })
             .shader({
-              cx: 'resolution.x / 2. + cos(pos.w + clock * .0001) * pos.z * 3.;'
-            , cy: 'resolution.y / 2. + sin(pos.w + clock * .0001) * pos.z * 3.;'
-            , stroke: 'vec4(unpack_color(stroke), .6);'
-            , radius: '5.;'
-                    })
+              cx: 'resolution.x / 2. + cos(pos.w + clock * pos.x) * pos.z * 10.;'
+            , cy: 'resolution.y / 2. + sin(pos.w + clock * pos.x) * pos.z * 10.;'
+            , stroke: 'vec4(unpack_color(stroke) * .5 + vec3(mouse.x / resolution.x, mouse.y / resolution.y, fract(sin(dot(pos.yx ,vec2(12.9898,78.233))) * 43758.5453)), '
+                      + '1.);'
+            , radius: 'pos.y;'
+            })
+
+  svg.on('click', function () {
+    circle.attr('fill', random_hue)
+  })
 }
 
 function random_hue () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
