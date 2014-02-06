@@ -187,6 +187,7 @@ function bindEvents(canvas) {
   }, 50)
   canvas.addEventListener('mousemove', mousemoved)
   canvas.addEventListener('touchmove', mousemoved)
+  canvas.addEventListener('touchstart', mousemoved)
 }
 
 function mousemoved(e) {

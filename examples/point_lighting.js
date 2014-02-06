@@ -33,10 +33,6 @@ examples.swarm = function (selector) {
                       + '1.);'
             , radius: 'pos.y;'
             })
-
-  svg.on('click', function () {
-    circle.attr('fill', random_hue)
-  })
 }
 
 function random_hue () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
