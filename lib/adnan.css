@@ -214,3 +214,8 @@ h1 {
     text-align: center;
     width: 50%;
 }
+
+
+.mode {
+    display: none;
+}
