@@ -25,12 +25,13 @@ function bindEvents(canvas) {
   setInterval(function () {
     pathgl.uniform('resolution', [canvas.width, canvas.height])
   }, 50)
-  d3.select(canvas).on('mousemove.pathgl', mousemoved)
+  canvas.addEventListener('mousemove', mousemoved)
+  canvas.addEventListener('touchmove', mousemoved)
 }
 
-function mousemoved() {
-  var m = d3.mouse(this)
-  pathgl.uniform('mouse', [m[0], m[1]])
+function mousemoved(e) {
+  var rect = canvas.getBoundingClientRect()
+  pathgl.uniform('mouse', [ e.clientX - rect.left - canvas.clientLeft, e.clientY - rect.top - canvas.clientTop ])
 }
 
 function monkeyPatch(canvas) {
