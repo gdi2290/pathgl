@@ -1,4 +1,6 @@
 var compressor = require('uglify-js')
+  , markdown = require('markdown').markdown
+
   , fs = require('fs')
   , http = require('http')
   , source = './src/'

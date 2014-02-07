@@ -1,6 +1,3 @@
-// Karma configuration
-// Generated on Mon Jan 20 2014 12:45:53 GMT-0800 (PST)
-
 module.exports = function(config) {
   config.set({
 
@@ -9,7 +6,7 @@ module.exports = function(config) {
 
 
     // frameworks to use
-    frameworks: ['mocha', 'sinon-chai'],
+    frameworks: ['qunit'],
 
 
     // list of files / patterns to load in the browser
