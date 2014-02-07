@@ -15,7 +15,7 @@ examples.map = function (selector) {
             .call(pathgl)
 
   var webgl = d3.select('canvas').attr(size).call(pathgl).attr('class', 'no-click')
-  var p = d3.select('.right').insert('div', '*')
+  var p = d3.select('.right').append('div')
           .attr('class', 'event_text')
           .style({
             position: 'absolute'
