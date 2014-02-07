@@ -91,21 +91,19 @@ examples.map = function (selector) {
 
     var b = svg.append("g")
     .attr("class", "brush")
-    .call(d3.svg.brush().x(x)
-          .on("brushstart", brushstart)
-          .on("brush", brushmove)
-          .on("brushend", brushend))
+    .call(d3.svg.brush().x(x).on("brush", brushmove))
     .attr('transform', 'translate(' + [0, height * .9] +  ')')
     .selectAll("rect")
     .attr('fill', 'blue')
     .attr('opacity', '.7')
     .attr("height", height * .1);
 
-    function brushstart() {
-    }
 
     function brushmove() {
-      var s = d3.event.target.extent();
+      adnan(d3.event.target.extent());
+    }
+
+    function adnan (s) {
       pathgl.uniform('dates', s)
       document.title = s.map(Math.round)
       d3.select('.current_year').text(from < 0 ? '' + Math.abs(+from) + ' BC' : from)
@@ -123,10 +121,8 @@ examples.map = function (selector) {
         p.text(event.length && event[0].event)
       })
     }
-
-    function brushend() {
-    }
-
+    adnan([-500, -400])
+    p.text('click on circles you filthy animal')
 
     d3.select('.right').insert('p', '*')
     .attr('class', 'title')
@@ -146,7 +142,7 @@ examples.map = function (selector) {
       d.location = proj(d.location.split(' ').map(parseFloat).reverse()) || d
             })
 
-    pathgl.uniform('dates', [0, 0])
+    pathgl.uniform('dates', [0, 1])
 
     webgl
     .selectAll('.nil')
