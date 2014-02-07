@@ -1,6 +1,7 @@
 var analyzer
+
 var numLines = 2048
-var s = d3.select(selection)
+var s = d3.select('canvas')
         .attr(size)
         .call(pathgl)
 
@@ -10,7 +11,8 @@ var midX = size.width / 2
 var midY = size.height / 2
 
 
-var audio = d3.select('.right').append('audio').attr('src', '/examples/overture.mp3')
+var audio = d3.select('.right').append('audio')
+            .attr('src', 'data/overture.mp3')
 
 var node = audio.on('play', initAudio).node()
 node.play()
@@ -45,8 +47,8 @@ d3.timer(function () {
 
   //s.node().style.background = "hsl(" + d3.sum(byteFreq) * 5 + ",100%, 50%)"
 })
+
 dropAndLoad(document.querySelector('.right'), initDnD, "ArrayBuffer")
-}
 
 function initAudio() {
   var audioContext = new webkitAudioContext();
@@ -103,3 +105,4 @@ function dropAndLoad(dropElement, callback, readFormat) {
     }
     reader['readAs'+readFormat](file)
   }
+}
