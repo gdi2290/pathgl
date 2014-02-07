@@ -9,8 +9,10 @@ function initBuffers () {
   b1 = gl.createBuffer(), b2 = gl.createBuffer(), b3 = gl.createBuffer(), b4 = gl.createBuffer()
 }
 
-var once = _.once(initBuffers)
-
+var once = once(initBuffers)
+function once (fn) {
+  return function () { fn && (fn(), fn = null) }
+}
 function drawLines(){
   once()
   if (lb.count < 1) return

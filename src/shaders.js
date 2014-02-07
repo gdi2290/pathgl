@@ -95,7 +95,7 @@ function initProgram (subst) {
     if (k == 'cy') o['y'] = v
 
   })
-  var defaults = _.extend({
+  var defaults = extend({
     stroke: 'vec4(unpack_color(stroke), 1.);'
   , radius: '2. * pos.z;'
   , x: 'pos.x;'

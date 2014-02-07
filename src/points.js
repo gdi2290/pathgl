@@ -1,6 +1,6 @@
 var p1, p2, p3, p4
 
-var oncep = _.once(function initBuffersp() {
+var oncep = once(function initBuffersp() {
   p1 = gl.createBuffer(), p2 = gl.createBuffer(), p3 = gl.createBuffer(), p4 = gl.createBuffer()
 })
 

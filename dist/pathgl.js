@@ -14,10 +14,13 @@ function pathgl(canvas) {
     canvas
 
   if (! canvas) return console.log('invalid selector')
-  if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');function parseColor () {
-  //parseInt(fill.toString().slice(1), 16)
-  return 0
-};pathgl.vertexShader = [
+  if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');var rgb = function (v) {
+  return d3.rgb(v)
+}
+function parseColor (v) {
+  return parseInt((rgb(v).toString()).slice(1), 16)
+}
+;pathgl.vertexShader = [
   'precision mediump float;'
 , 'uniform float type;'
 , 'uniform float clock;'
@@ -114,7 +117,7 @@ function initProgram (subst) {
     if (k == 'cy') o['y'] = v
 
   })
-  var defaults = _.extend({
+  var defaults = extend({
     stroke: 'vec4(unpack_color(stroke), 1.);'
   , radius: '2. * pos.z;'
   , x: 'pos.x;'
@@ -264,7 +267,7 @@ pathgl.uniform = function (attr, value) {
   if (program[attr]) return program[attr](value)
 };var p1, p2, p3, p4
 
-var oncep = _.once(function initBuffersp() {
+var oncep = once(function initBuffersp() {
   p1 = gl.createBuffer(), p2 = gl.createBuffer(), p3 = gl.createBuffer(), p4 = gl.createBuffer()
 })
 
@@ -311,8 +314,10 @@ function initBuffers () {
   b1 = gl.createBuffer(), b2 = gl.createBuffer(), b3 = gl.createBuffer(), b4 = gl.createBuffer()
 }
 
-var once = _.once(initBuffers)
-
+var once = once(initBuffers)
+function once (fn) {
+  return function () { fn && (fn(), fn = null) }
+}
 function drawLines(){
   once()
   if (lb.count < 1) return

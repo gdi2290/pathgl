@@ -2,20 +2,12 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-	<script src="lib/d3.js"></script>
-	<script src="lib/setup.js"></script>
-	<script src="lib/topojson.v1.min.js"></script>
-	<script src="lib/underscore.js"></script>
-	<script src="dist/pathgl.js"></script>
+	<script src="/lib/d3.js"></script>
+	<script src="/lib/setup.js"></script>
+	<script src="/lib/topojson.v1.min.js"></script>
+	<script src="/dist/pathgl.js"></script>
 
-	<script src="examples/map.js"></script>
-	<script src="examples/point_lighting.js"></script>
-	<script src="examples/music.js"></script>
-  <script src="examples/sphere.js"></script>
-	<script src="examples/docs.js"></script>
-
-  <link rel="stylesheet" href="lib/adnan.css">
-
+  <link rel="stylesheet" href="/lib/adnan.css">
   <meta charset="utf-8">
 </head>
 
@@ -26,17 +18,17 @@
 
 			<h3>Examples</h3>
       <ul class="examples">
-        <li><a href="#swarm">100k Circles</a>
-        <li><a href="#map">Map of History</a>
-        <li><a href="#music">Music Visualizer</a>
+        <li><a href="/examples/swarm.html">100k Circles</a>
+        <li><a href="/examples/map.html">Map of History</a>
+        <li><a href="/examples/music.html">Music Visualizer</a>
       </ul>
 			
 			<h3>Documentation</h3>
 			<ul class="docs">
-        <li><a href="#start">Getting Started</a>
-				<li><a href="#api">API Reference</a>
-        <li><a href="#webgl">The Graphics Pipeline</a>
-        <li><a href="#shaders">Shaders</a>
+        <li><a href="/documentation/start.html">Getting Started</a>
+				<li><a href="/documentation/api.html">API Reference</a>
+        <li><a href="/documentation/webgl.html">The Graphics Pipeline</a>
+        <li><a href="/documentation/shaders.html">Shaders</a>
 			</ul>
 			<div class="mode">
 			<h3>Rendering Mode</h3>
@@ -45,36 +37,9 @@
 			</div>
 	</div>
 	<div class="right" id="scroll">
-		<div class="blockDisplay"></div>
 		<svg></svg>
 		<canvas></canvas>
-		<div class="blurb">
-      <div class="center">
-        <h1>PathGL</h1>
-        <h7>A webGL renderer for Data Visualization</h7>
-        <br>
-        <br>
-        <a class="btn" href="#start">Get Started</a>
-        <a class="btn" href="/dist/pathgl.zip">Download PathGL v0.0.0</a>
-      </div>
-      <div class="container">
-        <div class="three">
-          <h2>Dynamic Shader Recompiliation</h2>
-          Pathgl bundles with a collection of powerful and commonly used GLSL code 
-          as well as a transpiler for building glsl expressions on the fly. 
-        </div>
-        <div class="three">
-          <h2>Virtual Dom</h2>
-          Pathgl implements a scene graph with svg semantics, so you 
-          can and should use it with prexisting libraries like D3. 
-        </div>
-        <div class="three">
-          <h2>Data Textures</h2>
-          Load in Billions of data points directly into your graphics card. 
-        </div>
-      </div>
-    </div>
+		<!--xxx-->
   </div>
-	<button class="edit">Edit Code</button>
 </div>
 </body>

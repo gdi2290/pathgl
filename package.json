@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "..",
   "scripts": {
-    "start": "node scripts/build.js",
-    "build": "node scripts/build.js 'build'",
+    "start": "node lib/build.js",
+    "build": "node lib/build.js 'build'",
     "test": "karma run"
   },
   "keywords": [
@@ -47,7 +47,7 @@
     "glsl-unit": "0.0.7",
     "marked": "0.3.1",
 
-    "qunit": "~1.14.0",
+    "qunit": "~0.5.8",
     "karma": "~0.10.9",
     "karma-qunit": "~0.1",
     "karma-sinon-chai": "~0.1.4",
