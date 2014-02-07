@@ -18,9 +18,10 @@ examples.map = function (selector) {
   var p = d3.select('.right').insert('div', '*')
           .attr('class', 'event_text')
           .style({
-    display: 'inline'
-  , 'margin': '0 auto'
-  })
+            position: 'absolute'
+          , left: document.querySelector('canvas').clientLeft + size.width / 2  + 'px'
+          , top: '5px'
+          })
 
   d3.json('examples/world-50m.json', draw_world)
   d3.csv('examples/hist.csv', draw_history)
@@ -91,7 +92,7 @@ examples.map = function (selector) {
 
     var b = svg.append("g")
     .attr("class", "brush")
-    .call(d3.svg.brush().x(x).on("brush", brushmove))
+    .call(d3.svg.brush().x(x).on("brush", brushmove).extent([-500, -400]))
     .attr('transform', 'translate(' + [0, height * .9] +  ')')
     .selectAll("rect")
     .attr('fill', 'blue')
@@ -122,7 +123,7 @@ examples.map = function (selector) {
       })
     }
     adnan([-500, -400])
-    p.text('click on circles you filthy animal')
+    p.text('click on circles you filthy animal. brush the histogram at the bottom to scroll through time')
 
     d3.select('.right').insert('p', '*')
     .attr('class', 'title')
