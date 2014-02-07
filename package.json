@@ -47,9 +47,7 @@
   "bugs": {
     "url": "https://github.com/adnan-wahab/pathgl/issues"
   },
-  "dependencies": {
-    "d3": "3.3.13"
-  },
+  "dependencies": {},
   "devDependencies": {
     "uglify-js": "2.4.0",
     "mocha": "~1.17.0",

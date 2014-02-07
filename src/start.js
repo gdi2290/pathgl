@@ -1,6 +1,6 @@
 this.pathgl = pathgl
 
-pathgl.stop = d3.functor()
+pathgl.stop = function () {}
 
 function pathgl(canvas) {
   var gl, program, programs

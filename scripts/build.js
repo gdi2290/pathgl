@@ -23,6 +23,7 @@ console.log('watching for file save on port ' + port)
 
 function build(_, file) {
   var blob = [ 'start.js'
+             , 'color.js'
              , 'shaders.js'
              , 'init.js'
              , 'parse.js'

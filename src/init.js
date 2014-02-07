@@ -9,7 +9,11 @@ function init(c) {
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
-  d3.timer(drawLoop)
+  var start = Date.now()
+  raf(function recur( ) {
+    drawLoop(new Date - start)
+    raf(recur)
+  })
   return gl ? canvas : null
 }
 

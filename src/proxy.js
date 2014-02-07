@@ -16,14 +16,13 @@ var proto = {
               this.posBuffer[this.indices[0] + 3] = v
             }
           , fill: function (v) {
-              var fill = d3.rgb(v)
-              colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
+
+              colorBuffer[this.indices[0] / 4] = parseColor(v)
             }
 
           , stroke: function (v) {
               return;
-              var fill = d3.rgb(v)
-              colorBuffer[this.indices[0] / 4] = + fill.toString().slice(1)
+              colorBuffer[this.indices[0] / 4] = parseColor(v)
             },
             opacity: function () {
             }
@@ -44,7 +43,7 @@ var proto = {
         , buffer: lineBuffer
         , posBuffer: linePosBuffer
         , stroke: function (v) {
-            var fill = d3.rgb(v)
+            var fill = parseColor(v)
             this.indices.forEach(function (i) {
               colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
             })
@@ -55,7 +54,7 @@ var proto = {
         , buffer: lineBuffer
         , posBuffer: linePosBuffer
         , stroke: function (v) {
-            var fill = d3.rgb(v)
+            var fill = parseColor(v)
             this.indices.forEach(function (i) {
               colorBuffer[i / 2] = + parseInt(fill.toString().slice(1), 16)
             })
@@ -91,20 +90,14 @@ var baseProto = extend(Object.create(null), {
 , parent: function () { return __scene__ }
 
 , fill: function (val) {
-    isId(val) && initShader(d3.select(val).text(), val)
+    isId(val) && initShader(document.querySelector(val).textContent, val)
   }
 
 , transform: function (d) {
-    var parse = d3.transform(d)
-      , radians = parse.rotate * Math.PI / 180
-
-    if (parse.rotate) delete parse.translate//fixme
-
-    extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
 
 , stroke: function (val) {
-    isId(val) && initShader(d3.select(val).text(), val)
+    isId(val) && initShader(document.querySelector(val).textContent, val)
   }
 
 , getAttribute: function (name) {
@@ -232,15 +225,6 @@ function constructProxy(type) {
 
 var e = {}
 
-function event (type, listener) {
-  // if (e[type]) return
-  // var c = d3.select(this.parentElement)
-  // console.log(this.parentElement)
-  // c.on('click.pathgl', function () {
-  //   console.log(d3.event.x)
-  //   //c.selectAll('*').filter(function () {})
-  // })
-}
+function event (type, listener) {}
 
-var tween =
-'float x(i) { return a / b + b * i }'
+var tween = 'float x(i) { return a / b + b * i }'

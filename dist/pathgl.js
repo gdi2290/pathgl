@@ -1,7 +1,7 @@
 ! function() {
 this.pathgl = pathgl
 
-pathgl.stop = d3.functor()
+pathgl.stop = function () {}
 
 function pathgl(canvas) {
   var gl, program, programs
@@ -14,7 +14,10 @@ function pathgl(canvas) {
     canvas
 
   if (! canvas) return console.log('invalid selector')
-  if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');pathgl.vertexShader = [
+  if (! canvas.getContext) return console.log(canvas, 'is not a valid canvas');function parseColor () {
+  //parseInt(fill.toString().slice(1), 16)
+  return 0
+};pathgl.vertexShader = [
   'precision mediump float;'
 , 'uniform float type;'
 , 'uniform float clock;'
@@ -68,15 +71,6 @@ pathgl.fragmentShader = [
 //2 rect
 //3 line
 //4 path
-
-d3.selection.prototype.shader = function (attr, name) {
-  if(arguments.length == 2) {
-    var args = {}
-    args[attr] = name
-  }
-  initProgram(args || attr)
-  return this
-}
 
 function createProgram(vs, fs) {
   program = gl.createProgram()
@@ -151,14 +145,33 @@ function bindUniform(val, key) {
   })(val)
 }
 
-d3.selection.prototype.pAttr = function (obj) {
-  //check if svg
-  this.each(function(d) {
-    for(var attr in obj)
-      this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
-  }).node().buffer.changed = true
-  return this
-};var stopRendering = false
+if(d3) {
+  d3.selection.prototype.pAttr = function (obj) {
+    //check if svg
+    this.each(function(d) {
+      for(var attr in obj)
+        this.posBuffer[this.indices[0] + this.schema.indexOf(attr)] = obj[attr](d)
+    }).node().buffer.changed = true
+    return this
+  }
+
+  d3.selection.prototype.shader = function (attr, name) {
+    if(arguments.length == 2) {
+      var args = {}
+      args[attr] = name
+    }
+    initProgram(args || attr)
+    return this
+  }
+}
+var raf = (function(){
+  return window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();;var stopRendering = false
 
 pathgl.stop = function () { stopRendering = true }
 
@@ -169,7 +182,11 @@ function init(c) {
   monkeyPatch(canvas)
   bindEvents(canvas)
   flags(canvas)
-  d3.timer(drawLoop)
+  var start = Date.now()
+  raf(function recur( ) {
+    drawLoop(new Date - start)
+    raf(recur)
+  })
   return gl ? canvas : null
 }
 
@@ -404,14 +421,13 @@ var proto = {
               this.posBuffer[this.indices[0] + 3] = v
             }
           , fill: function (v) {
-              var fill = d3.rgb(v)
-              colorBuffer[this.indices[0] / 4] = parseInt(fill.toString().slice(1), 16)
+
+              colorBuffer[this.indices[0] / 4] = parseColor(v)
             }
 
           , stroke: function (v) {
               return;
-              var fill = d3.rgb(v)
-              colorBuffer[this.indices[0] / 4] = + fill.toString().slice(1)
+              colorBuffer[this.indices[0] / 4] = parseColor(v)
             },
             opacity: function () {
             }
@@ -432,7 +448,7 @@ var proto = {
         , buffer: lineBuffer
         , posBuffer: linePosBuffer
         , stroke: function (v) {
-            var fill = d3.rgb(v)
+            var fill = parseColor(v)
             this.indices.forEach(function (i) {
               colorBuffer[i] = parseInt(fill.toString().slice(1), 16)
             })
@@ -443,7 +459,7 @@ var proto = {
         , buffer: lineBuffer
         , posBuffer: linePosBuffer
         , stroke: function (v) {
-            var fill = d3.rgb(v)
+            var fill = parseColor(v)
             this.indices.forEach(function (i) {
               colorBuffer[i / 2] = + parseInt(fill.toString().slice(1), 16)
             })
@@ -479,20 +495,14 @@ var baseProto = extend(Object.create(null), {
 , parent: function () { return __scene__ }
 
 , fill: function (val) {
-    isId(val) && initShader(d3.select(val).text(), val)
+    isId(val) && initShader(document.querySelector(val).textContent, val)
   }
 
 , transform: function (d) {
-    var parse = d3.transform(d)
-      , radians = parse.rotate * Math.PI / 180
-
-    if (parse.rotate) delete parse.translate//fixme
-
-    extend(this.attr, parse, { rotation: [ Math.sin(radians), Math.cos(radians) ] })
   }
 
 , stroke: function (val) {
-    isId(val) && initShader(d3.select(val).text(), val)
+    isId(val) && initShader(document.querySelector(val).textContent, val)
   }
 
 , getAttribute: function (name) {
@@ -620,18 +630,9 @@ function constructProxy(type) {
 
 var e = {}
 
-function event (type, listener) {
-  // if (e[type]) return
-  // var c = d3.select(this.parentElement)
-  // console.log(this.parentElement)
-  // c.on('click.pathgl', function () {
-  //   console.log(d3.event.x)
-  //   //c.selectAll('*').filter(function () {})
-  // })
-}
+function event (type, listener) {}
 
-var tween =
-'float x(i) { return a / b + b * i }';function drawLoop(elapsed) {
+var tween = 'float x(i) { return a / b + b * i }';function drawLoop(elapsed) {
   beforeRender()
 
   pathgl.uniform('clock', elapsed)
