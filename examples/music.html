@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<script src="/lib/d3.js"></script>
+	<script src="/lib/setup.js"></script>
+	<script src="/lib/topojson.v1.min.js"></script>
+	<script src="/dist/pathgl.js"></script>
+
+  <link rel="stylesheet" href="/lib/adnan.css">
+  <meta charset="utf-8">
+</head>
+
+<body>
+  <div class="nav">
+      <a href="http://github.com/adnan-wahab/pathgl">Github Repo</a>
+      <a href="/dist/pathgl.zip">Download</a>
+
+			<h3>Examples</h3>
+      <ul class="examples">
+        <li><a href="/examples/swarm.html">100k Circles</a>
+        <li><a href="/examples/map.html">Map of History</a>
+        <li><a href="/examples/music.html">Music Visualizer</a>
+      </ul>
+			
+			<h3>Documentation</h3>
+			<ul class="docs">
+        <li><a href="/documentation/start.html">Getting Started</a>
+				<li><a href="/documentation/api.html">API Reference</a>
+        <li><a href="/documentation/webgl.html">The Graphics Pipeline</a>
+        <li><a href="/documentation/shaders.html">Shaders</a>
+			</ul>
+			<div class="mode">
+			<h3>Rendering Mode</h3>
+			<label for="svg">SVG<input type="radio" name="mode" id="svg"></label>
+			<label for="webgl">WebGL<input type="radio" name="mode" checked="1" id="webgl"></label>
+			</div>
+	</div>
+	<div class="right" id="scroll">
+		<svg></svg>
+		<canvas></canvas>
+		<script>var analyzer
+examples.music = function (selection) {
+  var numLines = 2048
+  var s = d3.select(selection)
+          .attr(size)
+          .call(pathgl)
+
+  var scale = Math.PI * 2 / numLines
+
+  var midX = size.width / 2
+  var midY = size.height / 2
+
+
+  var audio = d3.select('.right').append('audio').attr('src', '/examples/overture.mp3')
+
+  var node = audio.on('play', initAudio).node()
+  node.play()
+
+  var lines = s.selectAll('line').data(d3.range(numLines).map(function () { return {a: 0}}))
+              .enter()
+              .append('line')
+              .attr({
+                x1: size.width >> 1
+              , y1: size.height >> 1
+  , stroke: function () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
+  , x2: function (d, i) { return Math.cos(i * 2) * innerWidth }
+  , y2: function (d, i) { return Math.sin(i * 2) * innerHeight }
+  })
+  //"hsl(" + Math.random() * 360 + ",100%, 50%)"
+
+  d3.timer(function () {
+    if (! analyzer) return
+    var freqData = new Uint8Array(analyzer.frequencyBinCount)
+    var timeData = new Uint8Array(analyzer.frequencyBinCount)
+
+    analyzer.getByteTimeDomainData(timeData)
+    analyzer.getByteFrequencyData(freqData)
+    lines.each(function (d, i) {
+      var freq  = (i > 1024 ? freqData : timeData)[i % 1024]
+      d.diff = d.a - freq
+      d.a = freq
+    })
+    .attr('stroke', function (d) { return "hsl(" + Math.abs(d.diff * 10 + 200) + ",100%, 50%)" })
+    .attr('x2', function (d, i) { return midX + (Math.cos(i) * d.a) })
+    .attr('y2', function (d, i) { return midY + (Math.sin(i) * d.a)})
+
+    //s.node().style.background = "hsl(" + d3.sum(byteFreq) * 5 + ",100%, 50%)"
+  })
+  dropAndLoad(document.querySelector('.right'), initDnD, "ArrayBuffer")
+}
+
+function initAudio() {
+  var audioContext = new webkitAudioContext();
+  window.analyzer = audioContext.createAnalyser();
+  var source = audioContext.createMediaElementSource(this);
+  source.connect(analyzer);
+  analyzer.connect(audioContext.destination);
+  this.play();
+}
+
+function initDnD (arrayBuffer) {
+  window.audioCtx = new webkitAudioContext()
+  window.analyser = audioCtx.createAnalyser()
+
+  if (window.source)
+    source.noteOff(0)
+
+  if (window.source)
+    audio.stop()
+  audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
+
+    window.source = audioCtx.createBufferSource()
+    source.buffer = buffer
+
+    source.connect(analyser)
+
+    analyser.connect(audioCtx.destination)
+
+    source.start(0)
+    analyzer = analyser
+  })
+}
+
+function dropAndLoad(dropElement, callback, readFormat) {
+  var readFormat = readFormat || "DataUrl"
+
+  dropElement.addEventListener('dragover', function(e) {
+    e.stopPropagation()
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+  }, false)
+
+  dropElement.addEventListener('drop', function(e) {
+    e.stopPropagation()
+    e.preventDefault()
+    loadFile(e.dataTransfer.files[0])
+  }, false)
+
+  function loadFile(files) {
+    var file = files
+    var reader = new FileReader()
+    reader.onload = function(e) {
+      callback(e.target.result)
+    }
+    reader['readAs'+readFormat](file)
+  }
+}
+</script>
+  </div>
+</div>
+</body>

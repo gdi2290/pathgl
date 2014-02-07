@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<script src="/lib/d3.js"></script>
+	<script src="/lib/setup.js"></script>
+	<script src="/lib/topojson.v1.min.js"></script>
+	<script src="/dist/pathgl.js"></script>
+
+  <link rel="stylesheet" href="/lib/adnan.css">
+  <meta charset="utf-8">
+</head>
+
+<body>
+  <div class="nav">
+      <a href="http://github.com/adnan-wahab/pathgl">Github Repo</a>
+      <a href="/dist/pathgl.zip">Download</a>
+
+			<h3>Examples</h3>
+      <ul class="examples">
+        <li><a href="/examples/swarm.html">100k Circles</a>
+        <li><a href="/examples/map.html">Map of History</a>
+        <li><a href="/examples/music.html">Music Visualizer</a>
+      </ul>
+			
+			<h3>Documentation</h3>
+			<ul class="docs">
+        <li><a href="/documentation/start.html">Getting Started</a>
+				<li><a href="/documentation/api.html">API Reference</a>
+        <li><a href="/documentation/webgl.html">The Graphics Pipeline</a>
+        <li><a href="/documentation/shaders.html">Shaders</a>
+			</ul>
+			<div class="mode">
+			<h3>Rendering Mode</h3>
+			<label for="svg">SVG<input type="radio" name="mode" id="svg"></label>
+			<label for="webgl">WebGL<input type="radio" name="mode" checked="1" id="webgl"></label>
+			</div>
+	</div>
+	<div class="right" id="scroll">
+		<svg></svg>
+		<canvas></canvas>
+		pathgl([element])
+Takes a canvas element, css3 selector, or d3 selection as an argument
+if webgl is not available, returns null
+otherwise the canvas element is returned
+If called without arguments, appends a 960x500 webgl canvas to the sceern.
+
+pathgl.texture(image)
+Takes a string, image tag or typed array
+The string needs to be either a url, css3 selector, or fragment shader.
+returns an object which represents the texture's location in video memory.
+you can pass this object as the fill of any element
+
+pathgl.context()
+returns the WebGL context, or null if webgl is not available.
+Useful for svg compatible code, or directly acessing the webgl context
+
+pathgl.uniform(name, [value])
+Set a variable that is global to all shader contexts.
+If called without a value, will return previously set value.
+
+pathgl.registerShader('name', 'function text')
+
+d3.selection.prototype.shader(name, expression)
+Inline's an abitrary string into the shader that renders the current mark.
+The expression language is untyped GLSl.
+Any svg attribute from that mark can be used in the expression.
+For more information, please see shaders.
+
+d3.transition.prototype.shaderTween(name, expression)
+...
+
+Currently, the scene graphi API is private and subject to rapid change.
+Instead of manipulating pathgl marks directly, use a library like d3 to manipulate
+the screen from a sane layer of abstraction.
+
+  </div>
+</div>
+</body>
