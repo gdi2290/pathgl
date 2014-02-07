@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node scripts/build.js",
     "build": "node scripts/build.js 'build'",
-    "test": "karma run",
+    "test": "karma run"
   },
   "keywords": [
     "pathgl",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "uglify-js": "2.4.0",
     "glsl-unit": "0.0.7",
-    "markdown": "0.6.0",
+    "marked": "0.3.1",
 
     "qunit": "~1.14.0",
     "karma": "~0.10.9",
