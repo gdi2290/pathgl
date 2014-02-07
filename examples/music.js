@@ -11,7 +11,7 @@ examples.music = function (selection) {
   var midY = size.height / 2
 
 
-  var audio = d3.select('.right').append('audio').attr('src', 'overture.mp3')
+  var audio = d3.select('.right').append('audio').attr('src', '/examples/overture.mp3')
 
   var node = audio.on('play', initAudio).node()
   node.play()

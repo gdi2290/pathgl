@@ -17,16 +17,10 @@ If webgl is available then your circles will be WEBGL, if not, fallback to svg.
 ```html
 <script src="http://adnanwahab.com/pathgl/dist/pathgl.min.js" charset="utf-8"></script>
 <script>
-var selector = pathgl('canvas') || 'svg'
-d3.select(selector).append('circle')
+d3.select('canvas').call(pathgl)
+.append('circle')
 .attr('r', 100)
 .attr('cx', 50)
 .attr('cy', 50)
 </script>
-```
-
-Alternatively:
-```
-d3.select('canvas').call(pathgl)
-.append('circle')
 ```
