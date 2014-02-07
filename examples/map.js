@@ -22,8 +22,8 @@ examples.map = function (selector) {
   , 'margin': '0 auto'
   })
 
-  d3.json('//pathgl.com/examples/world-50m.json', draw_world)
-  d3.csv('//pathgl.com/examples/hist.csv', draw_history)
+  d3.json('examples/world-50m.json', draw_world)
+  d3.csv('examples/hist.csv', draw_history)
 
   function mouseover(d) {
     d3.select('.title').text(d.title + ' ' + d.year + ', '  + d.event);
