@@ -1,6 +1,9 @@
 this.pathgl = pathgl
 
 pathgl.stop = function () {}
+pathgl.context = function () {}
+pathgl.uniform = function () {}
+pathgl.texture = function () {}
 
 function pathgl(canvas) {
   var gl, program, programs

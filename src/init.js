@@ -3,7 +3,7 @@ var stopRendering = false
 pathgl.stop = function () { stopRendering = true }
 
 function init(c) {
-  if (! gl = initContext(canvas = c))
+  if (! (gl = initContext(canvas = c)))
     return console.log('webGL context could not be initialized') || null
   program = initProgram()
   monkeyPatch(canvas)

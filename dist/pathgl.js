@@ -2,6 +2,9 @@
 this.pathgl = pathgl
 
 pathgl.stop = function () {}
+pathgl.context = function () {}
+pathgl.uniform = function () {}
+pathgl.texture = function () {}
 
 function pathgl(canvas) {
   var gl, program, programs
@@ -180,7 +183,7 @@ var raf = (function(){
 pathgl.stop = function () { stopRendering = true }
 
 function init(c) {
-  if (! gl = initContext(canvas = c))
+  if (! (gl = initContext(canvas = c)))
     return console.log('webGL context could not be initialized') || null
   program = initProgram()
   monkeyPatch(canvas)
