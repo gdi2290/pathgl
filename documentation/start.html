@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<script src="//pathgl.com/lib/d3.js"></script>
+	<script src="//pathgl.com/lib/setup.js"></script>
+	<script src="//pathgl.com/lib/topojson.v1.min.js"></script>
+	
+	<script src="/dist/pathgl.js"></script>
+  <link rel="stylesheet" href="/lib/adnan.css">
+</head>
+
+<body>
+  <div class="nav">
+    <a href="http://github.com/adnan-wahab/pathgl">Github Repo</a>
+    <a href="/dist/pathgl.zip">Download</a>
+
+		<h3>Examples</h3>
+    <ul class="examples">
+      <li><a href="/examples/swarm.html">100k Circles</a>
+      <li><a href="/examples/map.html">Map of History</a>
+      <li><a href="/examples/music.html">Music Visualizer</a>
+    </ul>
+		
+		<h3>Documentation</h3>
+		<ul class="docs">
+      <li><a href="/documentation/start.html">Getting Started</a>
+			<li><a href="/documentation/api.html">API Reference</a>
+      <li><a href="/documentation/webgl.html">The Graphics Pipeline</a>
+      <li><a href="/documentation/shaders.html">Shaders</a>
+		</ul>
+		<div class="mode">
+			<h3>Rendering Mode</h3>
+			<label for="svg">SVG<input type="radio" name="mode" id="svg"></label>
+			<label for="webgl">WebGL<input type="radio" name="mode" checked="1" id="webgl"></label>
+		</div>
+	</div>
+	<div class="right" id="scroll">
+		<svg></svg>
+		<canvas></canvas>
+		<div class="blurb"></div>
+		Pathgl extends d3 to run directly on your graphics card for improved perfomance and
+expression.
+
+Download the latest version and include in your html.
+
+Or link directly to the latest release, copy this snippet:
+
+<script src="http://adnanwahab.com/pathgl/dist/pathgl.min.js"
+charset="utf-8"></script>
+or Using npm and running npm install pathgl --save
+
+<script src="http://adnanwahab.com/pathgl/dist/pathgl.min.js"
+charset="utf-8"></script>
+<script>
+d3.select('canvas').call(pathgl)
+.append('circle')
+.attr('r', 100)
+.attr('cx', 50)
+.attr('cy', 50)
+</script>
+
+  </div>
+	</div>
+</body>
