@@ -4,11 +4,10 @@ d3.select('canvas')
 .data(d3.range(10000))
 .enter().append("circle")
 .attr('fill', random_hue)
-.pAttr({
-  "cx":function (d, i) { return d / 1e8 }
-, "cy": function (d, i) { return (10000  -  d) / 20000 }
-, 'cz': function (d, i) { return d }
-, "r": function (d, i) { return d % 1000 } })
+.attr('cx', function (d, i) { return d / 1e8 })
+.attr('cy', function (d, i) { return (10000  -  d) / 20000 })
+.attr('cz', function (d) { return d })
+.attr('r', function (d, i) { return d % 1000 })
 .shader({
   cx: 'resolution.x / 2. + cos(pos.w + clock * pos.x) * pos.z * 10.;'
 , cy: 'resolution.y / 2. + sin(pos.w + clock * pos.x) * pos.z * 10.;'

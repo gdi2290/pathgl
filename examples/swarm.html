@@ -13,28 +13,28 @@
 
 <body>
   <div class="nav">
-      <a href="http://github.com/adnan-wahab/pathgl">Github Repo</a>
-      <a href="/dist/pathgl.zip">Download</a>
+    <a href="http://github.com/adnan-wahab/pathgl">Github Repo</a>
+    <a href="/dist/pathgl.zip">Download</a>
 
-			<h3>Examples</h3>
-      <ul class="examples">
-        <li><a href="/examples/swarm.html">100k Circles</a>
-        <li><a href="/examples/map.html">Map of History</a>
-        <li><a href="/examples/music.html">Music Visualizer</a>
-      </ul>
-			
-			<h3>Documentation</h3>
-			<ul class="docs">
-        <li><a href="/documentation/start.html">Getting Started</a>
-				<li><a href="/documentation/api.html">API Reference</a>
-        <li><a href="/documentation/webgl.html">The Graphics Pipeline</a>
-        <li><a href="/documentation/shaders.html">Shaders</a>
-			</ul>
-			<div class="mode">
+		<h3>Examples</h3>
+    <ul class="examples">
+      <li><a href="/examples/swarm.html">100k Circles</a>
+      <li><a href="/examples/map.html">Map of History</a>
+      <li><a href="/examples/music.html">Music Visualizer</a>
+    </ul>
+		
+		<h3>Documentation</h3>
+		<ul class="docs">
+      <li><a href="/documentation/start.html">Getting Started</a>
+			<li><a href="/documentation/api.html">API Reference</a>
+      <li><a href="/documentation/webgl.html">The Graphics Pipeline</a>
+      <li><a href="/documentation/shaders.html">Shaders</a>
+		</ul>
+		<div class="mode">
 			<h3>Rendering Mode</h3>
 			<label for="svg">SVG<input type="radio" name="mode" id="svg"></label>
 			<label for="webgl">WebGL<input type="radio" name="mode" checked="1" id="webgl"></label>
-			</div>
+		</div>
 	</div>
 	<div class="right" id="scroll">
 		<svg></svg>
@@ -45,11 +45,10 @@
 .data(d3.range(10000))
 .enter().append("circle")
 .attr('fill', random_hue)
-.pAttr({
-  "cx":function (d, i) { return d / 1e8 }
-, "cy": function (d, i) { return (10000  -  d) / 20000 }
-, 'cz': function (d, i) { return d }
-, "r": function (d, i) { return d % 1000 } })
+.attr('cx', function (d, i) { return d / 1e8 })
+.attr('cy', function (d, i) { return (10000  -  d) / 20000 })
+.attr('cz', function (d) { return d })
+.attr('r', function (d, i) { return d % 1000 })
 .shader({
   cx: 'resolution.x / 2. + cos(pos.w + clock * pos.x) * pos.z * 10.;'
 , cy: 'resolution.y / 2. + sin(pos.w + clock * pos.x) * pos.z * 10.;'
@@ -57,8 +56,9 @@
 , radius: 'pos.y + (pos.x * .5 * pos.w) * max(distance(x, mouse.x)/ resolution.x, distance(y, mouse.y) / resolution.y)'
 })
 
+
 function random_hue () { return "hsl(" + Math.random() * 360 + ",100%, 50%)" }
 </script>
   </div>
-</div>
+	</div>
 </body>
