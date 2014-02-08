@@ -1,4 +1,4 @@
-var bSize = 4e5
+var bSize = 3e6
 var colorBuffer = new Float32Array(bSize)
 
 var proto = {

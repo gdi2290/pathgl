@@ -305,6 +305,7 @@ function drawPoints(elapsed) {
     pointBuffer.changed = false
   }
   gl.drawArrays(gl.POINTS, 0, pointBuffer.count)
+
   // gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
 ;var lineBuffer = new Uint16Array(4e4)
@@ -412,7 +413,7 @@ var combinators = { ' ': function (d) { return d && d !== __scene__ && d.parent(
                   }
 var chunker = //taken from sizle
   /^(\*|\w+)?(?:([\.\#]+[\w\-\.#]+)?)(\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\])?(:([\w\-]+)(\(['"]?([^()]+)['"]?\))?)?/
-;var bSize = 4e5
+;var bSize = 3e6
 var colorBuffer = new Float32Array(bSize)
 
 var proto = {

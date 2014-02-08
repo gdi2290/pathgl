@@ -34,5 +34,6 @@ function drawPoints(elapsed) {
     pointBuffer.changed = false
   }
   gl.drawArrays(gl.POINTS, 0, pointBuffer.count)
+
   // gl.drawElements(gl.POINTS, pointBuffer.count * 4, gl.UNSIGNED_SHORT, 0)
 }
