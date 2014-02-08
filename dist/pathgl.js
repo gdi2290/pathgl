@@ -413,7 +413,7 @@ var combinators = { ' ': function (d) { return d && d !== __scene__ && d.parent(
                   }
 var chunker = //taken from sizle
   /^(\*|\w+)?(?:([\.\#]+[\w\-\.#]+)?)(\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\])?(:([\w\-]+)(\(['"]?([^()]+)['"]?\))?)?/
-;var bSize = 3e6
+;var bSize = 8e5
 var colorBuffer = new Float32Array(bSize)
 
 var proto = {
